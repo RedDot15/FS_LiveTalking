@@ -91,7 +91,7 @@ async def offer(request):
     sessionid = randN(6) #len(nerfreals)
     logger.info('sessionid=%d',sessionid)
     nerfreals[sessionid] = None
-    nerfreal = await asyncio.get_event_loop().run_in_executor(None, build_nerfreal,sessionid)
+    nerfreal = await asyncio.get_event_loop().run_in_executor(None, build_nerfreal, sessionid)
     nerfreals[sessionid] = nerfreal
     
     pc = RTCPeerConnection()
@@ -385,9 +385,9 @@ if __name__ == '__main__':
     # parser.add_argument('--CHARACTER', type=str, default='test')
     # parser.add_argument('--EMOTION', type=str, default='default')
 
-    parser.add_argument('--model', type=str, default='ernerf') #musetalk wav2lip
+    parser.add_argument('--model', type=str, default='wav2lip') #musetalk wav2lip
 
-    parser.add_argument('--transport', type=str, default='rtcpush') #rtmp webrtc rtcpush
+    parser.add_argument('--transport', type=str, default='webrtc') #rtmp webrtc rtcpush
     parser.add_argument('--push_url', type=str, default='http://localhost:1985/rtc/v1/whip/?app=live&stream=livestream') #rtmp://localhost/live/livestream
 
     parser.add_argument('--max_session', type=int, default=1)  #multi session count
