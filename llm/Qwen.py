@@ -2,43 +2,58 @@ import os
 import openai
 
 '''
-`huggingface`连接不上可以使用 `modelscope`
+If `huggingface` connection fails, you can use `modelscope`.
 `pip install modelscope`
 '''
 from modelscope import AutoModelForCausalLM, AutoTokenizer
-#from transformers import AutoModelForCausalLM, AutoTokenizer
 
+# This line is commented out, indicating an alternative to use Hugging Face Transformers library.
+    # from transformers import AutoModelForCausalLM, AutoTokenizer
+
+# Sets an environment variable for CUDA. This can help with debugging CUDA errors by forcing synchronous execution, making it easier to pinpoint issues.
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-
 
 class Qwen:
     def __init__(self, model_path="Qwen/Qwen-1_8B-Chat", api_base=None, api_key=None) -> None:
-        '''暂时不写api版本,与Linly-api相类似,感兴趣可以实现一下'''
-        # 默认本地推理
+        # Currently, the API version is not implemented; it's similar to Linly-api. You can implement it if interested.
+        
+        # Default to local inference
+        # Initializes a flag 'local' to True, indicating that by default, the model will run locally rather than through an API.
         self.local = True
 
-        # api_base和api_key不为空时使用openapi的方式
+        # Use OpenAPI if api_base and api_key are not empty
         if api_key is not None and api_base is not None:
             openai.api_base = api_base
             openai.api_key = api_key
+            # Sets the 'local' flag to False, meaning API mode will be used.
             self.local = False
+            # Exits the constructor early, as model loading is not needed for API mode.
             return
 
+        # If not in API mode, calls 'init_model' to load the local Qwen model and its tokenizer.
         self.model, self.tokenizer = self.init_model(model_path)
+        # Initializes an empty dictionary 'data', likely for storing conversation history or temporary data.
         self.data = {}
 
+    # Defines a method to initialize the local Qwen model and tokenizer.
     def init_model(self, path="Qwen/Qwen-1_8B-Chat"):
         model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen-1_8B-Chat",
-                                                     device_map="auto",
-                                                     trust_remote_code=True).eval()
+                                                    # Automatically determines where to load the model (e.g., CPU, GPU).
+                                                    device_map="auto",
+                                                    # 'trust_remote_code=True' is necessary for custom model architectures.
+                                                    # '.eval()' sets the model to evaluation mode (disables dropout, etc.).
+                                                    trust_remote_code=True).eval()
+
+        # Loads the tokenizer for the specified model path.
+        # 'trust_remote_code=True' is also needed here.                                                    
         tokenizer = AutoTokenizer.from_pretrained(path, trust_remote_code=True)
 
         return model, tokenizer
 
     def chat(self, question):
-        # 优先调用qwen openapi的方式
+        # Prioritize calling Qwen OpenAPI
         if not self.local:
-            # 不使用流式回复的请求
+            # Request without streaming response
             response = openai.ChatCompletion.create(
                 model="Qwen",
                 messages=[
@@ -49,16 +64,19 @@ class Qwen:
             )
             return response.choices[0].message.content
 
-        # 默认本地推理
+        # Default local inference
+        # Formats the question for local inference.
         self.data["question"] = f"{question} ### Instruction:{question}  ### Response:"
+
         try:
+            # Calls the model's chat method.
+            # It uses the tokenizer to prepare the input, passes the formatted question, and starts with no history.
             response, history = self.model.chat(self.tokenizer, self.data["question"], history=None)
-            print(history)
             return response
         except:
-            return "对不起，你的请求出错了，请再次尝试。\nSorry, your request has encountered an error. Please try again.\n"
+            return "Sorry, your request has encountered an error. Please try again."
 
-
+# Defines a test function
 def test():
     llm = Qwen(model_path="Qwen/Qwen-1_8B-Chat")
     answer = llm.chat(question="如何应对压力？")

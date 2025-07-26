@@ -1,15 +1,19 @@
-1、利用vllm可以显著推理加速大模型
+1. Using VLLM for Significant Large Model Inference Acceleration
 
 conda create -n vllm python=3.10
 conda activate vllm
 conda install pytorch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 pytorch-cuda=12.1 -c pytorch -c nvidia
 
-2、启动推理
-python -m vllm.entrypoints.openai.api_server --tensor-parallel-size=1  --trust-remote-code --max-model-len 1024 --model THUDM/chatglm3-6b
-指定ip和端口：--host 127.0.0.1 --port 8101
+2. Starting Inference
 
-python -m vllm.entrypoints.openai.api_server --port 8101 --tensor-parallel-size=1  --trust-remote-code --max-model-len 1024 --model THUDM/chatglm3-6b
+# Start the VLLM OpenAI-compatible API server.
+python -m vllm.entrypoints.openai.api_server --tensor-parallel-size=1 --trust-remote-code --max-model-len 1024 --model THUDM/chatglm3-6b
 
+# Specify IP and Port: --host 127.0.0.1 --port 8101
+# Example of starting the server with a specific host and port.
+python -m vllm.entrypoints.openai.api_server --port 8101 --tensor-parallel-size=1 --trust-remote-code --max-model-len 1024 --model THUDM/chatglm3-6b
+
+# Example for starting the server using specific CUDA devices and a local model path.
 CUDA_VISIBLE_DEVICES=6,7 python -m vllm.entrypoints.openai.api_server \
 --model="/data/mnt/ShareFolder/common_models/Ziya-Reader-13B-v1.0" \
 --max-model-len=8192 \
@@ -17,29 +21,48 @@ CUDA_VISIBLE_DEVICES=6,7 python -m vllm.entrypoints.openai.api_server \
 --trust-remote-code \
 --port=8101
 
+3. Testing
 
-3、测试
+# Send a POST request to the VLLM /v1/completions endpoint.
 curl http://127.0.0.1:8101/v1/completions \
     -H "Content-Type: application/json" \
     -d '{
         "model": "THUDM/chatglm3-6b",
-        "prompt": "请用20字内回复我,你今年多大了",
+        "prompt": "Please reply within 20 words, how old are you this year?",
         "max_tokens": 20,
         "temperature": 0
     }'
 
-多轮对话
+# Send a POST request to the VLLM /v1/completions endpoint for a multi-turn conversation.
+# The 'history' field contains previous user and assistant turns.
 curl -X POST "http://127.0.0.1:8101/v1/completions" \
--H "Content-Type: application/json" \
--d "{\"model\": \"THUDM/chatglm3-6b\",\"prompt\": \"你叫什么名字\", \"history\": [{\"role\": \"user\", \"content\": \"你出生在哪里.\"}, {\"role\": \"assistant\", \"content\": \"出生在北京\"}]}"
+    -H "Content-Type: application/json" \
+    -d "{
+        "model": "THUDM/chatglm3-6b",
+        "prompt": "What is your name?", 
+        "history": [
+            {"role": "user", "content": "Where were you born?"}, 
+            {"role": "assistant", "content": "Born in Beijing"}
+        ]}"
 
-多轮对话
+# Send a POST request to the VLLM /v1/chat/completions endpoint, which is more aligned with OpenAI's chat API.
+# This uses the 'messages' array format with explicit roles.
 curl -X POST "http://127.0.0.1:8101/v1/chat/completions" \
--H "Content-Type: application/json" \
--d "{\"model\": \"THUDM/chatglm3-6b\", \"messages\": [{\"role\": \"system\", \"content\": \"You are ChatGLM3, a large language model trained by Zhipu.AI. Follow the user's instructions carefully. Respond using markdown.\"}, {\"role\": \"user\", \"content\": \"你好，给我讲一个故事，大概100字\"}], \"stream\": false, \"max_tokens\": 100, \"temperature\": 0.8, \"top_p\": 0.8}"
+    -H "Content-Type: application/json" \
+    -d "{
+        "model": "THUDM/chatglm3-6b", 
+        "messages": [
+            {"role": "system", "content": "You are ChatGLM3, a large language model trained by Zhipu.AI. Follow the user's instructions carefully. Respond using markdown."}, 
+            {"role": "user", "content": "Hello, tell me a story, about 100 words."}], 
+        "stream": false,
+        "max_tokens": 100, 
+        "temperature": 0.8, 
+        "top_p": 0.8}"
 
 
-4、启动前端访问
+4. Launching Frontend Access
+
+# Run an Nginx Docker container in detached mode (-d).
 docker run -d \
 --network=host \
 --name nginx2 --restart=always \
@@ -51,4 +74,4 @@ docker run -d \
 nginx
 
 
-参考文档：https://docs.vllm.ai/en/latest/
+Reference Documentation: https://docs.vllm.ai/en/latest/

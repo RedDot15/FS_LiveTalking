@@ -18,5 +18,5 @@ class GPT():
         return response['choices'][0]['message']['content']
 
 if __name__ == '__main__':
-    llm = GPT('gpt-3.5-turbo', '你的API Key','https://openai.api2d.net/v1')
-    response = llm.chat("如何应对压力？")
+    llm = GPT('gpt-3.5-turbo', 'Your API Key','https://openai.api2d.net/v1')
+    response = llm.chat("How to deal with stress?")
