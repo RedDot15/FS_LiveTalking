@@ -59,7 +59,7 @@ class BaseReal:
         elif opt.tts == "gpt-sovits":
             self.tts = SovitsTTS(opt,self)
         elif opt.tts == "xtts":
-            self.tts = XTTS(opt,self)
+            self.tts = XTTS(opt, self)
         elif opt.tts == "cosyvoice":
             self.tts = CosyVoiceTTS(opt,self)
         elif opt.tts == "fishtts":
@@ -82,8 +82,8 @@ class BaseReal:
         self.custom_opt = {}
         self.__loadcustom()
 
-    def put_msg_txt(self,msg,eventpoint=None):
-        self.tts.put_msg_txt(msg,eventpoint)
+    def put_msg_txt(self,msg, eventpoint=None):
+        self.tts.put_msg_txt(msg, eventpoint)
     
     def put_audio_frame(self,audio_chunk,eventpoint=None): #16khz 20ms pcm
         self.asr.put_audio_frame(audio_chunk,eventpoint)

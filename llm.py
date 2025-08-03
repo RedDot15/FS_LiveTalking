@@ -3,7 +3,7 @@ import os
 from basereal import BaseReal
 from logger import logger
 
-def llm_response(message,nerfreal:BaseReal):
+def llm_response(message, nerfreal:BaseReal):
     start = time.perf_counter()
     from openai import OpenAI
     client = OpenAI(

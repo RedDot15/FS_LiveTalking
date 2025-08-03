@@ -368,7 +368,7 @@ if __name__ == '__main__':
     parser.add_argument('--fullbody_offset_y', type=int, default=0)
 
     #musetalk opt
-    parser.add_argument('--avatar_id', type=str, default='avator_1')
+    parser.add_argument('--avatar_id', type=str, default='wav2lip256_avatar1', help="define which avatar in data/avatars")
     parser.add_argument('--bbox_shift', type=int, default=5)
     parser.add_argument('--batch_size', type=int, default=16)
 
@@ -381,7 +381,7 @@ if __name__ == '__main__':
     parser.add_argument('--tts', type=str, default='edgetts') #xtts gpt-sovits cosyvoice
     parser.add_argument('--REF_FILE', type=str, default=None)
     parser.add_argument('--REF_TEXT', type=str, default=None)
-    parser.add_argument('--TTS_SERVER', type=str, default='http://127.0.0.1:9880') # http://localhost:9000
+    parser.add_argument('--TTS_SERVER', type=str, default='http://127.0.0.1:8002') # http://localhost:9000
     # parser.add_argument('--CHARACTER', type=str, default='test')
     # parser.add_argument('--EMOTION', type=str, default='default')
 
