@@ -519,36 +519,38 @@ class TencentTTS(BaseTTS):
 class XTTS(BaseTTS):
     def __init__(self, opt, parent):
         super().__init__(opt,parent)
-        self.speaker = self.get_speaker(opt.REF_FILE, opt.TTS_SERVER)
+        self.speaker = self.get_speaker(opt.REF_FILE)
 
-    def txt_to_audio(self,msg):
-        text,textevent = msg  
+    def txt_to_audio(self, msg):
+        text, textevent = msg  
         self.stream_tts(
             self.xtts(
                 text,
                 self.speaker,
-                "zh-cn", #en args.language,
+                "vi", #en args.language,
                 self.opt.TTS_SERVER, #"http://localhost:9000", #args.server_url,
                 "20" #args.stream_chunk_size
             ),
             msg
         )
+        
+    # def get_speaker(self,ref_audio,server_url):
+        # files = {"wav_file": ("reference.wav", open(ref_audio, "rb"))}
+        # response = requests.post(f"{server_url}/clone_speaker", files=files)
+        # return response.json()
 
-    def get_speaker(self,ref_audio,server_url):
-        files = {"wav_file": ("reference.wav", open(ref_audio, "rb"))}
-        response = requests.post(f"{server_url}/clone_speaker", files=files)
-        return response.json()
+    def get_speaker(self, ref_audio):
+        return {'speaker_wav': ref_audio}
 
     def xtts(self,text, speaker, language, server_url, stream_chunk_size) -> Iterator[bytes]:
         start = time.perf_counter()
-        speaker["text"] = text
-        speaker["language"] = language
-        speaker["stream_chunk_size"] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
+        speaker['text'] = text
+        speaker['language'] = language
+        speaker['stream_chunk_size'] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
         try:
-            res = requests.post(
+            res = requests.get(
                 f"{server_url}/tts_stream",
-                json=speaker,
-                stream=True,
+                params=speaker,
             )
             end = time.perf_counter()
             logger.info(f"xtts Time to make POST: {end-start}s")
