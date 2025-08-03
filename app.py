@@ -456,7 +456,7 @@ if __name__ == '__main__':
     parser.add_argument('--customvideo_config', type=str, default='')
 
     # Arguments for Text-to-Speech (TTS) settings.
-    parser.add_argument('--tts', type=str, default='edgetts') #xtts gpt-sovits cosyvoice
+    parser.add_argument('--tts', type=str, default='xtts') #xtts gpt-sovits cosyvoice
     parser.add_argument('--REF_FILE', type=str, default=None)
     parser.add_argument('--REF_TEXT', type=str, default=None)
     parser.add_argument('--TTS_SERVER', type=str, default='http://127.0.0.1:8002') # http://localhost:9000

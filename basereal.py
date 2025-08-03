@@ -26,7 +26,8 @@ import av
 # Imports Fraction for representing rational numbers.
 from fractions import Fraction
 
-from ttsreal import EdgeTTS, SovitsTTS, XTTS, CosyVoiceTTS, FishTTS, TencentTTS
+# from ttsreal import EdgeTTS, SovitsTTS, XTTS, CosyVoiceTTS, FishTTS, TencentTTS
+from ttsreal import XTTS
 from logger import logger
 
 # Imports tqdm for displaying progress bars.
