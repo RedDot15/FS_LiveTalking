@@ -97,7 +97,7 @@ class BaseReal:
 
     # Processes a byte stream representing an audio file and feeds it to the ASR in chunks.
     def put_audio_file(self, filebyte): 
-         # Creates an in-memory byte stream.
+        # Creates an in-memory byte stream.
         input_stream = BytesIO(filebyte)
         # Processes the byte stream into an audio array.
         stream = self.__create_bytes_stream(input_stream)

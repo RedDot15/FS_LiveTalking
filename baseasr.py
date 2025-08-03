@@ -7,7 +7,6 @@ import torch.multiprocessing as mp
 
 from basereal import BaseReal
 
-
 class BaseASR:
     def __init__(self, opt, parent:BaseReal = None):
         self.opt = opt
@@ -105,6 +104,6 @@ class BaseASR:
         pass # Does nothing, as it's meant to be overridden by subclasses.
 
     # Defines a method to retrieve the next feature from the feature queue.
-    def get_next_feat(self,block,timeout):        
+    def get_next_feat(self, block, timeout):        
         # Gets an item from the feature queue, with options for blocking and timeout.
         return self.feat_queue.get(block,timeout)
