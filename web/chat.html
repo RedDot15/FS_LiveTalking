@@ -1,73 +1,92 @@
 <!-- index.html -->
 <html>
+
 <head>
-  <script type="text/javascript" src="mpegts-1.7.3.min.js"></script>
-  <script type="text/javascript" src="http://cdn.sockjs.org/sockjs-0.3.4.js"></script>
-  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-
-
-  
 </head>
+
 <body>
-  <div class="container">
-    <h1>WebSocket Test</h1>
-    <form class="form-inline" id="echo-form">
-      <div class="form-group">
-        <p>input text</p>
-
-		<textarea cols="2" rows="3" style="width:600px;height:50px;" class="form-control" id="message">test</textarea>
-      </div>
-      <button type="submit" class="btn btn-default">Send</button>
-    </form>
-    <div id="log">
-		
+	<div class="container">
+		<h1>WebSocket Test</h1>
+		<form class="form-inline" id="echo-form">
+			<div class="form-group">
+				<p>input text</p>
+				<textarea cols="2" rows="3" style="width:600px;height:50px;" class="form-control"
+					id="message">test</textarea>
+			</div>
+			<button type="submit" class="btn btn-default">Send</button>
+		</form>
+		<div id="log">
+		</div>
+		<video id="video_player" width="40%" controls autoplay muted></video>
 	</div>
-	<video id="video_player" width="40%" controls autoplay muted></video>
-  </div>
+
+	<script type="text/javascript" src="mpegts-1.7.3.min.js"></script>
+	<script type="text/javascript" src="http://cdn.sockjs.org/sockjs-0.3.4.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" charset="utf-8">
+
+		$(document).ready(function () {
+			// Get the hostname from the current URL
+			var host = window.location.hostname
+
+			// The commented-out code below would set up a WebSocket connection.
+			// It's currently disabled, but it shows the logic for connecting to a WebSocket server
+			// at a specific host and port (8000) for a service called 'humanecho'.
+			// It defines functions to handle the connection opening, incoming messages, and closing.
+			//   var ws = new WebSocket("ws://"+host+":8000/humanecho");
+			//   //document.getElementsByTagName("video")[0].setAttribute("src", aa["video"]);
+			//
+			//   ws.onopen = function() {
+			// 	 	console.log('Connected');
+			//   };
+			//
+			//   ws.onmessage = function(e) {
+			// 	 	console.log('Received: ' + e.data);
+			// 	 	data = e
+			// 	 	var vid = JSON.parse(data.data); 
+			// 	 	console.log(typeof(vid),vid)
+			// 	 	//document.getElementsByTagName("video")[0].setAttribute("src", vid["video"]);
+			//   };
+			//
+			//   ws.onclose = function(e) {
+			// 	 	console.log('Closed');
+			//   };
+
+			// Initialize an FLV (Flash Video) player using the mpegts library.
+			// It's configured to stream live video from a specific URL.
+			flvPlayer = .createPlampegtsyer({
+				type: 'flv',
+				url: "http://" + host + ":8080/live/livestream.flv",
+				isLive: true,
+				enableStashBuffer: false
+			});
+			// Attach the player to the HTML video element with the ID 'video_player'.
+			flvPlayer.attachMediaElement(document.getElementById('video_player'));
+			// Load the video stream.
+			flvPlayer.load();
+			// Start playing the video.
+			flvPlayer.play();
+
+			// Send a http request to chat with AI model
+			$('#echo-form').on('submit', function (e) {
+				e.preventDefault();
+				var message = $('#message').val();
+				console.log('Sending: ' + message);
+				fetch('/human', {
+					body: JSON.stringify({
+						text: message,
+						type: 'chat',
+					}),
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					method: 'POST'
+				});
+				//ws.send(message);
+				$('#message').val('');
+			});
+		});
+	</script>
 </body>
-<script type="text/javascript" charset="utf-8">
 
-	$(document).ready(function() {
-	  var host = window.location.hostname
-	//   var ws = new WebSocket("ws://"+host+":8000/humanecho");
-	//   //document.getElementsByTagName("video")[0].setAttribute("src", aa["video"]);
-	//   ws.onopen = function() {
-	// 	console.log('Connected');
-	//   };
-	//   ws.onmessage = function(e) {
-	// 	console.log('Received: ' + e.data);
-	// 	data = e
-	// 	var vid = JSON.parse(data.data); 
-	// 	console.log(typeof(vid),vid)
-	// 	//document.getElementsByTagName("video")[0].setAttribute("src", vid["video"]);
-		
-	//   };
-	//   ws.onclose = function(e) {
-	// 	console.log('Closed');
-	//   };
-
-	  flvPlayer = mpegts.createPlayer({type: 'flv', url: "http://"+host+":8080/live/livestream.flv", isLive: true, enableStashBuffer: false});
-	  flvPlayer.attachMediaElement(document.getElementById('video_player'));
-	  flvPlayer.load();
-	  flvPlayer.play();
-
-	  $('#echo-form').on('submit', function(e) {
-		e.preventDefault();
-		var message = $('#message').val();
-		console.log('Sending: ' + message);
-		fetch('/human', {
-				body: JSON.stringify({
-					text: message,
-					type: 'chat',
-				}),
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				method: 'POST'
-		});
-		//ws.send(message);
-		$('#message').val('');
-		});
-	});
-</script>
- </html>
+</html>

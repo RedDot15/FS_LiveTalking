@@ -443,7 +443,7 @@ if __name__ == '__main__':
     parser.add_argument('--fullbody_offset_x', type=int, default=0)
     parser.add_argument('--fullbody_offset_y', type=int, default=0)
 
-    #musetalk opt (Arguments specific to the 'musetalk' model)
+    # musetalk opt (Arguments specific to the 'musetalk' model)
     parser.add_argument('--avatar_id', type=str, default='wav2lip256_avatar1', help="define which avatar in data/avatars")
     parser.add_argument('--bbox_shift', type=int, default=5)
     parser.add_argument('--batch_size', type=int, default=16)
@@ -559,7 +559,7 @@ if __name__ == '__main__':
     # Define HTTP POST routes and link them to their respective asynchronous handler functions.
     appasync.router.add_post("/offer", offer)           # Handles WebRTC SDP offers.
     appasync.router.add_post("/human", human)           # Handles text input for avatar.
-    appasync.router.add_post("/humanaudio", humanaudio) # Handles audio file input for avatar.
+    # appasync.router.add_post("/humanaudio", humanaudio) # Handles audio file input for avatar.
     appasync.router.add_post("/set_audiotype", set_audiotype) # Sets audio processing type.
     appasync.router.add_post("/record", record)         # Handles recording commands.
     appasync.router.add_post("/is_speaking", is_speaking) # Checks if the avatar is speaking.

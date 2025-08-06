@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>livetalking数字人交互平台</title>
+    <title>LiveTalking digital human interaction platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -176,9 +177,17 @@
         }
 
         @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         .mode-switch {
@@ -219,7 +228,7 @@
             color: #6c757d;
             font-size: 0.9rem;
         }
-        
+
         .voice-record-btn {
             width: 60px;
             height: 60px;
@@ -231,68 +240,72 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
             margin: 0 auto;
         }
-        
+
         .voice-record-btn:hover {
             background-color: var(--secondary-color);
             transform: scale(1.05);
         }
-        
+
         .voice-record-btn:active {
             background-color: #dc3545;
             transform: scale(0.95);
         }
-        
+
         .voice-record-btn i {
             font-size: 24px;
         }
-        
+
         .voice-record-label {
             text-align: center;
             margin-top: 10px;
             font-size: 14px;
             color: #6c757d;
         }
-        
+
         .video-size-control {
             margin-top: 15px;
         }
-        
+
         .recording-pulse {
             animation: pulse 1.5s infinite;
         }
-        
+
         @keyframes pulse {
             0% {
                 box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
             }
+
             70% {
                 box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
             }
+
             100% {
                 box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
             }
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
         <div class="row">
             <div class="col-12">
-                <h1 class="text-center mb-4">livetalking数字人交互平台</h1>
+                <h1 class="text-center mb-4">
+                    LiveTalking digital human interaction platform</h1>
             </div>
         </div>
 
         <div class="row">
-            <!-- 视频区域 -->
+            <!-- video area -->
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
                             <span class="status-indicator status-disconnected" id="connection-status"></span>
-                            <span id="status-text">未连接</span>
+                            <span id="status-text">Not connected</span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -300,27 +313,28 @@
                             <video id="video" autoplay playsinline></video>
                             <div class="recording-indicator" id="recording-indicator">
                                 <div class="blink"></div>
-                                <span>录制中</span>
+                                <span>Recording</span>
                             </div>
                         </div>
-                        
+
                         <div class="controls-container">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <button class="btn btn-primary w-100" id="start">
-                                        <i class="bi bi-play-fill"></i> 开始连接
+                                        <i class="bi bi-play-fill"></i> Start connecting
                                     </button>
                                     <button class="btn btn-danger w-100" id="stop" style="display: none;">
-                                        <i class="bi bi-stop-fill"></i> 停止连接
+                                        <i class="bi bi-stop-fill"></i> Stop connection
                                     </button>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="d-flex">
                                         <button class="btn btn-outline-primary flex-grow-1 me-2" id="btn_start_record">
-                                            <i class="bi bi-record-fill"></i> 开始录制
+                                            <i class="bi bi-record-fill"></i> Start recording
                                         </button>
-                                        <button class="btn btn-outline-danger flex-grow-1" id="btn_stop_record" disabled>
-                                            <i class="bi bi-stop-fill"></i> 停止录制
+                                        <button class="btn btn-outline-danger flex-grow-1" id="btn_stop_record"
+                                            disabled>
+                                            <i class="bi bi-stop-fill"></i> Stop recording
                                         </button>
                                     </div>
                                 </div>
@@ -329,18 +343,20 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="video-size-control">
-                                        <label for="video-size-slider" class="form-label">视频大小调节: <span id="video-size-value">100%</span></label>
-                                        <input type="range" class="form-range" id="video-size-slider" min="50" max="150" value="100">
+                                        <label for="video-size-slider" class="form-label">Video size adjustment: <span
+                                                id="video-size-value">100%</span></label>
+                                        <input type="range" class="form-range" id="video-size-slider" min="50" max="150"
+                                            value="100">
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="settings-panel mt-3">
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-check form-switch mb-3">
                                             <input class="form-check-input" type="checkbox" id="use-stun">
-                                            <label class="form-check-label" for="use-stun">使用STUN服务器</label>
+                                            <label class="form-check-label" for="use-stun">Use STUN server</label>
                                         </div>
                                     </div>
                                 </div>
@@ -350,54 +366,59 @@
                 </div>
             </div>
 
-            <!-- 右侧交互 -->
+            <!-- Right interaction -->
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="interaction-tabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab" aria-controls="chat" aria-selected="true">对话模式</button>
+                                <button class="nav-link active" id="chat-tab" data-bs-toggle="tab"
+                                    data-bs-target="#chat" type="button" role="tab" aria-controls="chat"
+                                    aria-selected="true">Conversation mode</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tts-tab" data-bs-toggle="tab" data-bs-target="#tts" type="button" role="tab" aria-controls="tts" aria-selected="false">朗读模式</button>
+                                <button class="nav-link" id="tts-tab" data-bs-toggle="tab" data-bs-target="#tts"
+                                    type="button" role="tab" aria-controls="tts" aria-selected="false">Read aloud mode</button>
                             </li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div class="tab-content" id="interaction-tabs-content">
-                            <!-- 对话模式 -->
+                            <!-- Conversation mode -->
                             <div class="tab-pane fade show active" id="chat" role="tabpanel" aria-labelledby="chat-tab">
                                 <div class="asr-container mb-3" id="chat-messages">
                                     <div class="asr-text system-message">
-                                        系统: 欢迎使用livetalking，请点击"开始连接"按钮开始对话。
+                                        System: Welcome to livetalking, please click the "Start Connecting" button to start the conversation.
                                     </div>
                                 </div>
-                                
+
                                 <form id="chat-form">
                                     <div class="input-group mb-3">
-                                        <textarea class="form-control" id="chat-message" rows="3" placeholder="输入您想对数字人说的话..."></textarea>
+                                        <textarea class="form-control" id="chat-message" rows="3"
+                                            placeholder="Enter what you want to say to the digital person..."></textarea>
                                         <button class="btn btn-primary" type="submit">
-                                            <i class="bi bi-send"></i> 发送
+                                            <i class="bi bi-send"></i> send
                                         </button>
                                     </div>
                                 </form>
-                                
-                                <!-- 按住说话按钮 -->
+
+                                <!-- Press and hold the talk button -->
                                 <div class="voice-record-btn" id="voice-record-btn">
                                     <i class="bi bi-mic-fill"></i>
                                 </div>
-                                <div class="voice-record-label">按住说话，松开发送</div>
+                                <div class="voice-record-label">Press and hold to talk, release to send</div>
                             </div>
-                            
-                            <!-- 朗读模式 -->
+
+                            <!-- Read aloud mode -->
                             <div class="tab-pane fade" id="tts" role="tabpanel" aria-labelledby="tts-tab">
                                 <form id="echo-form">
                                     <div class="mb-3">
-                                        <label for="message" class="form-label">输入要朗读的文本</label>
-                                        <textarea class="form-control" id="message" rows="6" placeholder="输入您想让数字人朗读的文字..."></textarea>
+                                        <label for="message" class="form-label">Enter text to be read aloud</label>
+                                        <textarea class="form-control" id="message" rows="6"
+                                            placeholder="Enter the text you want the digital human to read..."></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary w-100">
-                                        <i class="bi bi-volume-up"></i> 朗读文本
+                                        <i class="bi bi-volume-up"></i> Read text aloud
                                     </button>
                                 </form>
                             </div>
@@ -407,100 +428,134 @@
             </div>
         </div>
 
-        <div class="footer">
-            <p>Made with ❤️ by Marstaos | Frontend & Performance Optimization</p>
-        </div>
     </div>
 
-    <!-- 隐藏的会话ID -->
+    <!-- Hidden session ID -->
     <input type="hidden" id="sessionid" value="0">
-
 
     <script src="client.js"></script>
     <script src="srs.sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#video-size-slider').on('input', function() {
+        $(document).ready(function () {
+            // When the input of the slider with ID 'video-size-slider' changes, run this function.
+            $('#video-size-slider').on('input', function () {
+                // Get the current value of the slider.
                 const value = $(this).val();
+                // Update the text of the element with ID 'video-size-value' to show the current percentage.
                 $('#video-size-value').text(value + '%');
+                // Set the width of the video element with ID 'video' to the slider's value in percent.
                 $('#video').css('width', value + '%');
             });
+
+            // This function updates the connection status indicator on the page.
             function updateConnectionStatus(status) {
+                // Get the jQuery object for the status indicator element.
                 const statusIndicator = $('#connection-status');
+                // Get the jQuery object for the text element that displays the status.
                 const statusText = $('#status-text');
-                
+
+                // Remove any existing connection status classes from the indicator.
                 statusIndicator.removeClass('status-connected status-disconnected status-connecting');
+
                 
-                switch(status) {
+                switch (status) {
+                    // If the status is 'connected'...
                     case 'connected':
+                        // Add the 'status-connected' class to the indicator.
                         statusIndicator.addClass('status-connected');
-                        statusText.text('已连接');
+                        // Set the status text to 'Connected'.
+                        statusText.text('Connected');
+                        // Exit the switch statement.
                         break;
                     case 'connecting':
+                        // Add the 'status-connecting' class to the indicator.
                         statusIndicator.addClass('status-connecting');
-                        statusText.text('连接中...');
+                        // Set the status text to 'Connecting...'.
+                        statusText.text('Connecting...');
+                        // Exit the switch statement.
                         break;
-                    case 'disconnected':
+                    // case 'disconnected':
                     default:
+                        // Add the 'status-disconnected' class to the indicator.
                         statusIndicator.addClass('status-disconnected');
-                        statusText.text('未连接');
+                        // Set the status text to 'Not connected'.
+                        // Exit the switch statement.
                         break;
                 }
             }
 
-            // 添加聊天消息
+            // This function adds a new message to the chat display.
             function addChatMessage(message, type = 'user') {
+                // Get the jQuery object for the chat messages container.
                 const messagesContainer = $('#chat-messages');
+                // Determine the CSS class based on the message type.
                 const messageClass = type === 'user' ? 'user-message' : 'system-message';
-                const sender = type === 'user' ? '您' : '数字人';
-                
+                // Determine the sender's label based on the message type.
+                const sender = type === 'user' ? 'you' : 'character';
+
+                // Create a new HTML element for the message using a template literal.
                 const messageElement = $(`
                     <div class="asr-text ${messageClass}">
                         ${sender}: ${message}
                     </div>
                 `);
-                
+
+                // Append the new message element to the messages container.
                 messagesContainer.append(messageElement);
+                // Scroll the messages container to the bottom to show the new message.
                 messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
             }
 
-            // 开始/停止按钮
-            $('#start').click(function() {
+            // Start/Stop button
+            $('#start').click(function () {
+                // Update the connection status to 'connecting'.
                 updateConnectionStatus('connecting');
+                // Call the 'start' function (likely a WebRTC function defined elsewhere).
                 start();
+                // Hide the 'start' button.
                 $(this).hide();
+                // Show the 'stop' button.
                 $('#stop').show();
-                
-                // 添加定时器检查视频流是否已加载
-                let connectionCheckTimer = setInterval(function() {
+
+                // Add a timer to check if the video stream has loaded
+                let connectionCheckTimer = setInterval(function () {
+                    // Get the video element.
                     const video = document.getElementById('video');
-                    // 检查视频是否有数据
+                    // Check if the video has loaded enough data and has a valid width.
                     if (video.readyState >= 3 && video.videoWidth > 0) {
+                        // If it has, update the status to 'connected'.
                         updateConnectionStatus('connected');
+                        // Clear the timer since the connection is established.
                         clearInterval(connectionCheckTimer);
                     }
-                }, 2000); // 每2秒检查一次
-                
-                // 60秒后如果还是连接中状态，就停止检查
-                setTimeout(function() {
+                }, 2000); // Check every 2 seconds
+
+                // Set a timeout to stop checking after 60 seconds to prevent it from running forever.
+                setTimeout(function () {
                     if (connectionCheckTimer) {
                         clearInterval(connectionCheckTimer);
                     }
                 }, 60000);
             });
 
-            $('#stop').click(function() {
+            $('#stop').click(function () {
+                // Call the 'stop' function (likely a WebRTC function defined elsewhere).
                 stop();
+                // Hide the 'stop' button.
                 $(this).hide();
+                // Show the 'start' button.
                 $('#start').show();
+                // Update the connection status to 'disconnected'.
                 updateConnectionStatus('disconnected');
             });
 
-            // 录制功能
-            $('#btn_start_record').click(function() {
+            // Recording function
+            $('#btn_start_record').click(function () {
+                // Log starting message to the console.
                 console.log('Starting recording...');
+                // Send a POST request to the '/record' endpoint.
                 fetch('/record', {
                     body: JSON.stringify({
                         type: 'start_record',
@@ -510,22 +565,31 @@
                         'Content-Type': 'application/json'
                     },
                     method: 'POST'
-                }).then(function(response) {
+                }).then(function (response) {
+                    // When the response is received, check if it was successful.
                     if (response.ok) {
+                        // If so, log a success message.
                         console.log('Recording started.');
+                        // Disable the start recording button.
                         $('#btn_start_record').prop('disabled', true);
+                        // Enable the stop recording button.
                         $('#btn_stop_record').prop('disabled', false);
+                        // Add the 'active' class to the recording indicator for visual feedback.
                         $('#recording-indicator').addClass('active');
                     } else {
+                        // If the response was not successful, log an error.
                         console.error('Failed to start recording.');
                     }
-                }).catch(function(error) {
+                }).catch(function (error) {
+                    // If there's an error with the fetch request, log the error.
                     console.error('Error:', error);
                 });
             });
 
-            $('#btn_stop_record').click(function() {
+            $('#btn_stop_record').click(function () {
+                // Log a stopping message to the console.
                 console.log('Stopping recording...');
+                // Send a POST request to the '/record' endpoint.
                 fetch('/record', {
                     body: JSON.stringify({
                         type: 'end_record',
@@ -535,27 +599,39 @@
                         'Content-Type': 'application/json'
                     },
                     method: 'POST'
-                }).then(function(response) {
+                }).then(function (response) {
+                    // When the response is received, check if it was successful.
                     if (response.ok) {
+                        // If so, log a success message.
                         console.log('Recording stopped.');
+                        // Enable the start recording button.
                         $('#btn_start_record').prop('disabled', false);
+                        // Disable the stop recording button.
                         $('#btn_stop_record').prop('disabled', true);
+                        // Remove the 'active' class from the recording indicator.
                         $('#recording-indicator').removeClass('active');
                     } else {
+                        // If the response was not successful, log an error.
                         console.error('Failed to stop recording.');
                     }
-                }).catch(function(error) {
+                }).catch(function (error) {
                     console.error('Error:', error);
                 });
             });
 
-            $('#echo-form').on('submit', function(e) {
+            // This block handles the 'echo' form for sending text to be read aloud.
+            $('#echo-form').on('submit', function (e) {
+                // Prevent the default form submission behavior (page reload).
                 e.preventDefault();
+                // Get the value of the message input field.
                 var message = $('#message').val();
+                // If the message is empty or only whitespace, do nothing.
                 if (!message.trim()) return;
-                
+
+                // Log the message being sent.
                 console.log('Sending echo message:', message);
-                
+
+                // Send a POST request to the '/human' endpoint.
                 fetch('/human', {
                     body: JSON.stringify({
                         text: message,
@@ -568,19 +644,26 @@
                     },
                     method: 'POST'
                 });
-                
+
+                // Clear the message input field.
                 $('#message').val('');
-                addChatMessage(`已发送朗读请求: "${message}"`, 'system');
+                // Add a system message to the chat display 
+                addChatMessage(`Read request sent: "${message}"`, 'system');
             });
 
-            // 聊天模式表单提交
-            $('#chat-form').on('submit', function(e) {
+            // This block handles the main chat form for sending text messages.
+            $('#chat-form').on('submit', function (e) {
+                // Prevent the default form submission behavior.
                 e.preventDefault();
+                // Get the value of the chat message input field.
                 var message = $('#chat-message').val();
+                // If the message is empty or only whitespace, do nothing.
                 if (!message.trim()) return;
-                
+
+                // Log the message being sent.
                 console.log('Sending chat message:', message);
-                
+
+                // Send a POST request to the '/human' endpoint.
                 fetch('/human', {
                     body: JSON.stringify({
                         text: message,
@@ -593,113 +676,150 @@
                     },
                     method: 'POST'
                 });
-                
+
+                // Add the user's message to the chat display.
                 addChatMessage(message, 'user');
+                // Clear the chat message input field.
                 $('#chat-message').val('');
             });
 
-            // 按住说话功能
+            /* 
+            Press and talk function
+            */
+
+            // Declare variables for media recording.
             let mediaRecorder;
             let audioChunks = [];
             let isRecording = false;
             let recognition;
-            
-            // 检查浏览器是否支持语音识别
+
+            // Check if your browser supports speech recognition
             const isSpeechRecognitionSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-            
+
+            // If speech recognition is supported...
             if (isSpeechRecognitionSupported) {
+                // Create a new speech recognition object.
                 recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                // Set recognition to be continuous.
                 recognition.continuous = true;
+                // Set to return interim (partial) results.
                 recognition.interimResults = true;
+                // Set the language to Chinese (zh-CN).
                 recognition.lang = 'zh-CN';
-                
-                recognition.onresult = function(event) {
+
+                // Define the function to run when speech is recognized.
+                recognition.onresult = function (event) {
                     let interimTranscript = '';
                     let finalTranscript = '';
-                    
+
+                    // Loop through the results to distinguish between final and interim transcripts.
                     for (let i = event.resultIndex; i < event.results.length; ++i) {
                         if (event.results[i].isFinal) {
                             finalTranscript += event.results[i][0].transcript;
                         } else {
                             interimTranscript += event.results[i][0].transcript;
+                            // Update the chat message input field with the interim transcript.
                             $('#chat-message').val(interimTranscript);
                         }
                     }
-                    
+
+                    // If there's a final transcript, update the chat message input field with it.
                     if (finalTranscript) {
                         $('#chat-message').val(finalTranscript);
                     }
                 };
                 
-                recognition.onerror = function(event) {
-                    console.error('语音识别错误:', event.error);
+                // Define the function to run if there is a speech recognition error.
+                recognition.onerror = function (event) {
+                    console.error('Voice recognition error:', event.error);
                 };
             }
-            
-            // 按住说话按钮事件
-            $('#voice-record-btn').on('mousedown touchstart', function(e) {
+
+            // Set up event listeners for the voice record button for both mouse and touch events.
+            $('#voice-record-btn').on('mousedown touchstart', function (e) {
+                // Prevent default actions.
                 e.preventDefault();
+                // Call the 'startRecording' function.
                 startRecording();
-            }).on('mouseup mouseleave touchend', function() {
+            }).on('mouseup mouseleave touchend', function () {
+                // When the button is released or the mouse leaves, if recording is active...
                 if (isRecording) {
+                    // ...call the 'stopRecording' function.
                     stopRecording();
                 }
             });
-            
-            // 开始录音
+
+            // Define the 'startRecording' function.
             function startRecording() {
+                // If already recording, do nothing.
                 if (isRecording) return;
-                
+
+                // Request access to the user's microphone.
                 navigator.mediaDevices.getUserMedia({ audio: true })
-                    .then(function(stream) {
+                    .then(function (stream) {
+                        // Initialize the audio chunks array.
                         audioChunks = [];
+                        // Create a new MediaRecorder instance with the microphone stream.
                         mediaRecorder = new MediaRecorder(stream);
-                        
-                        mediaRecorder.ondataavailable = function(e) {
+
+                        // Define the function to run when data is available from the recorder.
+                        mediaRecorder.ondataavailable = function (e) {
+                            // If there's data, add it to the audioChunks array.
                             if (e.data.size > 0) {
                                 audioChunks.push(e.data);
                             }
                         };
-                        
+
+                        // Start the media recorder.
                         mediaRecorder.start();
+                        // Set the recording flag to true.
                         isRecording = true;
-                        
+
+                        // Add a pulsating animation class to the button.
                         $('#voice-record-btn').addClass('recording-pulse');
+                        // Change the button's background color to red.
                         $('#voice-record-btn').css('background-color', '#dc3545');
-                        
+
+                        // If speech recognition is supported, start it.
                         if (recognition) {
                             recognition.start();
                         }
                     })
-                    .catch(function(error) {
-                        console.error('无法访问麦克风:', error);
-                        alert('无法访问麦克风，请检查浏览器权限设置。');
+                    .catch(function (error) {
+                        // If microphone access fails, log the error and show an alert.
+                        console.error('Unable to access microphone:', error);
+                        alert('Unable to access microphone, please check browser permission settings.');
                     });
             }
 
             function stopRecording() {
+                // If not recording, do nothing.
                 if (!isRecording) return;
-                
+
+                // Stop the media recorder.
                 mediaRecorder.stop();
+                // Set the recording flag to false.
                 isRecording = false;
-                
-                // 停止所有音轨
+
+                // Stop all tracks associated with the audio stream to release the microphone.
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
-                
-                // 视觉反馈恢复
+
+                // Restore the visual state of the button.
                 $('#voice-record-btn').removeClass('recording-pulse');
                 $('#voice-record-btn').css('background-color', '');
-                
-                // 停止语音识别
+
+                // Stop speech recognition if it was running.
                 if (recognition) {
                     recognition.stop();
                 }
-                
-                // 获取识别的文本并发送
-                setTimeout(function() {
+
+                // Use a timeout to wait for the final recognized text before sending.
+                setTimeout(function () {
+                    // Get the recognized text from the chat message input field.
                     const recognizedText = $('#chat-message').val().trim();
+                    // If there's any text...
                     if (recognizedText) {
-                        // 发送识别的文本
+                        // Send the recognized text via a fetch POST request.
                         fetch('/human', {
                             body: JSON.stringify({
                                 text: recognizedText,
@@ -712,62 +832,82 @@
                             },
                             method: 'POST'
                         });
-                        
+
+                        // Add the recognized text as a user message to the chat display.
                         addChatMessage(recognizedText, 'user');
+                        // Clear the chat message input field.
                         $('#chat-message').val('');
                     }
-                }, 500); 
+                }, 500);
             }
 
-            // WebRTC 相关功能
+            /*
+            * This block integrates with WebRTC to update the connection status.
+            */
+
+            // Check if the global 'onWebRTCConnected' function exists.
             if (typeof window.onWebRTCConnected === 'function') {
-                const originalOnConnected = window.onWebRTCConnected;
-                window.onWebRTCConnected = function() {
+                // Overwrite the function to also update the status and then call the original function.
+                window.onWebRTCConnected = function () {
                     updateConnectionStatus('connected');
                     if (originalOnConnected) originalOnConnected();
                 };
             } else {
-                window.onWebRTCConnected = function() {
+                // If the function doesn't exist, define a new one to just update the status.
+                window.onWebRTCConnected = function () {
                     updateConnectionStatus('connected');
                 };
             }
 
-            // 当连接断开时更新状态
+            // Similar logic for when the WebRTC connection is disconnected.
             if (typeof window.onWebRTCDisconnected === 'function') {
                 const originalOnDisconnected = window.onWebRTCDisconnected;
-                window.onWebRTCDisconnected = function() {
+                window.onWebRTCDisconnected = function () {
                     updateConnectionStatus('disconnected');
                     if (originalOnDisconnected) originalOnDisconnected();
                 };
             } else {
-                window.onWebRTCDisconnected = function() {
+                window.onWebRTCDisconnected = function () {
                     updateConnectionStatus('disconnected');
                 };
             }
 
-            // SRS WebRTC播放功能
-            var sdk = null; // 全局处理器，用于在重新发布时进行清理
+            /*
+            * This block handles SRS (Simple Realtime Server) WebRTC playback.
+            */
 
+            // Declare a global variable to hold the SRS SDK handler.
+            var sdk = null;
+
+            // Define the 'startPlay' function for WebRTC video playback.
             function startPlay() {
-                // 关闭之前的连接
+                // If a previous SDK instance exists, close it to clean up the connection.
                 if (sdk) {
                     sdk.close();
                 }
-                
+
+                // Create a new instance of the SRS WebRTC SDK.
                 sdk = new SrsRtcWhipWhepAsync();
+                // Set the video element's source to the stream from the SDK.
                 $('#video').prop('srcObject', sdk.stream);
-                
+
+                // Get the hostname of the current page.
                 var host = window.location.hostname;
+                // Construct the URL for the WebRTC playback stream.
                 var url = "http://" + host + ":1985/rtc/v1/whep/?app=live&stream=livestream";
-                
-                sdk.play(url).then(function(session) {
-                    console.log('WebRTC播放已启动，会话ID:', session.sessionid);
-                }).catch(function(reason) {
+
+                // Start playing the video from the constructed URL.
+                sdk.play(url).then(function (session) {
+                    // If playback starts successfully, log the session ID.
+                    console.log('WebRTC playback started, session ID:', session.sessionid);
+                }).catch(function (reason) {
+                    // If playback fails, close the SDK and log the reason for the failure.
                     sdk.close();
-                    console.error('WebRTC播放失败:', reason);
+                    console.error('WebRTC playback fails:', reason);
                 });
             }
         });
     </script>
 </body>
+
 </html>

@@ -134,7 +134,7 @@ def __mirror_index(size, index):
     if turn % 2 == 0:
         # Return the remainder directly.
         return res
-    else:
+    else: 
         # Return the mirrored index.
         return size - res - 1 
 
