@@ -54,12 +54,14 @@
 
 			// Initialize an FLV (Flash Video) player using the mpegts library.
 			// It's configured to stream live video from a specific URL.
-			flvPlayer = .createPlampegtsyer({
-				type: 'flv',
-				url: "http://" + host + ":8080/live/livestream.flv",
-				isLive: true,
-				enableStashBuffer: false
-			});
+			flvPlayer = mpegts.createPlayer(
+				{
+					type: 'flv', 
+					url: "http://"+ host + ":8080/live/livestream.flv", 
+					isLive: true, 
+					enableStashBuffer: false
+				}
+			);
 			// Attach the player to the HTML video element with the ID 'video_player'.
 			flvPlayer.attachMediaElement(document.getElementById('video_player'));
 			// Load the video stream.
