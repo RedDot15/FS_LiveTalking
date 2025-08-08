@@ -1,0 +1,17 @@
+[project]
+name = "chat-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "realtrevor15", email = "ttkien1503@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+chat-service = "chat_service:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
