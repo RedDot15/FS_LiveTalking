@@ -4,6 +4,7 @@ from .settings import ChromaDBSetting
 
 import chromadb
 from base import BaseModel
+from base import BaseService
 from chromadb.config import Settings
 
 
@@ -14,7 +15,8 @@ class ChromaDBInput(BaseModel):
 class ChromaDBOutput(BaseModel):
     results: list[str]
 
-class ChromaDB:
+
+class ChromaDB(BaseService):
     chromadb_setting: ChromaDBSetting
     
     @property
@@ -37,10 +39,10 @@ class ChromaDB:
             ids=ids
         )
         
-    def query(self, input: ChromaDBInput) -> ChromaDBOutput:
+    def process(self, input: ChromaDBInput) -> ChromaDBOutput:
         results = self.client.query(
             query_texts=input.query,
             n_results=input.topk
         )
-        
-        return ChromaDBOutput(results=results['documents'])
+
+        return ChromaDBOutput(results=results['documents'][0])

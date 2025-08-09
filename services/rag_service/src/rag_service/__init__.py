@@ -23,8 +23,9 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.settings = settings
-    app.state.chromadb = ChromaDB(settings=app.state.settings.chromadb)
+    app.state.chromadb = ChromaDB(chromadb_setting=app.state.settings.chromadb)
     
+    yield
 
 app = FastAPI(
     lifespan=lifespan
@@ -46,4 +47,4 @@ app.include_router(
 )
 
 def main() -> None:
-    uvicorn.run('rag_service:app', host='0.0.0.0', port=3005)
+    uvicorn.run('rag_service:app', host='0.0.0.0', port=3005, reload=True)
