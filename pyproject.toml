@@ -34,6 +34,7 @@ dependencies = [
     "pandas>=2.3.1",
     "pymcubes>=0.1.6",
     "python-speech-features>=0.6",
+    "rag-service",
     "resampy>=0.4.3",
     "rich>=14.1.0",
     "scikit-learn>=1.7.1",
@@ -52,7 +53,9 @@ members = [
     "services/chat_service", 
     "libs/chromadb_client", 
     "services/indexer", 
+    "libs/base", "libs/logger", 
 ]
 
 [tool.uv.sources]
 chromadb-client = { workspace = true }
+rag_service = { workspace = true }

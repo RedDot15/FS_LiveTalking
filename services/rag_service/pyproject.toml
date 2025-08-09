@@ -8,15 +8,23 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "asgi-correlation-id>=4.3.4",
+    "base",
     "chromadb-client",
+    "fastapi>=0.116.1",
+    "logger",
+    "pydantic-settings>=2.10.1",
 ]
 
 [project.scripts]
-rag-service = "rag_service:main"
+rag_service = "rag_service:main"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.8.7,<0.9.0"]
+build-backend = "uv_build"
 
 [tool.uv.sources]
 chromadb-client = { workspace = true }
+logger = { workspace = true }
+base = { workspace = true }
+

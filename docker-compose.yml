@@ -12,6 +12,34 @@ services:
     volumes:
       - chromadb:/chroma/.chroma/index
     ports:
-      - 8000:8000
+      - ${CHROMADB__PORT}:8000
     networks:
       - multidimension
+
+  rag_service:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile.rag
+      args:
+        - PYTHON-VERSION=3.11
+        - PACKAGE=rag_service
+        - OPTIONAL_BUILD=src/rag_service/__init__.py
+  
+    ports:
+      - "3005:3005"
+    
+    networks:
+      - multidimension
+    command: uv run rag_service
+
+    volumes:
+      - type: bind
+        source: ./services/rag_service
+        target: /home/reunion/app/services/rag_service
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+
+    environment:
+      - CHROMADB__HOST=${CHROMADB__HOST}
+      - CHROMADB__PORT=${CHROMADB__PORT}
