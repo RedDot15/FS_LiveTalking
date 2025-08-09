@@ -3,7 +3,7 @@ from __future__ import annotations
 from .settings import ChromaDBSetting
 
 import chromadb
-from pydantic import BaseModel
+from base import BaseModel
 from chromadb.config import Settings
 
 

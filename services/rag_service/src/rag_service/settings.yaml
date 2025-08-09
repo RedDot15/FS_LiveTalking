@@ -1,0 +1,4 @@
+chromadb:
+  document_collections: 'reunion'
+  allow_reset: True
+  anonymized_telemetry: True

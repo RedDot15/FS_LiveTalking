@@ -1,13 +1,9 @@
 [project]
-<<<<<<< HEAD
 <<<<<<<< HEAD:services/indexer/pyproject.toml
 name = "indexer"
 ========
 name = "logger"
 >>>>>>>> cd58532 (rag_service init):libs/logger/pyproject.toml
-=======
-name = "indexer"
->>>>>>> cd58532 (rag_service init)
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -16,19 +12,12 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-<<<<<<< HEAD
 <<<<<<<< HEAD:services/indexer/pyproject.toml
     "fastapi>=0.116.1",
-=======
-    "base",
-    "fastapi>=0.116.1",
-    "logger",
->>>>>>> cd58532 (rag_service init)
 ]
 
 [project.scripts]
 indexer = "indexer:main"
-<<<<<<< HEAD
 ========
     "structlog>=25.4.0",
 ]
@@ -37,12 +26,3 @@ indexer = "indexer:main"
 [build-system]
 requires = ["uv_build>=0.8.7,<0.9.0"]
 build-backend = "uv_build"
-=======
-
-[build-system]
-requires = ["uv_build>=0.8.7,<0.9.0"]
-build-backend = "uv_build"
-[tool.uv.sources]
-base = { workspace = true }
-logger = { workspace = true }
->>>>>>> cd58532 (rag_service init)
