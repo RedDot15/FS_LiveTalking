@@ -1,5 +1,5 @@
 [project]
-name = "openai"
+name = "indexer"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,7 +7,12 @@ authors = [
     { name = "realtrevor15", email = "ttkien1503@gmail.com" }
 ]
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "fastapi>=0.116.1",
+]
+
+[project.scripts]
+indexer = "indexer:main"
 
 [build-system]
 requires = ["hatchling"]

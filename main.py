@@ -1,6 +1,2 @@
-def main():
-    print("Hello from fs-livetalking!")
+from chromadb_client import ChromaDB
 
-
-if __name__ == "__main__":
-    main()

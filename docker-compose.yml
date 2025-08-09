@@ -1,0 +1,17 @@
+volumes:
+  chromadb:
+
+networks:
+  multidimension:
+    driver: bridge
+
+services:
+  chromadb:
+    container_name: chromadb
+    image: ghcr.io/chroma-core/chroma:latest
+    volumes:
+      - chromadb:/chroma/.chroma/index
+    ports:
+      - 8000:8000
+    networks:
+      - multidimension
