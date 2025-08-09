@@ -20,9 +20,6 @@ indexer = "indexer:main"
 requires = ["uv_build>=0.8.7,<0.9.0"]
 build-backend = "uv_build"
 
-[build-system]
-requires = ["uv_build>=0.8.7,<0.9.0"]
-build-backend = "uv_build"
 [tool.uv.sources]
 base = { workspace = true }
 logger = { workspace = true }
