@@ -9,6 +9,8 @@ def llm_response(message, nerfreal:BaseReal):
     start = time.perf_counter()
     # Imports the OpenAI client library.
     from openai import OpenAI
+    from dotenv import load_dotenv
+    load_dotenv()
     client = OpenAI(
         # Initializes the OpenAI client with an API key from an environment variable.
         api_key=os.getenv("OPENAI_API_KEY") 
@@ -63,23 +65,24 @@ def llm_response(message, nerfreal:BaseReal):
                 # msglist = re.split('[,.!;:，。！?]',msg)
 
             # Iterates through characters in the chunk to find punctuation marks.
-            for i, char in enumerate(msg):
-                # Checks for various punctuation marks.
-                if char in ",.!;:，。！？：；" :
-                    # Appends the text up to the punctuation.
-                    result = result+msg[lastpos:i+1]
-                    # Updates the position.
-                    lastpos = i+1
-                    # Checks if the accumulated text is long enough.
-                    if len(result) > 10:
-                        logger.info(result)
-                        # Puts the sentence to the real-time system's TTS.
-                        nerfreal.put_msg_txt(result)
-                        # Resets the accumulated text.
-                        result = ""
+            if msg:
+                for i, char in enumerate(msg):
+                    # Checks for various punctuation marks.
+                    if char in ",.!;:，。！？：；" :
+                        # Appends the text up to the punctuation.
+                        result = result+msg[lastpos:i+1]
+                        # Updates the position.
+                        lastpos = i+1
+                        # Checks if the accumulated text is long enough.
+                        if len(result) > 10:
+                            logger.info(result)
+                            # Puts the sentence to the real-time system's TTS.
+                            nerfreal.put_msg_txt(result)
+                            # Resets the accumulated text.
+                            result = ""
 
-            # Appends any remaining text after the last punctuation.
-            result = result+msg[lastpos:]
+                # Appends any remaining text after the last punctuation.
+                result = result+msg[lastpos:]
 
     # Records the end time after the loop finishes.
     end = time.perf_counter()
