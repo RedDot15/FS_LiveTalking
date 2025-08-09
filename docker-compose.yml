@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: dockers/Dockerfile.rag
       args:
-        - PYTHON-VERSION=3.11
+        - PYTHON-VERSION=python3.11
         - PACKAGE=rag_service
         - OPTIONAL_BUILD=src/rag_service/__init__.py
   
@@ -39,7 +39,6 @@ services:
       - type: bind
         source: ./libs/
         target: /home/reunion/app/libs/
-
     environment:
       - CHROMADB__HOST=${CHROMADB__HOST}
       - CHROMADB__PORT=${CHROMADB__PORT}

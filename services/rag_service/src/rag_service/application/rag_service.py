@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from base import BaseModel
+from base import BaseService
 from chromadb_client import ChromaDB
 from chromadb_client import ChromaDBInput
 
@@ -12,23 +13,23 @@ class RagServiceInput(BaseModel):
     
     
 class RagServiceOutput(BaseModel):
-    results: list[str]
+    results: list[str] | None
     
     
-class RagServiceApplication:
+class RagServiceApplication(BaseService):
     
     request: Request
     
     @property
     def chromadb(self) -> ChromaDB:
-        return ChromaDB(settings=self.request.app.state.settings.chromadb)
+        return ChromaDB(chromadb_setting=self.request.app.state.settings.chromadb)
     
-    def process(self, input: RagServiceInput) -> RagServiceOutput:
+    async def process(self, input: RagServiceInput) -> RagServiceOutput:
         
-        results = self.chromadb.query(
+        results = self.chromadb.process(
             input=ChromaDBInput(
                 query=input.query,
             )
         )
         
-        return RagServiceOutput(results=results)
+        return RagServiceOutput(results=results.results)

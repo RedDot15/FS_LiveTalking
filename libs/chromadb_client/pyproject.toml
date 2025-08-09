@@ -1,13 +1,5 @@
 [project]
-<<<<<<< HEAD
-<<<<<<<< HEAD:libs/chromadb_client/pyproject.toml
 name = "chromadb-client"
-========
-name = "base"
->>>>>>>> cd58532 (rag_service init):libs/base/pyproject.toml
-=======
-name = "chromadb-client"
->>>>>>> cd58532 (rag_service init)
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -16,21 +8,10 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-<<<<<<< HEAD
-<<<<<<<< HEAD:libs/chromadb_client/pyproject.toml
     "chromadb>=1.0.16",
-========
-    "pydantic==2.8.2",
->>>>>>>> cd58532 (rag_service init):libs/base/pyproject.toml
-=======
-    "chromadb>=1.0.16",
->>>>>>> cd58532 (rag_service init)
 ]
 
 [build-system]
 requires = ["uv_build>=0.8.7,<0.9.0"]
-<<<<<<< HEAD
 build-backend = "uv_build"
-=======
-build-backend = "uv_build"
->>>>>>> cd58532 (rag_service init)
+
