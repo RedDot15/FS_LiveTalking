@@ -42,3 +42,29 @@ services:
     environment:
       - CHROMADB__HOST=${CHROMADB__HOST}
       - CHROMADB__PORT=${CHROMADB__PORT}
+
+  chat_service:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile.rag
+      args:
+        - PYTHON-VERSION=python3.11
+        - PACKAGE=chat_service
+        - OPTIONAL_BUILD=src/chat_service/__init__.py
+  
+    ports:
+      - "3000:3000"
+    
+    networks:
+      - multidimension
+    command: uv run chat_service
+
+    volumes:
+      - type: bind
+        source: ./services/chat_service
+        target: /home/reunion/app/services/chat_service
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+    environment:
+      - LLM__OPENAI_API_KEY=${LLM__OPENAI_API_KEY}

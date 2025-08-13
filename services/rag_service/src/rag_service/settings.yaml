@@ -2,3 +2,5 @@ chromadb:
   document_collections: 'reunion'
   allow_reset: True
   anonymized_telemetry: True
+  model_name: 'bkai-foundation-models/vietnamese-bi-encoder'
+
