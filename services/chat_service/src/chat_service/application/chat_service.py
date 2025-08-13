@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from base import BaseModel
 from base import BaseService
+
+from logger import get_logger
+
 from chat_service.domain.answer_aggregator import AnswerAggregatorInput
 from chat_service.domain.answer_aggregator import AnswerAggregatorService
 from chat_service.shared.tools import get_context
@@ -12,9 +15,11 @@ from typing import Any
 from pydantic import ConfigDict
 from pydantic import Field
 
+logger = get_logger(__name__)
 
 class ChatServiceInput(BaseModel):
     question: str
+    character_name: str
     
     
 class ChatServiceOutput(BaseModel):
@@ -38,13 +43,16 @@ class ChatServiceApplication(BaseService):
     async def process(self, input: ChatServiceInput) -> ChatServiceOutput:
         context = await get_context(question=input.question)
         
+        logger.info(f'Total context is: {len(context)}')
+        
         answer = await self.answer_aggregator.process(
             inputs=AnswerAggregatorInput(
                 question=input.question,
-                context=context
+                context=context,
+                character_name=input.character_name
             )
         )
         
-        return ChatServiceOutput(answer=answer)
+        return ChatServiceOutput(answer=answer.answer)
         
         

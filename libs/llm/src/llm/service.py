@@ -15,6 +15,7 @@ from .settings import LLMSetting
 
 from typing import Dict
 from typing import Any
+from typing import cast
 
 
 from openai import OpenAI, AsyncOpenAI
@@ -33,7 +34,7 @@ class LLMService(BaseService):
     @property
     @contextmanager
     def client(self) -> Generator[OpenAI, None, None]:
-        client = OpenAI(api_key=self.settings.open_ai_key)
+        client = OpenAI(api_key=self.settings.openai_key)
         try:
             yield client
         except Exception as e:
@@ -44,7 +45,7 @@ class LLMService(BaseService):
     @property
     @asynccontextmanager
     async def aclient(self) -> AsyncGenerator[AsyncOpenAI, None]:
-        client = AsyncOpenAI(api_key=self.settings.open_ai_key)
+        client = AsyncOpenAI(api_key=self.settings.openai_key)
         try:
             yield client
         except Exception as e:
@@ -82,7 +83,27 @@ class LLMService(BaseService):
         
         async with self.aclient as client:
             completion = await client.chat.completions.create(**payload)
-            return completion
+            contents = ""
+            
+            async for chunk in completion:
+                if len(chunk.choices) > 0:
+                    msg = chunk.choices[0].delta.content
+                    if msg:
+                        contents += msg
+
+            response_data = {
+                "choices": [{"message": {"content": contents}}],
+                "usage": getattr(completion, "usage", None)
+            }
+            
+            with open('log2.txt', 'w') as f:
+                f.write(repr(response_data))
+
+            return self.__postprocessing_response(
+                response=response_data,
+                count_token=True,
+                return_type=input.return_type
+            )
 
     def __build_request_payload(
         self,
@@ -125,3 +146,47 @@ class LLMService(BaseService):
             'role': message.role.value,
             'content': message.content,
         }
+        
+    def __postprocessing_response(
+        self,
+        response: Dict[str, Any],
+        count_token: bool,
+        return_type: type[BaseModel] | None,
+    ) -> LLMServiceOutput:
+        """
+        Post-process the response from chat completion API.
+
+        Args:
+            response (Dict[str, Any]): The response object received from the LLM API.
+            count_token (bool): Flag indicating whether to count tokens used in the response.
+            return_type (type[BaseModel] | None): The expected return type for the response. If provided, the response will be validated against this type.
+
+        Returns:
+            LiteLLMOutput: The processed output containing the response content, token count, and any tokens used in the completion.
+
+        Raises:
+            ValueError: If the response content is empty.
+        """
+        if not response.get('choices') or not response['choices']:
+            raise ValueError('No choices returned in response')
+
+        choice = response['choices'][0]
+        content = choice.get('message', {}).get('content')
+
+        if not content:
+            raise ValueError('Response returned by client is empty')
+
+        tokens = TokensLLM()
+        if count_token and response.get('usage'):
+            usage = response['usage']
+            tokens.completion_tokens = usage.get('completion_tokens', 0)
+            tokens.prompt_tokens = usage.get('prompt_tokens', 0)
+            tokens.total_tokens = usage.get('total_tokens', 0)
+
+        return LLMServiceOutput(
+            response=(
+                content if not return_type else return_type.model_validate_json(
+                    content,
+                )
+            )
+        )

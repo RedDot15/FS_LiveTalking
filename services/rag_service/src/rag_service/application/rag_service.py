@@ -29,6 +29,7 @@ class RagServiceApplication(BaseService):
         results = self.chromadb.process(
             input=ChromaDBInput(
                 query=input.query,
+                topk=3
             )
         )
         

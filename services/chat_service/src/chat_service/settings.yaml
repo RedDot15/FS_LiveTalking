@@ -1,4 +1,4 @@
-answer_aggregator:
+answer_aggregator_settings:
   model: "gpt-4o-mini"
   context_window: 100000
 

@@ -20,6 +20,7 @@ logger = get_logger(__name__)
 class AnswerAggregatorInput(BaseModel):
     question: str
     context: list[str]
+    character_name: str
     language: str = 'VIETNAMESE'
     
 class AnswerAggregatorOutput(BaseModel):
@@ -34,13 +35,11 @@ class AnswerAggregatorService(BaseService):
     
     async def process(self, inputs: AnswerAggregatorInput) -> AnswerAggregatorOutput:
         
-        joined_contexts = self._join_contexts_with_questions(
-            inputs.context,
-            inputs.question,
-        )
         
         message = self.build_conversation(
-            context=joined_contexts[: self.settings.context_window],
+            context=inputs.context[: self.settings.context_window],
+            raw_question=inputs.question,
+            character_name=inputs.character_name,
             language=inputs.language,
         )
         
@@ -49,6 +48,7 @@ class AnswerAggregatorService(BaseService):
                 message=message,
                 return_type=AnswerAggregatorModel,
                 model=self.settings.model,
+                
             ),
         )
         
@@ -76,6 +76,7 @@ class AnswerAggregatorService(BaseService):
         self,
         context: str,
         raw_question: str,
+        character_name: str,
         language: str
     ) -> list[dict]:
         """
@@ -96,7 +97,10 @@ class AnswerAggregatorService(BaseService):
         return [
             {
                 'role': MessageRole.SYSTEM,
-                'content': ANSWER_AGGREGATOR_SYSTEM_PROMPT.format(language=language),
+                'content': ANSWER_AGGREGATOR_SYSTEM_PROMPT.format(
+                    language=language, 
+                    character_name=character_name
+                ),
             },
             {
                 'role': MessageRole.USER,
@@ -106,32 +110,3 @@ class AnswerAggregatorService(BaseService):
                 ),
             },
         ]
-        
-    def _join_contexts_with_questions(
-        self,
-        contexts: list[str],
-        questions: list[str],
-    ) -> str:
-        """
-        Join contexts with their corresponding questions.
-
-        This method combines context strings with their related sub-questions,
-        formatting them with markdown headers for better structure and readability
-        when passed to the LLM.
-
-        Args:
-            contexts (list[str]): List of context strings to be combined
-            questions (list[str]): List of corresponding sub-questions
-
-        Returns:
-            str: Formatted string with questions as headers followed by their contexts
-        """
-        joined_contexts = ''
-        for context, question in zip(contexts, questions):
-            if (
-                not context
-                == 'Không có thông tin liên quan đến câu hỏi trong các chunk đã cung cấp.'
-            ):
-                joined_contexts += ''
-            joined_contexts += f'### {question}\n\n{context}\n\n'
-        return joined_contexts

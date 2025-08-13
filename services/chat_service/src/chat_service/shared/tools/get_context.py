@@ -22,18 +22,17 @@ async def get_context(question: str) -> list[str]:
             response = await client.post(
                 url=settings.rag_service_url,
                 json={'query': question},
-                timeout=15.0,
             )
             
             if response.status_code != 200:
                 logger.warning(
-                    f'API request failed with status {response.status_code}: {response.text}',
+                    f'API request failed with status {response.status_code}: {response.text} : {settings.rag_service_url}',
                 )
                 return []
             
             response_data = response.json()
             
-            search_output = response_data.get('info', {})
+            search_output = response_data.get('info', {}).get('results', [])
             
             return search_output
         

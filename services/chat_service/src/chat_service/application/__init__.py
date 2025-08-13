@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from .chat_service import RagServiceInput
-from .chat_service import RagServiceOutput
-from .chat_service import RagServiceApplication
+from .chat_service import ChatServiceInput
+from .chat_service import ChatServiceOutput
+from .chat_service import ChatServiceApplication
 
-__all__ = ['RagServiceInput',
-           'RagServiceOutput',
-           'RagServiceApplication']
+__all__ = ['ChatServiceInput',
+           'ChatServiceOutput',
+           'ChatServiceApplication']
