@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: dockers/Dockerfile.rag
       args:
-        - PYTHON-VERSION=python3.11
+        - PYTHON_VERSION=python3.11
         - PACKAGE=rag_service
         - OPTIONAL_BUILD=src/rag_service/__init__.py
   
@@ -48,7 +48,7 @@ services:
       context: .
       dockerfile: dockers/Dockerfile.rag
       args:
-        - PYTHON-VERSION=python3.11
+        - PYTHON_VERSION=python3.11
         - PACKAGE=chat_service
         - OPTIONAL_BUILD=src/chat_service/__init__.py
   
@@ -67,4 +67,5 @@ services:
         source: ./libs/
         target: /home/reunion/app/libs/
     environment:
-      - LLM__OPENAI_API_KEY=${LLM__OPENAI_API_KEY}
+      - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
+      - RAG_SERVICE_URL=${RAG_SERVICE_URL}

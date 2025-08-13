@@ -48,4 +48,4 @@ app.include_router(
 )
 
 def main() -> None:
-    uvicorn.run('chat_service:app', host='0.0.0.0', port=3005, reload=True)
+    uvicorn.run('chat_service:app', host='0.0.0.0', port=3000, reload=True)

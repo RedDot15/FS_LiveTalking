@@ -13,6 +13,7 @@ dependencies = [
     "fastapi>=0.116.1",
     "logger",
     "pydantic-settings>=2.10.1",
+    "uvicorn>=0.35.0",
 ]
 
 [project.scripts]
@@ -23,7 +24,7 @@ requires = ["uv_build>=0.8.7,<0.9.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-chromadb-client = { workspace = true }
 logger = { workspace = true }
 base = { workspace = true }
+chromadb-client = { workspace = true }
 

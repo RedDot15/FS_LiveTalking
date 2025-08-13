@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     llm: LLMSetting
     answer_aggregator_settings: AnswerAggregatorSettings
     
+    
     class Config:
         env_nested_delimiter = '__'
         yaml_file = str(Path(__file__).parent.parent.parent / 'settings.yaml')

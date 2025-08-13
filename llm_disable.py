@@ -13,7 +13,7 @@ def llm_response(message, nerfreal:BaseReal):
     load_dotenv()
     client = OpenAI(
         # Initializes the OpenAI client with an API key from an environment variable.
-        api_key=os.getenv("OPENAI_API_KEY") 
+        api_key=os.getenv("LLM__OPENAI_KEY") 
     )
 
     # Records the time after client initialization.
