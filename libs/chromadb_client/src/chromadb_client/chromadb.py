@@ -6,7 +6,7 @@ import chromadb
 from base import BaseModel
 from base import BaseService
 from chromadb.config import Settings
-
+from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
 class ChromaDBInput(BaseModel):
     query: str
@@ -30,7 +30,12 @@ class ChromaDB(BaseService):
             )
         )
         
-        return client.get_or_create_collection(name=self.chromadb_setting.document_collections)
+        return client.get_or_create_collection(
+            name=self.chromadb_setting.document_collections,
+            embedding_function=SentenceTransformerEmbeddingFunction(
+                model_name=self.chromadb_setting.model_name
+            )
+        )
     
     def add_document(self, documents: list[str], metadatas: list[dict], ids: list):
         self.client.add(

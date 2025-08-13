@@ -10,7 +10,6 @@ requires-python = ">=3.10"
 dependencies = [
     "asgi-correlation-id>=4.3.4",
     "base",
-    "chromadb-client",
     "fastapi>=0.116.1",
     "logger",
     "pydantic-settings>=2.10.1",
