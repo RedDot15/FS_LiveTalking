@@ -17,7 +17,7 @@ pretrained
 .DS_Store
 workspace/log_ngp.txt
 .idea
-models/
+models/wav2lip.pth
 *.log
 dist
 
