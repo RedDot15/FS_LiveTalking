@@ -3,6 +3,7 @@ build/
 *.egg-info/
 *.so
 *.mp4
+*.wav
 
 tmp*
 trial*/
@@ -16,7 +17,7 @@ pretrained
 .DS_Store
 workspace/log_ngp.txt
 .idea
-models/
+models/wav2lip.pth
 *.log
 dist
 

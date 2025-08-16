@@ -1,119 +1,102 @@
 /**
- * Copyright FunASR (https://github.com/alibaba-damo-academy/FunASR). All Rights
- * Reserved. MIT License  (https://opensource.org/licenses/MIT)
- */
+* Copyright FunASR (https://github.com/alibaba-damo-academy/FunASR). All Rights
+* Reserved. MIT License (https://opensource.org/licenses/MIT)
+*/
 /* 2021-2023 by zhaoming,mali aihealthx.com */
 
-function WebSocketConnectMethod( config ) { //定义socket连接方法类
-
-	
+function WebSocketConnectMethod(config) { //Define the WebSocket connection method class
 	var speechSokt;
 	var connKeeperID;
-	
+
 	var msgHandle = config.msgHandle;
 	var stateHandle = config.stateHandle;
-			  
+
 	this.wsStart = function () {
-		var Uri = document.getElementById('wssip').value; //"wss://111.205.137.58:5821/wss/" //设置wss asr online接口地址 如 wss://X.X.X.X:port/wss/
-		if(Uri.match(/wss:\S*|ws:\S*/))
-		{
-			console.log("Uri"+Uri);
+		var Uri = document.getElementById('wssip').value; //"wss://111.205.137.58:5821/wss/" //Set the wss asr online interface address, such as wss://X.X.X.X:port/wss/
+		if (Uri.match(/wss:\S*|ws:\S*/)) {
+			console.log("Uri" + Uri);
 		}
-		else
-		{
-			alert("请检查wss地址正确性");
+		else {
+			alert("Please check the correctness of the wss address");
 			return 0;
 		}
- 
-		if ( 'WebSocket' in window ) {
-			speechSokt = new WebSocket( Uri ); // 定义socket连接对象
-			speechSokt.onopen = function(e){onOpen(e);}; // 定义响应函数
-			speechSokt.onclose = function(e){
-			    console.log("onclose ws!");
-			    //speechSokt.close();
+
+		if ('WebSocket' in window) {
+			speechSokt = new WebSocket(Uri); // Define the WebSocket connection object
+			speechSokt.onopen = function (e) { onOpen(e); }; // Define the response function
+			speechSokt.onclose = function (e) {
+				console.log("onclose ws!");
+				//speechSokt.close();
 				onClose(e);
-				};
-			speechSokt.onmessage = function(e){onMessage(e);};
-			speechSokt.onerror = function(e){onError(e);};
+			};
+			speechSokt.onmessage = function (e) { onMessage(e); };
+			speechSokt.onerror = function (e) { onError(e); };
 			return 1;
 		}
 		else {
-			alert('当前浏览器不支持 WebSocket');
+			alert('Your browser does not support WebSocket');
 			return 0;
 		}
 	};
-	
-	// 定义停止与发送函数
+
+	// Define the stop and send functions
 	this.wsStop = function () {
-		if(speechSokt != undefined) {
+		if (speechSokt != undefined) {
 			console.log("stop ws!");
 			speechSokt.close();
 		}
 	};
-	
-	this.wsSend = function ( oneData ) {
- 
-		if(speechSokt == undefined) return;
-		if ( speechSokt.readyState === 1 ) { // 0:CONNECTING, 1:OPEN, 2:CLOSING, 3:CLOSED
- 
-			speechSokt.send( oneData );
- 
-			
+
+	this.wsSend = function (oneData) {
+		if (speechSokt == undefined) return;
+		if (speechSokt.readyState === 1) { // 0:CONNECTING, 1:OPEN, 2:CLOSING, 3:CLOSED
+			speechSokt.send(oneData);
 		}
 	};
-	
-	// SOCEKT连接中的消息与状态响应
-	function onOpen( e ) {
-		// 发送json
-		var chunk_size = new Array( 5, 10, 5 );
+
+	// Message and status response during SOCKET connection
+	function onOpen(e) {
+		// Send json
+		var chunk_size = new Array(5, 10, 5);
 		var request = {
 			"chunk_size": chunk_size,
-			"wav_name":  "h5",
-			"is_speaking":  true,
-			"chunk_interval":10,
-			"itn":getUseITN(),
-			"mode":getAsrMode(),
-			
+			"wav_name": "h5",
+			"is_speaking": true,
+			"chunk_interval": 10,
+			"itn": getUseITN(),
+			"mode": getAsrMode(),
 		};
-		if(isfilemode)
-		{
-			request.wav_format=file_ext;
-			if(file_ext=="wav")
-			{
-				request.wav_format="PCM";
-				request.audio_fs=file_sample_rate;
+		if (isfilemode) {
+			request.wav_format = file_ext;
+			if (file_ext == "wav") {
+				request.wav_format = "PCM";
+				request.audio_fs = file_sample_rate;
 			}
 		}
-		
-		var hotwords=getHotwords();
- 
-		if(hotwords!=null  )
-		{
-			request.hotwords=hotwords;
+
+		var hotwords = getHotwords();
+
+		if (hotwords != null) {
+			request.hotwords = hotwords;
 		}
 		console.log(JSON.stringify(request));
 		speechSokt.send(JSON.stringify(request));
-		console.log("连接成功");
+		console.log("Connection successful");
 		stateHandle(0);
- 
+
 	}
-	
-	function onClose( e ) {
+
+	function onClose(e) {
 		stateHandle(1);
 	}
-	
-	function onMessage( e ) {
- 
-		msgHandle( e );
+
+	function onMessage(e) {
+		msgHandle(e);
 	}
-	
-	function onError( e ) {
- 
-		info_div.innerHTML="连接"+e;
+
+	function onError(e) {
+		info_div.innerHTML = "Connection" + e;
 		console.log(e);
 		stateHandle(2);
-		
 	}
-    
- 
 }
