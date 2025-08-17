@@ -14,7 +14,7 @@ from chat_service.shared.utils import get_settings
 from chat_service.api.routers import chat_router
 from chat_service.api.helpers import LoggingMiddleware
 
-from llm import LLMService
+from llm_client import LLMService
 
 setup_logging(json_logs=False, log_level='INFO')
 logger = get_logger('api')

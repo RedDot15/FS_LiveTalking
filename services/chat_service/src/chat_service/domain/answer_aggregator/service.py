@@ -10,9 +10,9 @@ from .prompt import ANSWER_AGGREGATOR_USER_PROMPT
 from chat_service.shared.settings import AnswerAggregatorSettings
 from chat_service.shared.models import AnswerAggregatorModel
 
-from llm import LLMService
-from llm import LLMServiceInput
-from llm import MessageRole
+from llm_client import LLMService
+from llm_client import LLMServiceInput
+from llm_client import MessageRole
 
 
 logger = get_logger(__name__)

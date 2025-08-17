@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiveTalking digital human interaction platform</title>
+    <title>LiveTalking Digital Human Interaction Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -293,19 +292,17 @@
     <div class="dashboard-container">
         <div class="row">
             <div class="col-12">
-                <h1 class="text-center mb-4">
-                    LiveTalking digital human interaction platform</h1>
+                <h1 class="text-center mb-4">LiveTalking Digital Human Interaction Platform</h1>
             </div>
         </div>
 
         <div class="row">
-            <!-- video area -->
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
                             <span class="status-indicator status-disconnected" id="connection-status"></span>
-                            <span id="status-text">Not connected</span>
+                            <span id="status-text">Disconnected</span>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -322,20 +319,19 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <button class="btn btn-primary w-100" id="start">
-                                        <i class="bi bi-play-fill"></i> Start connecting
+                                        <i class="bi bi-play-fill"></i> Start Connection
                                     </button>
                                     <button class="btn btn-danger w-100" id="stop" style="display: none;">
-                                        <i class="bi bi-stop-fill"></i> Stop connection
+                                        <i class="bi bi-stop-fill"></i> Stop Connection
                                     </button>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="d-flex">
                                         <button class="btn btn-outline-primary flex-grow-1 me-2" id="btn_start_record">
-                                            <i class="bi bi-record-fill"></i> Start recording
+                                            <i class="bi bi-record-fill"></i> Start Recording
                                         </button>
-                                        <button class="btn btn-outline-danger flex-grow-1" id="btn_stop_record"
-                                            disabled>
-                                            <i class="bi bi-stop-fill"></i> Stop recording
+                                        <button class="btn btn-outline-danger flex-grow-1" id="btn_stop_record" disabled>
+                                            <i class="bi bi-stop-fill"></i> Stop Recording
                                         </button>
                                     </div>
                                 </div>
@@ -344,10 +340,8 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="video-size-control">
-                                        <label for="video-size-slider" class="form-label">Video size adjustment: <span
-                                                id="video-size-value">100%</span></label>
-                                        <input type="range" class="form-range" id="video-size-slider" min="50" max="150"
-                                            value="100">
+                                        <label for="video-size-slider" class="form-label">Adjust Video Size: <span id="video-size-value">100%</span></label>
+                                        <input type="range" class="form-range" id="video-size-slider" min="50" max="150" value="100">
                                     </div>
                                 </div>
                             </div>
@@ -357,7 +351,7 @@
                                     <div class="col-md-12">
                                         <div class="form-check form-switch mb-3">
                                             <input class="form-check-input" type="checkbox" id="use-stun">
-                                            <label class="form-check-label" for="use-stun">Use STUN server</label>
+                                            <label class="form-check-label" for="use-stun">Use STUN Server</label>
                                         </div>
                                     </div>
                                 </div>
@@ -367,59 +361,50 @@
                 </div>
             </div>
 
-            <!-- Right interaction -->
             <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="interaction-tabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="chat-tab" data-bs-toggle="tab"
-                                    data-bs-target="#chat" type="button" role="tab" aria-controls="chat"
-                                    aria-selected="true">Conversation mode</button>
+                                <button class="nav-link active" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab" aria-controls="chat" aria-selected="true">Chat Mode</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tts-tab" data-bs-toggle="tab" data-bs-target="#tts"
-                                    type="button" role="tab" aria-controls="tts" aria-selected="false">Read aloud mode</button>
+                                <button class="nav-link" id="tts-tab" data-bs-toggle="tab" data-bs-target="#tts" type="button" role="tab" aria-controls="tts" aria-selected="false">Read Aloud Mode</button>
                             </li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div class="tab-content" id="interaction-tabs-content">
-                            <!-- Conversation mode -->
                             <div class="tab-pane fade show active" id="chat" role="tabpanel" aria-labelledby="chat-tab">
                                 <div class="asr-container mb-3" id="chat-messages">
                                     <div class="asr-text system-message">
-                                        System: Welcome to livetalking, please click the "Start Connecting" button to start the conversation.
+                                        System: Welcome to LiveTalking. Please click "Start Connection" to begin.
                                     </div>
                                 </div>
 
                                 <form id="chat-form">
                                     <div class="input-group mb-3">
-                                        <textarea class="form-control" id="chat-message" rows="3"
-                                            placeholder="Enter what you want to say to the digital person..."></textarea>
+                                        <textarea class="form-control" id="chat-message" rows="3" placeholder="Enter what you want to say to the digital human..."></textarea>
                                         <button class="btn btn-primary" type="submit">
-                                            <i class="bi bi-send"></i> send
+                                            <i class="bi bi-send"></i> Send
                                         </button>
                                     </div>
                                 </form>
-
-                                <!-- Press and hold the talk button -->
+                                
                                 <div class="voice-record-btn" id="voice-record-btn">
                                     <i class="bi bi-mic-fill"></i>
                                 </div>
-                                <div class="voice-record-label">Press and hold to talk, release to send</div>
+                                <div class="voice-record-label">Hold to speak, release to send</div>
                             </div>
-
-                            <!-- Read aloud mode -->
+                            
                             <div class="tab-pane fade" id="tts" role="tabpanel" aria-labelledby="tts-tab">
                                 <form id="echo-form">
                                     <div class="mb-3">
-                                        <label for="message" class="form-label">Enter text to be read aloud</label>
-                                        <textarea class="form-control" id="message" rows="6"
-                                            placeholder="Enter the text you want the digital human to read..."></textarea>
+                                        <label for="message" class="form-label">Enter text to read aloud</label>
+                                        <textarea class="form-control" id="message" rows="6" placeholder="Enter the text you want the digital human to read..."></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary w-100">
-                                        <i class="bi bi-volume-up"></i> Read text aloud
+                                        <i class="bi bi-volume-up"></i> Read Text
                                     </button>
                                 </form>
                             </div>
@@ -431,7 +416,6 @@
 
     </div>
 
-    <!-- Hidden session ID -->
     <input type="hidden" id="sessionid" value="0">
 
     <script src="client.js"></script>
@@ -466,37 +450,30 @@
                     case 'connected':
                         // Add the 'status-connected' class to the indicator.
                         statusIndicator.addClass('status-connected');
-                        // Set the status text to 'Connected'.
                         statusText.text('Connected');
-                        // Exit the switch statement.
                         break;
                     case 'connecting':
                         // Add the 'status-connecting' class to the indicator.
                         statusIndicator.addClass('status-connecting');
-                        // Set the status text to 'Connecting...'.
                         statusText.text('Connecting...');
-                        // Exit the switch statement.
                         break;
                     // case 'disconnected':
                     default:
                         // Add the 'status-disconnected' class to the indicator.
                         statusIndicator.addClass('status-disconnected');
-                        // Set the status text to 'Not connected'.
-                        // Exit the switch statement.
+                        statusText.text('Disconnected');
                         break;
                 }
             }
 
-            // This function adds a new message to the chat display.
+            // Add chat message
             function addChatMessage(message, type = 'user') {
                 // Get the jQuery object for the chat messages container.
                 const messagesContainer = $('#chat-messages');
                 // Determine the CSS class based on the message type.
                 const messageClass = type === 'user' ? 'user-message' : 'system-message';
-                // Determine the sender's label based on the message type.
-                const sender = type === 'user' ? 'you' : 'character';
-
-                // Create a new HTML element for the message using a template literal.
+                const sender = type === 'user' ? 'You' : 'Digital Human';
+                
                 const messageElement = $(`
                     <div class="asr-text ${messageClass}">
                         ${sender}: ${message}
@@ -509,9 +486,8 @@
                 messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
             }
 
-            // Start/Stop button
-            $('#start').click(function () {
-                // Update the connection status to 'connecting'.
+            // Start/Stop buttons
+            $('#start').click(function() {
                 updateConnectionStatus('connecting');
                 // Call the 'start' function (likely a WebRTC function defined elsewhere).
                 start();
@@ -519,12 +495,11 @@
                 $(this).hide();
                 // Show the 'stop' button.
                 $('#stop').show();
-
+                
                 // Add a timer to check if the video stream has loaded
-                let connectionCheckTimer = setInterval(function () {
-                    // Get the video element.
+                let connectionCheckTimer = setInterval(function() {
                     const video = document.getElementById('video');
-                    // Check if the video has loaded enough data and has a valid width.
+                    // Check if the video has data
                     if (video.readyState >= 3 && video.videoWidth > 0) {
                         // If it has, update the status to 'connected'.
                         updateConnectionStatus('connected');
@@ -532,9 +507,9 @@
                         clearInterval(connectionCheckTimer);
                     }
                 }, 2000); // Check every 2 seconds
-
-                // Set a timeout to stop checking after 60 seconds to prevent it from running forever.
-                setTimeout(function () {
+                
+                // If still in 'connecting' state after 60 seconds, stop checking
+                setTimeout(function() {
                     if (connectionCheckTimer) {
                         clearInterval(connectionCheckTimer);
                     }
@@ -552,9 +527,8 @@
                 updateConnectionStatus('disconnected');
             });
 
-            // Recording function
-            $('#btn_start_record').click(function () {
-                // Log starting message to the console.
+            // Recording functionality
+            $('#btn_start_record').click(function() {
                 console.log('Starting recording...');
                 // Send a POST request to the '/record' endpoint.
                 fetch('/record', {
@@ -648,13 +622,11 @@
 
                 // Clear the message input field.
                 $('#message').val('');
-                // Add a system message to the chat display 
-                addChatMessage(`Read request sent: "${message}"`, 'system');
+                addChatMessage(`Read aloud request sent: "${message}"`, 'system');
             });
 
-            // This block handles the main chat form for sending text messages.
-            $('#chat-form').on('submit', function (e) {
-                // Prevent the default form submission behavior.
+            // Chat mode form submission
+            $('#chat-form').on('submit', function(e) {
                 e.preventDefault();
                 // Get the value of the chat message input field.
                 var message = $('#chat-message').val();
@@ -684,17 +656,13 @@
                 $('#chat-message').val('');
             });
 
-            /* 
-            Press and talk function
-            */
-
-            // Declare variables for media recording.
+            // Push-to-talk functionality
             let mediaRecorder;
             let audioChunks = [];
             let isRecording = false;
             let recognition;
-
-            // Check if your browser supports speech recognition
+            
+            // Check if the browser supports speech recognition
             const isSpeechRecognitionSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 
             // If speech recognition is supported...
@@ -705,11 +673,9 @@
                 recognition.continuous = true;
                 // Set to return interim (partial) results.
                 recognition.interimResults = true;
-                // Set the language to Chinese (zh-CN).
-                recognition.lang = 'zh-CN';
-
-                // Define the function to run when speech is recognized.
-                recognition.onresult = function (event) {
+                recognition.lang = 'en-US'; // Changed language to English
+                
+                recognition.onresult = function(event) {
                     let interimTranscript = '';
                     let finalTranscript = '';
 
@@ -730,15 +696,13 @@
                     }
                 };
                 
-                // Define the function to run if there is a speech recognition error.
-                recognition.onerror = function (event) {
-                    console.error('Voice recognition error:', event.error);
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
                 };
             }
-
-            // Set up event listeners for the voice record button for both mouse and touch events.
-            $('#voice-record-btn').on('mousedown touchstart', function (e) {
-                // Prevent default actions.
+            
+            // Push-to-talk button events
+            $('#voice-record-btn').on('mousedown touchstart', function(e) {
                 e.preventDefault();
                 // Call the 'startRecording' function.
                 startRecording();
@@ -749,8 +713,8 @@
                     stopRecording();
                 }
             });
-
-            // Define the 'startRecording' function.
+            
+            // Start recording audio
             function startRecording() {
                 // If already recording, do nothing.
                 if (isRecording) return;
@@ -786,10 +750,9 @@
                             recognition.start();
                         }
                     })
-                    .catch(function (error) {
-                        // If microphone access fails, log the error and show an alert.
-                        console.error('Unable to access microphone:', error);
-                        alert('Unable to access microphone, please check browser permission settings.');
+                    .catch(function(error) {
+                        console.error('Cannot access microphone:', error);
+                        alert('Cannot access microphone. Please check your browser permission settings.');
                     });
             }
 
@@ -801,26 +764,25 @@
                 mediaRecorder.stop();
                 // Set the recording flag to false.
                 isRecording = false;
-
-                // Stop all tracks associated with the audio stream to release the microphone.
+                
+                // Stop all audio tracks
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
-
-                // Restore the visual state of the button.
+                
+                // Restore visual feedback
                 $('#voice-record-btn').removeClass('recording-pulse');
                 $('#voice-record-btn').css('background-color', '');
-
-                // Stop speech recognition if it was running.
+                
+                // Stop speech recognition
                 if (recognition) {
                     recognition.stop();
                 }
-
-                // Use a timeout to wait for the final recognized text before sending.
-                setTimeout(function () {
-                    // Get the recognized text from the chat message input field.
+                
+                // Get the recognized text and send it
+                setTimeout(function() {
                     const recognizedText = $('#chat-message').val().trim();
                     // If there's any text...
                     if (recognizedText) {
-                        // Send the recognized text via a fetch POST request.
+                        // Send the recognized text
                         fetch('/human', {
                             body: JSON.stringify({
                                 text: recognizedText,
@@ -842,11 +804,7 @@
                 }, 500);
             }
 
-            /*
-            * This block integrates with WebRTC to update the connection status.
-            */
-
-            // Check if the global 'onWebRTCConnected' function exists.
+            // WebRTC related functions
             if (typeof window.onWebRTCConnected === 'function') {
                 // Overwrite the function to also update the status and then call the original function.
                 window.onWebRTCConnected = function () {
@@ -860,7 +818,7 @@
                 };
             }
 
-            // Similar logic for when the WebRTC connection is disconnected.
+            // Update status when disconnected
             if (typeof window.onWebRTCDisconnected === 'function') {
                 const originalOnDisconnected = window.onWebRTCDisconnected;
                 window.onWebRTCDisconnected = function () {
@@ -873,16 +831,15 @@
                 };
             }
 
-            /*
-            * This block handles SRS (Simple Realtime Server) WebRTC playback.
-            */
+            // SRS WebRTC playback function
+            var sdk = null; // Global handler, used for cleanup on re-publish
 
             // Declare a global variable to hold the SRS SDK handler.
             var sdk = null;
 
             // Define the 'startPlay' function for WebRTC video playback.
             function startPlay() {
-                // If a previous SDK instance exists, close it to clean up the connection.
+                // Close the previous connection
                 if (sdk) {
                     sdk.close();
                 }
@@ -896,15 +853,12 @@
                 var host = window.location.hostname;
                 // Construct the URL for the WebRTC playback stream.
                 var url = "http://" + host + ":1985/rtc/v1/whep/?app=live&stream=livestream";
-
-                // Start playing the video from the constructed URL.
-                sdk.play(url).then(function (session) {
-                    // If playback starts successfully, log the session ID.
+                
+                sdk.play(url).then(function(session) {
                     console.log('WebRTC playback started, session ID:', session.sessionid);
-                }).catch(function (reason) {
-                    // If playback fails, close the SDK and log the reason for the failure.
+                }).catch(function(reason) {
                     sdk.close();
-                    console.error('WebRTC playback fails:', reason);
+                    console.error('WebRTC playback failed:', reason);
                 });
             }
         });

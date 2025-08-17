@@ -1,8 +1,8 @@
-from llm_disable import LLMService
-from llm_disable import LLMServiceInput
-from llm_disable import LLMSetting
-from llm_disable import CompletionMessage
-from llm_disable import MessageRole
+from llm_client import LLMService
+from llm_client import LLMServiceInput
+from llm_client import LLMSetting
+from llm_client import CompletionMessage
+from llm_client import MessageRole
 
 import os
 from dotenv import load_dotenv

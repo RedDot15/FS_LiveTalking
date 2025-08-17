@@ -9,7 +9,7 @@ from pydantic_settings import BaseSettings
 from pydantic_settings import PydanticBaseSettingsSource
 from pydantic_settings import YamlConfigSettingsSource
 
-from llm import LLMSetting
+from llm_client import LLMSetting
 from .answer_aggregator import AnswerAggregatorSettings
 
 load_dotenv(find_dotenv('.env'), override=True)

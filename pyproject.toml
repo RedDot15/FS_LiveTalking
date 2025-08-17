@@ -15,7 +15,7 @@ members = [
     "services/indexer",
     "libs/base",
     "libs/logger",
-    "libs/llm",
+    "libs/llm_client",
 ]
 
 [tool.uv.sources]
