@@ -1,0 +1,23 @@
+[project]
+name = "fs-livetalking"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+[tool.uv.workspace]
+members = [
+    "services/rag_service",
+    "services/chat_service",
+    "libs/chromadb_client",
+    "services/indexer",
+    "libs/base",
+    "libs/logger",
+    "libs/llm_client",
+]
+
+[tool.uv.sources]
+chat-service = { workspace = true }
+rag-service = { workspace = true }

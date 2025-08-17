@@ -1,0 +1,16 @@
+[project]
+name = "base"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "realtrevor15", email = "ttkien1503@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic==2.8.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.7,<0.9.0"]
+build-backend = "uv_build"

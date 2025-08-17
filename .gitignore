@@ -23,3 +23,8 @@ dist
 
 .env
 env
+
+.wav
+
+.lock
+uv.lock

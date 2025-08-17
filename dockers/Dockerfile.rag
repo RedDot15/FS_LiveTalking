@@ -1,0 +1,68 @@
+ARG PYTHON_VERSION=python3.12
+ARG USER=reunion
+ARG GROUP=reunion
+ARG PACKAGE=service
+ARG APT_PACKAGE="git gcc libpq-dev"
+ARG OPTIONAL_BUILD='README.md'
+
+FROM ghcr.io/astral-sh/uv:${PYTHON_VERSION}-bookworm-slim AS base
+
+ARG USER
+ARG GROUP
+ARG APT_PACKAGE
+
+USER root
+
+RUN --mount=type=cache,target=/var/cache/apt,id=apt-cache,sharing=locked \
+    sed -i 's|http://deb.debian.org|https://deb.debian.org|' /etc/apt/sources.list && \
+    sed -i 's| main| main contrib non-free non-free-firmware|' /etc/apt/sources.list && \
+    apt-get update || (apt install -y apt && apt-get update) && \
+    apt-get install -y --no-install-recommends \
+        curl ca-certificates gnupg apt-utils && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ${APT_PACKAGE} && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV USER=${USER} \
+    GROUP=${GROUP} \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_FROZEN=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    APP_DIR=/home/$USER/app
+
+RUN groupadd -r $GROUP \
+    && useradd -m -s /bin/bash -g $GROUP $USER
+
+USER $USER
+WORKDIR $APP_DIR
+
+RUN mkdir -p $APP_DIR/data
+
+FROM base AS builder
+
+ARG PACKAGE
+ARG OPTIONAL_BUILD
+
+COPY pyproject.toml uv.lock $APP_DIR/
+COPY libs/ $APP_DIR/libs/
+COPY services/$PACKAGE/pyproject.toml $APP_DIR/services/$PACKAGE/
+COPY services/$PACKAGE/README.md $APP_DIR/services/$PACKAGE/
+
+COPY services/$PACKAGE/$OPTIONAL_BUILD $APP_DIR/services/$PACKAGE/$OPTIONAL_BUILD
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-install-project --no-dev
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-dev --package $PACKAGE
+
+FROM builder AS final
+
+ARG PACKAGE
+
+COPY services/${PACKAGE}/ $APP_DIR/services/${PACKAGE}/

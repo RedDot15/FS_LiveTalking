@@ -19,7 +19,7 @@ from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc.rtcrtpsender import RTCRtpSender
 from webrtc import HumanPlayer
 from basereal import BaseReal
-from llm import llm_response
+from llm_disable import llm_response
 
 import argparse
 import random
@@ -150,8 +150,8 @@ async def human(request):
     if params['type']=='echo':
         nerfreals[sessionid].put_msg_txt(params['text'])
     elif params['type']=='chat':
-        res=await asyncio.get_event_loop().run_in_executor(None, llm_response, params['text'],nerfreals[sessionid])                         
-        nerfreals[sessionid].put_msg_txt(res)
+        res=await asyncio.get_event_loop().run_in_executor(None, llm_response, params['text'], nerfreals[sessionid])                         
+        # nerfreals[sessionid].put_msg_txt(res)
 
     return web.Response(
         content_type="application/json",
@@ -457,7 +457,7 @@ if __name__ == '__main__':
 
     # Arguments for Text-to-Speech (TTS) settings.
     parser.add_argument('--tts', type=str, default='xtts') #xtts gpt-sovits cosyvoice
-    parser.add_argument('--REF_FILE', type=str, default=None)
+    parser.add_argument('--REF_FILE', type=str, default='thang.wav')
     parser.add_argument('--REF_TEXT', type=str, default=None)
     parser.add_argument('--TTS_SERVER', type=str, default='http://127.0.0.1:8002') # http://localhost:9000
 
