@@ -292,7 +292,7 @@ function handleWithTimestamp(tmptext, tmptime) {
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 async function is_speaking() {
-    const response = await fetch('/is_speaking', {
+    const response = await fetch('/v1/is_speaking', {
         body: JSON.stringify({
             sessionid: parseInt(parent.document.getElementById('sessionid').value),
         }),

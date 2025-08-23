@@ -56,7 +56,7 @@
 <script type="text/javascript" charset="utf-8">
   // TODO:
   function custom() {
-      fetch('/set_audiotype', {
+      fetch('/v1/set_audiotype', {
             body: JSON.stringify({
                 audiotype: parseInt(document.getElementById('audiotype').value),
                 reinit: false,

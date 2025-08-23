@@ -4,7 +4,6 @@ volumes:
 networks:
   multidimension:
     driver: bridge
-
 services:
   chromadb:
     container_name: chromadb
@@ -24,7 +23,7 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=rag_service
         - OPTIONAL_BUILD=src/rag_service/__init__.py
-  
+
     ports:
       - "3005:3005"
     
@@ -66,6 +65,7 @@ services:
       - type: bind
         source: ./libs/
         target: /home/reunion/app/libs/
+
     environment:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - RAG_SERVICE_URL=${RAG_SERVICE_URL}

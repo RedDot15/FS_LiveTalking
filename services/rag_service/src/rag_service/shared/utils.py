@@ -7,7 +7,7 @@ import time
 from functools import lru_cache
 from functools import wraps
 
-from logger import get_logger
+from logger_dis import get_logger
 
 from .settings import Settings
 

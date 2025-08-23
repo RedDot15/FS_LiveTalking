@@ -9,7 +9,7 @@ from fastapi import BackgroundTasks
 
 from indexer.api.helpers.exception_handler import ExceptionHandler
 from indexer.api.helpers.exception_handler import ResponseMessage
-from logger import get_logger
+from logger_dis import get_logger
 
 
 logger = get_logger(__name__)

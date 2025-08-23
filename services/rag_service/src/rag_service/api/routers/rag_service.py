@@ -10,7 +10,7 @@ from rag_service.application import RagServiceInput
 from rag_service.application import RagServiceApplication
 from rag_service.api.helpers.exception_handler import ExceptionHandler
 
-from logger import get_logger
+from logger_dis import get_logger
 
 rag_router = APIRouter(prefix='/v1')
 logger = get_logger(__name__)

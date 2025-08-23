@@ -17,7 +17,6 @@ from typing import Dict
 from typing import Any
 from typing import cast
 
-
 from openai import OpenAI, AsyncOpenAI
 
 class LLMServiceInput(BaseModel):
@@ -96,9 +95,6 @@ class LLMService(BaseService):
                 "usage": getattr(completion, "usage", None)
             }
             
-            with open('log2.txt', 'w') as f:
-                f.write(repr(response_data))
-
             return self.__postprocessing_response(
                 response=response_data,
                 count_token=True,

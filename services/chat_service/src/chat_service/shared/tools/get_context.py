@@ -5,7 +5,7 @@ import httpx
 
 from functools import lru_cache
 
-from logger import get_logger
+from logger_dis import get_logger
 
 from ..utils import get_settings
 

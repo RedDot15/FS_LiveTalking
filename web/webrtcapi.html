@@ -53,7 +53,26 @@
     <div id="media">
         <h2>Media</h2>
         <audio id="audio" autoplay="true"></audio>
-        <video id="video" style="width:600px;" autoplay="true" playsinline="true"></video>
+        <video id="video" 
+               style="width:600px; background: #cccccc;" 
+               autoplay 
+               playsinline 
+               controls></video>
+        <div id="video-stats">
+            <p>Video status: <span id="video-status">Unknown</span></p>
+            <p>Resolution: <span id="video-resolution">Unknown</span></p>
+        </div>
+        <script>
+            // Monitor video element state
+            setInterval(() => {
+                const video = document.getElementById('video');
+                const status = document.getElementById('video-status');
+                const resolution = document.getElementById('video-resolution');
+                
+                status.textContent = video.readyState + (video.paused ? ' (Paused)' : ' (Playing)');
+                resolution.textContent = video.videoWidth + 'x' + video.videoHeight;
+            }, 1000);
+        </script>
     </div>
 
     <script src="client.js"></script>
@@ -87,7 +106,7 @@
                 var message = $('#message').val();
 
                 // Send HTTP Post request to the server
-                fetch('/human', {
+                fetch('/v1/human', {
                     body: JSON.stringify({
                         text: message,
                         type: 'echo',
@@ -108,7 +127,7 @@
                 // Starting recording 
                 console.log('Starting recording...');
                 // Send HTTP Post request to start recording
-                fetch('/record', {
+                fetch('/v1/record', {
                     body: JSON.stringify({
                         type: 'start_record',
                         sessionid: parseInt(document.getElementById('sessionid').value),
@@ -138,7 +157,7 @@
                 // Stopping recording 
                 console.log('Stopping recording...');
                 // Send HTTP Post request to stop recording
-                fetch('/record', {
+                fetch('/v1/record', {
                     body: JSON.stringify({
                         type: 'end_record',
                         sessionid: parseInt(document.getElementById('sessionid').value),
