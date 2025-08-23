@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from base import BaseModel
 from base import BaseService
-from logger import get_logger
+from logger_dis import get_logger
 from fastapi.encoders import jsonable_encoder
 
 from .prompt import ANSWER_AGGREGATOR_SYSTEM_PROMPT

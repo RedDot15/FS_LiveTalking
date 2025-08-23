@@ -3,12 +3,18 @@ var pc = null;
 
 // This function handles the WebRTC negotiation process.
 function negotiate() {
+    console.log("Starting negotiation...");
+    console.log("Adding transceivers...");
+    
     // Add a video transceiver to the peer connection.
     // 'recvonly' means this client will only receive video.
-    pc.addTransceiver('video', { direction: 'recvonly' });
+    const videoTransceiver = pc.addTransceiver('video', { direction: 'recvonly' });
+    console.log("Video transceiver added:", videoTransceiver);
+    
     // Add an audio transceiver to the peer connection.
     // 'recvonly' means this client will only receive audio.
-    pc.addTransceiver('audio', { direction: 'recvonly' });
+    const audioTransceiver = pc.addTransceiver('audio', { direction: 'recvonly' });
+    console.log("Audio transceiver added:", audioTransceiver);
 
     // Create a WebRTC offer (a session description).
     // This describes the client's capabilities.
@@ -43,7 +49,7 @@ function negotiate() {
         // Once ICE gathering is complete, get the final offer with all the candidates.
         var offer = pc.localDescription;
         // Use the Fetch API to send the offer to a server.
-        return fetch('/offer', {
+        return fetch('/v1/offer', {
             body: JSON.stringify({
                 sdp: offer.sdp,
                 type: offer.type,
@@ -55,20 +61,33 @@ function negotiate() {
         });
     }).then((response) => {
         // The server's response should contain the remote peer's answer.
+        console.log("Got response from server:", response);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         return response.json();
     }).then((answer) => {
+        console.log("Got answer from server:", answer);
+        if (!answer || !answer.sdp || !answer.type) {
+            throw new Error('Invalid answer format from server');
+        }
         // Set the value of an HTML element with the ID 'sessionid' to the session ID from the answer.
-        document.getElementById('sessionid').value = answer.sessionid
+        document.getElementById('sessionid').value = answer.sessionid;
         // Set the received answer as the remote description.
         // This tells the local peer connection about the remote peer's capabilities.
-        return pc.setRemoteDescription(answer);
+        return pc.setRemoteDescription({
+            sdp: answer.sdp,
+            type: answer.type
+        });
     }).catch((e) => {
-        alert(e);
+        console.error("Error during negotiation:", e);
+        alert(`Connection failed: ${e.message}`);
     });
 }
 
 // This function initiates the WebRTC connection.
 function start() {
+    console.log("Starting WebRTC connection...");
     // Define the configuration for the RTCPeerConnection.
     var config = {
         // Specify 'unified-plan' SDP semantics, which is the modern standard.
@@ -84,15 +103,60 @@ function start() {
 
     // Create a new RTCPeerConnection with the defined configuration.
     pc = new RTCPeerConnection(config);
-
     // Add an event listener for the 'track' event.
     // This event fires when a new media track is received from the remote peer.
     pc.addEventListener('track', (evt) => {
+        console.log('Received track:', evt.track.kind);
+        console.log('Track settings:', evt.track.getSettings());
+        console.log('Track constraints:', evt.track.getConstraints());
+        console.log('Track state:', evt.track.readyState);
+        
         if (evt.track.kind == 'video') {
-            // If it's video, set the source of the video element to the received stream.
-            document.getElementById('video').srcObject = evt.streams[0];
+            console.log('Setting video source');
+            const videoElem = document.getElementById('video');
+            const stream = evt.streams[0];
+            console.log('Stream:', stream);
+            console.log('Stream tracks:', stream.getTracks());
+            
+            videoElem.srcObject = stream;
+            
+            // Add all event handlers for debugging
+            videoElem.onloadedmetadata = () => {
+                console.log('Video metadata loaded:', {
+                    width: videoElem.videoWidth,
+                    height: videoElem.videoHeight
+                });
+                videoElem.play().catch(e => console.error('Error playing video:', e));
+            };
+            
+            videoElem.oncanplay = () => {
+                console.log('Video can play');
+            };
+            
+            videoElem.onplay = () => {
+                console.log('Video play event fired');
+            };
+            
+            videoElem.onplaying = () => {
+                console.log('Video is playing');
+            };
+            
+            videoElem.onwaiting = () => {
+                console.log('Video is waiting for data');
+            };
+            
+            videoElem.onerror = (e) => {
+                console.error('Video element error:', e);
+                console.error('Error code:', videoElem.error.code);
+                console.error('Error message:', videoElem.error.message);
+            };
+            
+            // Monitor track state changes
+            evt.track.onmute = () => console.log('Video track muted');
+            evt.track.onunmute = () => console.log('Video track unmuted');
+            evt.track.onended = () => console.log('Video track ended');
         } else {
-            // Otherwise (if it's audio), set the source of the audio element to the received stream.
+            console.log('Setting audio source');
             document.getElementById('audio').srcObject = evt.streams[0];
         }
     });

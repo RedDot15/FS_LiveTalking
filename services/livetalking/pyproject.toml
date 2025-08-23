@@ -1,0 +1,32 @@
+[project]
+name = "livetalking"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "realtrevor15", email = "ttkien1503@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "aiortc>=1.10.1",
+    "asgi-correlation-id>=4.3.4",
+    "fastapi>=0.116.1",
+    "humanplayer",
+    "llm-client",
+    "pydantic-settings>=2.10.1",
+    "python-dotenv>=1.1.1",
+    "realistic",
+    "uvicorn>=0.35.0",
+]
+
+[project.scripts]
+livetalking = "livetalking:main"
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.9"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+realistic = { workspace = true }
+humanplayer = { workspace = true }
+llm-client = { workspace = true }

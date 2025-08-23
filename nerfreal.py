@@ -38,7 +38,7 @@ from ernerf.nerf_triplane.utils import *
 from ernerf.nerf_triplane.network import NeRFNetwork
 from transformers import AutoModelForCTC, AutoProcessor, Wav2Vec2Processor, HubertModel
 
-from logger import logger
+from logger_dis import logger
 from tqdm import tqdm
 def read_imgs(img_list):
     frames = []

@@ -531,7 +531,7 @@
             $('#btn_start_record').click(function() {
                 console.log('Starting recording...');
                 // Send a POST request to the '/record' endpoint.
-                fetch('/record', {
+                fetch('/v1/record', {
                     body: JSON.stringify({
                         type: 'start_record',
                         sessionid: parseInt(document.getElementById('sessionid').value),
@@ -565,7 +565,7 @@
                 // Log a stopping message to the console.
                 console.log('Stopping recording...');
                 // Send a POST request to the '/record' endpoint.
-                fetch('/record', {
+                fetch('/v1/record', {
                     body: JSON.stringify({
                         type: 'end_record',
                         sessionid: parseInt(document.getElementById('sessionid').value),
@@ -607,7 +607,7 @@
                 console.log('Sending echo message:', message);
 
                 // Send a POST request to the '/human' endpoint.
-                fetch('/human', {
+                fetch('/v1/human', {
                     body: JSON.stringify({
                         text: message,
                         type: 'echo',
@@ -637,7 +637,7 @@
                 console.log('Sending chat message:', message);
 
                 // Send a POST request to the '/human' endpoint.
-                fetch('/human', {
+                fetch('/v1/human', {
                     body: JSON.stringify({
                         text: message,
                         type: 'chat',
@@ -783,7 +783,7 @@
                     // If there's any text...
                     if (recognizedText) {
                         // Send the recognized text
-                        fetch('/human', {
+                        fetch('/v1/human', {
                             body: JSON.stringify({
                                 text: recognizedText,
                                 type: 'chat',

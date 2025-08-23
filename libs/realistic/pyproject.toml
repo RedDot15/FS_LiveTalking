@@ -1,0 +1,28 @@
+[project]
+name = "realistic"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "realtrevor15", email = "ttkien1503@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "asr",
+    "cython<3.0",
+    "logger",
+    "opencv-python>=4.12.0.88",
+    "resampy>=0.4.3",
+    "soundfile==0.12.1",
+    "text-to-speech",
+    "torch>=2.8.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.9"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+asr = { workspace = true }
+logger = { workspace = true }
+text-to-speech = { workspace = true }

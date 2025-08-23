@@ -1,0 +1,23 @@
+[project]
+name = "text-to-speech"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "realtrevor15", email = "ttkien1503@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "base",
+    "logger",
+    "realistic",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.0,<0.9"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+base = { workspace = true }
+realistic = { workspace = true }
+logger = { workspace = true }
