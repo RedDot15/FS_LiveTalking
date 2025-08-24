@@ -25,6 +25,3 @@ dist
 env
 
 .wav
-
-.lock
-uv.lock
