@@ -1,0 +1,14 @@
+model: 'models/wav2lip.pth'
+avatar_id: 'wav2lip256_avatar1'
+
+max_session: 5
+
+lipreal:
+  W: 450
+  H: 450
+  fps: 20
+  idx: 0
+  batch_size: 16
+  model: 'wav2lip'
+  customopt: []
+  customvideo_config: ''

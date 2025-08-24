@@ -1,47 +1,73 @@
-ARG BASE_IMAGE=nvcr.io/nvidia/cuda:11.6.1-cudnn8-devel-ubuntu20.04
-FROM $BASE_IMAGE
+ARG PYTHON_VERSION=python3.12
+ARG USER=reunion
+ARG GROUP=reunion
+ARG PACKAGE=service
+ARG APT_PACKAGE="git gcc libpq-dev"
+ARG OPTIONAL_BUILD='README.md'
+ARG FRONTEND_DIR='web'
 
-RUN apt-get update -yq --fix-missing \
- && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-    pkg-config \
-    wget \
-    cmake \
-    curl \
-    git \
-    vim
+FROM ghcr.io/astral-sh/uv:${PYTHON_VERSION}-bookworm-slim AS base
 
-#ENV PYTHONDONTWRITEBYTECODE=1
-#ENV PYTHONUNBUFFERED=1
+ARG USER
+ARG GROUP
+ARG APT_PACKAGE
 
-# nvidia-container-runtime
-#ENV NVIDIA_VISIBLE_DEVICES all
-#ENV NVIDIA_DRIVER_CAPABILITIES compute,utility,graphics
+USER root
 
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN sh Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3
-RUN ~/miniconda3/bin/conda init
-RUN source ~/.bashrc
-RUN conda create -n nerfstream python=3.10
-RUN conda activate nerfstream
+RUN --mount=type=cache,target=/var/cache/apt,id=apt-cache,sharing=locked \
+    sed -i 's|http://deb.debian.org|https://deb.debian.org|' /etc/apt/sources.list && \
+    sed -i 's| main| main contrib non-free non-free-firmware|' /etc/apt/sources.list && \
+    apt-get update || (apt install -y apt && apt-get update) && \
+    apt-get install -y --no-install-recommends \
+        curl ca-certificates gnupg apt-utils && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
-# install depend
-RUN conda install pytorch==1.12.1 torchvision==0.13.1 cudatoolkit=11.3 -c pytorch
-Copy requirements.txt ./
-RUN pip install -r requirements.txt
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ${APT_PACKAGE} && \
+    rm -rf /var/lib/apt/lists/*
 
-# additional libraries
-RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git"
-RUN pip install tensorflow-gpu==2.8.0
+ENV USER=${USER} \
+    GROUP=${GROUP} \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_FROZEN=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    APP_DIR=/home/$USER/app
 
-RUN pip uninstall protobuf
-RUN pip install protobuf==3.20.1
+RUN groupadd -r $GROUP \
+    && useradd -m -s /bin/bash -g $GROUP $USER
 
-RUN conda install ffmpeg
-Copy ../python_rtmpstream /python_rtmpstream
-WORKDIR /python_rtmpstream/python
-RUN pip install .
+USER $USER
+WORKDIR $APP_DIR
 
-Copy ../nerfstream /nerfstream
-WORKDIR /nerfstream
-CMD ["python3", "app.py"]
+RUN mkdir -p $APP_DIR/data
+
+FROM base AS builder
+
+ARG PACKAGE
+ARG OPTIONAL_BUILD
+
+COPY pyproject.toml uv.lock $APP_DIR/
+COPY libs/ $APP_DIR/libs/
+COPY services/$PACKAGE/pyproject.toml $APP_DIR/services/$PACKAGE/
+COPY services/$PACKAGE/README.md $APP_DIR/services/$PACKAGE/
+
+COPY services/$PACKAGE/$OPTIONAL_BUILD $APP_DIR/services/$PACKAGE/$OPTIONAL_BUILD
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-install-project --no-dev
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-dev --package $PACKAGE
+
+FROM builder AS final
+
+ARG PACKAGE
+ARG FRONTEND_DIR
+
+COPY services/${PACKAGE}/ $APP_DIR/services/${PACKAGE}/
+COPY /$FRONTEND_DIR/ $APP_DIR/$FRONTEND_DIR/
+COPY /models/ $APP_DIR/models/
+COPY /data/ $APP_DIR/data/

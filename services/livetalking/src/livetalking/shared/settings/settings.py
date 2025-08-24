@@ -16,12 +16,12 @@ load_dotenv(find_dotenv('.env'), override=True)
 
 class Settings(BaseSettings):
     
-    model: str = 'models/wav2lip.pth'
-    avatar_id: str = 'wav2lip256_avatar1'
-    max_session: int = 5
+    model: str
+    avatar_id: str
+    max_session: int
     
     llm: LLMSetting
-    lipreal: LipRealSettings = LipRealSettings()
+    lipreal: LipRealSettings
     
     class Config:
         env_nested_delimiter = '__'

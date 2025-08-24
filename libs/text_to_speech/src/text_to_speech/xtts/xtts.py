@@ -20,7 +20,7 @@ class XTTS(BaseTTS):
         super().__init__(parent=parent)
         
         self.settings = settings
-        self.speaker = self.get_speaker(self.settings.REF_FILE)
+        self.speaker = self.get_speaker(self.settings.ref_file)
     
     def txt_to_audio(self,msg):
         # Use XTTS to convert text to audio
