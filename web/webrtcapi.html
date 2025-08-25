@@ -106,7 +106,7 @@
                 var message = $('#message').val();
 
                 // Send HTTP Post request to the server
-                fetch('/v1/human', {
+                fetch('http://127.0.0.1:8010/v1/human', {
                     body: JSON.stringify({
                         text: message,
                         type: 'echo',
