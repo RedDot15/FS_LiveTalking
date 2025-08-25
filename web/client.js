@@ -49,7 +49,7 @@ function negotiate() {
         // Once ICE gathering is complete, get the final offer with all the candidates.
         var offer = pc.localDescription;
         // Use the Fetch API to send the offer to a server.
-        return fetch('/v1/offer', {
+        return fetch('http://127.0.0.1:8010/v1/offer', {
             body: JSON.stringify({
                 sdp: offer.sdp,
                 type: offer.type,

@@ -99,3 +99,12 @@ services:
       - LLM__MODEL_NAME=${LLM__MODEL_NAME}
       - LIPREAL__XTTS__REF_FILE=${LIPREAL__XTTS__REF_FILE}
       - LIPREAL__XTTS__TTS_SERVER=${LIPREAL__XTTS__TTS_SERVER}
+
+  frontend:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile.frontend
+
+    container_name: frontend
+    ports:
+      - "8080:80"
