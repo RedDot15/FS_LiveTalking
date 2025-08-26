@@ -13,9 +13,6 @@ class MinioConnection:
 
     setting: MinioSettings
     
-    def __init__(self, setting):
-        self.setting = setting
-
     @property
     def client(self) -> Minio:
         return Minio(endpoint = self.setting.endpoint,
