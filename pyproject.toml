@@ -48,6 +48,9 @@ dependencies = [
     "transformers==4.46.2",
     "trimesh>=4.7.4",
     "websockets==12.0",
+    "chat-service",
+    "minio>=7.2.16",
+    "torch>=2.8.0",
 ]
 
 [tool.uv.workspace]
@@ -64,6 +67,7 @@ members = [
     "libs/asr",
     "services/livetalking",
     "libs/humanplayer",
+    "libs/minio_client",
     "libs/postgresql_client",
 ]
 

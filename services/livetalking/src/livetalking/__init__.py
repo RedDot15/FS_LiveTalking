@@ -57,7 +57,5 @@ app.include_router(
     livetalking_router,    
 )
 
-app.mount("/", StaticFiles(directory="web", html=True), name="web")
-
 def main() -> None:
     uvicorn.run('livetalking:app', host='0.0.0.0', port=8010, reload=True)
