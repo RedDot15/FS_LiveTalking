@@ -1,0 +1,16 @@
+[project]
+name = "minio-client"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "HoangManhh", email = "144936790+HoangManhh@users.noreply.github.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "python-dotenv>=1.1.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.11,<0.9.0"]
+build-backend = "uv_build"
