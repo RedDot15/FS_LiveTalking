@@ -1,0 +1,23 @@
+[project]
+name = "postgresql-client"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "RedDot15", email = "minhtb03@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "alembic==1.13.3",
+    "base",
+    "dotenv>=0.9.9",
+    "logger",
+    "psycopg==3.2.3",
+    "psycopg2-binary==2.9.9",
+    "pydantic==2.8.2",
+    "sqlalchemy==2.0.35",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.13,<0.9.0"]
+build-backend = "uv_build"
