@@ -61,13 +61,14 @@ members = [
     "services/indexer",
     "libs/base",
     "libs/logger",
-    "libs/llm_client",
+    "libs/llm_client", 
     "libs/text_to_speech",
     "libs/realistic",
     "libs/asr",
     "services/livetalking",
     "libs/humanplayer",
     "libs/minio_client",
+    "libs/postgresql_client",
 ]
 
 [tool.uv.sources]
