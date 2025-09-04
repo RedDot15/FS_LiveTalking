@@ -1,6 +1,8 @@
 volumes:
   chromadb:
   minio:
+  postgres:
+  mongodb:
 
 networks:
   multidimension:
@@ -40,24 +42,25 @@ services:
     networks:
       - multidimension
     volumes:
-      - ./data/pgdata:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
       - POSTGRES_USER=${POSTGRES__USER}
       - POSTGRES_PASSWORD=${POSTGRES__PASSWORD}
+      - POSTGRES_DB=${POSTGRES__DB}
 
   mongodb:
     image: mongo:7.0.23
     container_name: mongodb
     ports:
       - "27017:27017"
+    networks:
+      - multidimension
     volumes:
-      - ./data/db:/data/db
+      - mongodb:/data/db
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO__USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO__PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO__DB}
 
   rag_service:
     build:

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     # new_char = Character(name="AI Assistant", avatar_url="url_to_avatar")
     # print(db_handler.create_character(new_char))
 
-    print(db_handler.get_character())
+    # print(db_handler.get_character())
 
     # print(db_handler.get_character_by_id(character_id="68b90225e6f59bb7290ad88e"))
 
