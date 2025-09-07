@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import threading
 
-
 class SingletonMeta(type):
     """Thread-safe metaclass for singleton"""
 

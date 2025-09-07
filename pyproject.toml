@@ -61,7 +61,7 @@ members = [
     "services/indexer",
     "libs/base",
     "libs/logger",
-    "libs/llm_client", 
+    "libs/llm_client",
     "libs/text_to_speech",
     "libs/realistic",
     "libs/asr",
@@ -69,6 +69,7 @@ members = [
     "libs/humanplayer",
     "libs/minio_client",
     "libs/postgresql_client",
+    "libs/mongo_client",
 ]
 
 [tool.uv.sources]
