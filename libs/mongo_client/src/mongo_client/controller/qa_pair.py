@@ -17,9 +17,9 @@ class QAPairHandler:
         return list(data)
     
     # Get 3 most recent qa_pair by conversation_id with (created_at order: desc)
-    def get_3_most_recent_qa_pair_by_conversation_id(self, conversation_id: str):
+    def get_k_most_recent_qa_pair_by_conversation_id(self, conversation_id: str, k: int):
         collection = self._get_collection("qa_pairs")
-        data = collection.find({"conversation_id": conversation_id}).sort("created_at", -1).limit(3)
+        data = collection.find({"conversation_id": conversation_id}).sort("created_at", -1).limit(k)
         return list(data)
     
     # Update qa_pair by id ( can only update (question,answer,response_time) )

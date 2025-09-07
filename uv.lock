@@ -2680,13 +2680,17 @@ name = "mongo-client"
 version = "0.1.0"
 source = { editable = "libs/mongo_client" }
 dependencies = [
+    { name = "base" },
     { name = "dotenv" },
+    { name = "pydantic" },
     { name = "pymongo" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "base", editable = "libs/base" },
     { name = "dotenv", specifier = ">=0.9.9" },
+    { name = "pydantic", specifier = "==2.8.2" },
     { name = "pymongo", specifier = ">=4.14.1" },
 ]
 

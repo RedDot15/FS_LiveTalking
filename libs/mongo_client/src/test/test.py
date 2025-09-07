@@ -1,9 +1,37 @@
 # Example of use:
+import os
+from dotenv import load_dotenv
 from datetime import datetime
-from mongo_client.db import MongoDBHandler
+from mongo_client import (
+    MongoSettings, 
+    MongoDBHandler
+)
+from mongo_client.model import (
+    Character,
+    Conversation,
+    QAPair
+)
 
 if __name__ == "__main__":
-    db_handler = MongoDBHandler()
+    # Load environment variables from .env file
+    load_dotenv()
+    
+    # Get credentials from environment variables
+    db_name = os.getenv("MONGO__DB")
+    user = os.getenv("MONGO__USER")
+    password = os.getenv("MONGO__PASSWORD")
+    host = os.getenv("MONGO__HOST")
+    port = os.getenv("MONGO__PORT")
+
+    db_handler = MongoDBHandler(
+        mongo_settings = MongoSettings(
+            db=db_name, 
+            username=user, 
+            password=password, 
+            host=host, 
+            port=port
+        )
+    )
     
     ################# Character #################
     # new_char = Character(name="AI Assistant", avatar_url="url_to_avatar")
@@ -36,7 +64,7 @@ if __name__ == "__main__":
 
     # print(db_handler.get_qa_pair_by_conversation_id("convo_456"))
 
-    # print(db_handler.get_3_most_recent_qa_pair_by_conversation_id("convo_456"))
+    # print(db_handler.get_k_most_recent_qa_pair_by_conversation_id("convo_456", 3))
 
     # updated_qa_pair = QAPair(question="Updated question", answer="Updated answer", response_time=300)
     # print(db_handler.update_qa_pair_by_id(qa_pair_id="68b92dc2ad7283ee6ba67668", qa_pair=updated_qa_pair))

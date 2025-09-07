@@ -1,2 +1,7 @@
-def hello() -> str:
-    return "Hello from mongo-client!"
+from .db import MongoDBHandler
+from .settings import MongoSettings
+
+__all__ = [
+    "MongoDBHandler",
+    "MongoSettings"
+]
