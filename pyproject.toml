@@ -48,7 +48,6 @@ dependencies = [
     "transformers==4.46.2",
     "trimesh>=4.7.4",
     "websockets==12.0",
-    "chat-service",
     "minio>=7.2.16",
     "torch>=2.8.0",
 ]
