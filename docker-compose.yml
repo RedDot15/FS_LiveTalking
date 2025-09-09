@@ -77,6 +77,8 @@ services:
     networks:
       - multidimension
     command: uv run rag_service
+    depends_on:
+      - chromadb
 
     volumes:
       - type: bind
