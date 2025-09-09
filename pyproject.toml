@@ -30,7 +30,6 @@ members = [
 ]
 
 [tool.uv.sources]
-chat-service = { workspace = true }
 rag-service = { workspace = true }
 logger = { workspace = true }
 base = { workspace = true }

@@ -1,0 +1,84 @@
+from __future__ import annotations
+
+import io
+import json
+
+from fastapi import APIRouter
+from fastapi import Request
+from fastapi import BackgroundTasks
+from fastapi import Depends
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+
+from indexer.api.helpers.exception_handler import ExceptionHandler
+from indexer.api.helpers.exception_handler import ResponseMessage
+from logger import get_logger
+
+from indexer.application import CharacterInputs, IndexerApplication, CharacterMongoDBInputs, ParserInput
+
+from fastapi import File, UploadFile, Form
+
+logger = get_logger(__name__)
+index_router = APIRouter(prefix="/v1")
+
+@index_router.post('/indexing')
+async def index(request: Request, 
+                # character_inputs: CharacterInputs, 
+                background_tasks: BackgroundTasks,
+                name: str = Form(...),
+                knowledge_file: UploadFile = File(...),
+                avatar_image: UploadFile = File(...),
+                ) -> JSONResponse:
+    
+    exception_handler = ExceptionHandler(
+        logger=logger.bind(),
+        service_name=__name__,
+    )
+    # Khoi tao
+    try:
+        index_application = IndexerApplication(
+            request=request, 
+        )
+    except Exception as e:
+        raise e
+
+    # Upload minio
+    try:
+        minio_response = await index_application.process(
+            # inputs=character_inputs
+            inputs = CharacterInputs(
+                name=name,
+                knowledge_file=knowledge_file,
+                avatar_image=avatar_image,
+            )
+        )
+    except Exception as e:
+        raise e
+    
+    # Upload mongodb
+    try:
+        mongodb_result = await index_application.upload_to_mongodb(
+            inputs=CharacterMongoDBInputs(
+                name=name,
+                avatar_url=minio_response.avatar_url
+            )
+        )
+    except Exception as e:
+        raise e    
+
+    # parse file
+    try:
+        parse_text = await index_application.parse_file(
+            inputs=ParserInput(
+                knowledge_file=knowledge_file
+            )
+        )
+    except Exception as e:
+        raise e
+    return exception_handler.handle_success(
+        # thanh cong
+        jsonable_encoder(minio_response)
+    )
+
+    
+    
