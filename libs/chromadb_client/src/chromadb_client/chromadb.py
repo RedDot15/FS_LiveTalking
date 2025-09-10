@@ -21,7 +21,7 @@ class ChromaDB(BaseService):
     
     @property
     def client(self) -> chromadb.HttpClient:
-        client = chromadb.HttpClient(
+        http_client = chromadb.HttpClient(
             host=self.chromadb_setting.host,
             port=self.chromadb_setting.port,
             settings=Settings(
@@ -30,7 +30,7 @@ class ChromaDB(BaseService):
             )
         )
         
-        return client.get_or_create_collection(
+        return http_client.get_or_create_collection(
             name=self.chromadb_setting.document_collections,
             # embedding_function=SentenceTransformerEmbeddingFunction(
             #     model_name=self.chromadb_setting.model_name
