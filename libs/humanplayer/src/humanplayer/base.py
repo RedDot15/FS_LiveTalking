@@ -10,7 +10,6 @@ from av.packet import Packet
 from base import BaseModel
 from logger import get_logger
 
-
 import asyncio
 from aiortc import MediaStreamTrack
 
@@ -60,7 +59,8 @@ class PlayerStreamTrack(MediaStreamTrack):
 
     """
     This is an asynchronous function that calculates and returns the next timestamp for a media frame. 
-    It ensures a consistent frame rate by calculating the time to wait before the next frame is due and pausing the execution if necessary.
+    It ensures a consistent frame rate by calculating the time to wait before the next frame is due and 
+    pausing the execution if necessary.
     """
     async def next_timestamp(self) -> Tuple[int, fractions.Fraction]:
         # Checks if the stream is in a 'live' state.
