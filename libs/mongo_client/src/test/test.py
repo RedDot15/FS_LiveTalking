@@ -42,10 +42,10 @@ if __name__ == "__main__":
         ################# Character #################
         char_handler = CharacterHandler(collection=db["characters"])
 
-        new_char = Character(name="AI Assistant", avatar_url="url_to_avatar")
-        print(char_handler.create_character(db, new_char))
+        # new_char = Character(_id="68bd554c45e2ada165a9b582", name="AI Assistant 2")
+        # print(char_handler.create_character(new_char))
 
-        # print(char_handler.get_character())
+        print(char_handler.get_character())
 
         # print(char_handler.get_character_by_id(character_id="68b90225e6f59bb7290ad88e"))
 
@@ -55,10 +55,10 @@ if __name__ == "__main__":
         # print(char_handler.delete_character_by_id(character_id="68b9081ea7ea1b3baf1776b1"))
 
         ################# Conversation #################
-        convo_handler = ConversationHandler(collection=db["conversations"])
+        # convo_handler = ConversationHandler(collection=db["conversations"])
 
-        new_convo = Conversation(name="General Inquiry", participants_hash="hash123", character_id="char_123", created_at=datetime.now())
-        print(convo_handler.create_conversation(new_convo))
+        # new_convo = Conversation(name="General Inquiry", participants_hash="hash123", character_id="char_123", created_at=datetime.now())
+        # print(convo_handler.create_conversation(new_convo))
 
         # print(convo_handler.get_conversation_by_participants_hash(participants_hash="hash123"))
 
@@ -69,10 +69,10 @@ if __name__ == "__main__":
         # print(convo_handler.delete_conversation_by_id(conversation_id="68b90225e6f59bb7290ad88f"))
 
         ################# QA pair #################
-        qa_handler = QAPairHandler(collection=db["qa_pairs"])
+        # qa_handler = QAPairHandler(collection=db["qa_pairs"])
 
-        new_qa = QAPair(conversation_id="convo_456", question="What's the capital of France?", answer="Paris", created_at=datetime.now(), updated_at=datetime.now(), response_time=500)
-        print(qa_handler.create_qa_pair(new_qa))
+        # new_qa = QAPair(conversation_id="convo_456", question="What's the capital of France?", answer="Paris", created_at=datetime.now(), updated_at=datetime.now(), response_time=500)
+        # print(qa_handler.create_qa_pair(new_qa))
 
         # print(qa_handler.get_qa_pair_by_conversation_id("convo_456"))
 
