@@ -3,8 +3,8 @@ from datetime import datetime
 
 @dataclass
 class Character:
+    _id: str
     name: str
-    avatar_url: str
 
 @dataclass
 class Conversation:
