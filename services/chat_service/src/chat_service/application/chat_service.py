@@ -3,7 +3,7 @@ from __future__ import annotations
 from base import BaseModel
 from base import BaseService
 
-from logger_dis import get_logger
+from logger import get_logger
 
 from chat_service.domain.answer_aggregator import AnswerAggregatorInput
 from chat_service.domain.answer_aggregator import AnswerAggregatorService

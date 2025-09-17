@@ -128,6 +128,7 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=livetalking
         - OPTIONAL_BUILD=src/livetalking/__init__.py
+        - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
   
     ports:
       - "8010:8010"
