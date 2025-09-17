@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import json
+
 import httpx
-
-from functools import lru_cache
-
-from logger_dis import get_logger
+from logger import get_logger
 
 from ..utils import get_settings
 

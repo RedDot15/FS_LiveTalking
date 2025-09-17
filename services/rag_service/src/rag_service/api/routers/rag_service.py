@@ -1,16 +1,11 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
-from fastapi import BackgroundTasks
-from fastapi import Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.encoders import jsonable_encoder
-
-from rag_service.application import RagServiceInput
-from rag_service.application import RagServiceApplication
+from fastapi.responses import JSONResponse
+from logger import get_logger
 from rag_service.api.helpers.exception_handler import ExceptionHandler
-
-from logger_dis import get_logger
+from rag_service.application import RagServiceApplication, RagServiceInput
 
 rag_router = APIRouter(prefix='/v1')
 logger = get_logger(__name__)

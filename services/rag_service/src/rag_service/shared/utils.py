@@ -4,10 +4,9 @@ import hashlib
 import html
 import re
 import time
-from functools import lru_cache
-from functools import wraps
+from functools import lru_cache, wraps
 
-from logger_dis import get_logger
+from logger import get_logger
 
 from .settings import Settings
 

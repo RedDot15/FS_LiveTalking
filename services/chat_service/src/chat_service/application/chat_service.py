@@ -1,22 +1,18 @@
 from __future__ import annotations
 
-from base import BaseModel
-from base import BaseService
+from typing import Annotated, Any
 
+from base import BaseModel, BaseService
 from logger import get_logger
+from pydantic import ConfigDict, Field
 
-from chat_service.domain.answer_aggregator import AnswerAggregatorInput
-from chat_service.domain.answer_aggregator import AnswerAggregatorService
+from chat_service.domain.answer_aggregator import (
+    AnswerAggregatorInput,
+    AnswerAggregatorService,
+)
 from chat_service.shared.tools import get_context
 
-from typing import Annotated
-from typing import Any
-
-from pydantic import ConfigDict
-from pydantic import Field
-
 logger = get_logger(__name__)
-
 class ChatServiceInput(BaseModel):
     question: str
     character_name: str
@@ -29,7 +25,6 @@ class ChatServiceOutput(BaseModel):
 class ChatServiceApplication(BaseService):
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
-
     request: Annotated[Any, Field(exclude=True)]
     settings: Annotated[Any, Field(exclude=True)]
     
@@ -39,7 +34,6 @@ class ChatServiceApplication(BaseService):
             llm=self.request.app.state.llm,
             settings=self.settings.answer_aggregator_settings
         )
-
     async def process(self, input: ChatServiceInput) -> ChatServiceOutput:
         context = await get_context(question=input.question)
         
@@ -54,5 +48,3 @@ class ChatServiceApplication(BaseService):
         )
         
         return ChatServiceOutput(answer=answer.answer)
-        
-        
