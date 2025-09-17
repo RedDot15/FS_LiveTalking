@@ -31,5 +31,7 @@ chat-service = { workspace = true }
 rag-service = { workspace = true }
 logger = { workspace = true }
 base = { workspace = true }
-realistic = { workspace = true }
 livetalking = { workspace = true }
+realistic = { workspace = true }
+text-to-speech = { workspace = true }
+indexer = { workspace = true }
