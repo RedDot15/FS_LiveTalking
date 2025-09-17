@@ -15,31 +15,30 @@
 #  limitations under the License.
 ###############################################################################
 
-import math
-import torch
-import numpy as np
+import asyncio
+import glob
 
 #from .utils import *
 import os
 import time
-import torch.nn.functional as F
+
 import cv2
-import glob
-
-from nerfasr import NerfASR
-
-import asyncio
+import numpy as np
+import torch
 from av import AudioFrame, VideoFrame
 from basereal import BaseReal
+from logger import logger
+from tqdm import tqdm
+from transformers import AutoModelForCTC, AutoProcessor, HubertModel, Wav2Vec2Processor
+
+from ernerf.nerf_triplane.network import NeRFNetwork
 
 #from imgcache import ImgCache
 from ernerf.nerf_triplane.provider import NeRFDataset_Test
 from ernerf.nerf_triplane.utils import *
-from ernerf.nerf_triplane.network import NeRFNetwork
-from transformers import AutoModelForCTC, AutoProcessor, Wav2Vec2Processor, HubertModel
+from nerfasr import NerfASR
 
-from logger_dis import logger
-from tqdm import tqdm
+
 def read_imgs(img_list):
     frames = []
     logger.info('reading images...')
@@ -325,7 +324,7 @@ class NeRFReal(BaseReal):
         self.init_customindex()
 
         if self.opt.transport=='rtmp':
-            from rtmp_streaming import StreamerConfig, Streamer
+            from rtmp_streaming import Streamer, StreamerConfig
             fps=25
             #push_url='rtmp://localhost/live/livestream' #'data/video/output_0.mp4'
             sc = StreamerConfig()
