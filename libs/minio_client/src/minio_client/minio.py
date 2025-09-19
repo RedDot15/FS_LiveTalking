@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import random
-from base import BaseModel, BaseService
 from .settings import MinioSettings
 from minio import Minio
+from base import BaseModel
+from base import BaseService
 from logger import get_logger
 from datetime import datetime, timedelta
 

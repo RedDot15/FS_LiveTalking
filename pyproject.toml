@@ -5,6 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "minio-client",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.5",
 ]
 
 [tool.uv.workspace]
@@ -35,3 +38,4 @@ livetalking = { workspace = true }
 realistic = { workspace = true }
 text-to-speech = { workspace = true }
 indexer = { workspace = true }
+minio-client = { workspace = true }
