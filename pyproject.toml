@@ -25,6 +25,7 @@ members = [
     "libs/mongo_client", 
     "services/wav2lip", 
     "services/character_service",
+    "services/identity_service",
 ]
 
 [tool.uv.sources]
