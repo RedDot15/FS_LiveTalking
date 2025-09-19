@@ -39,7 +39,7 @@ services:
     image: postgres:17.0-alpine
     container_name: postgres
     ports:
-      - 5432:5432
+      - ${POSTGRES__PORT}:5432
     networks:
       - multidimension
     volumes:
@@ -53,7 +53,7 @@ services:
     image: mongo:7.0.23
     container_name: mongodb
     ports:
-      - "27017:27017"
+      - ${MONGO__PORT}:27017
     networks:
       - multidimension
     volumes:
@@ -102,7 +102,7 @@ services:
         - OPTIONAL_BUILD=src/chat_service/__init__.py
   
     ports:
-      - "3000:3000"
+      - 3000:3000
     
     networks:
       - multidimension
@@ -131,7 +131,7 @@ services:
         - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
   
     ports:
-      - "8010:8010"
+      - 8010:8010
     
     networks:
       - multidimension
