@@ -30,3 +30,5 @@ uv.lock
 
 ./ernerf/
 test.py
+
+checkpoints/
