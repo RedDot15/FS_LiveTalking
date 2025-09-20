@@ -4,7 +4,6 @@ ARG GROUP=reunion
 ARG PACKAGE=service
 ARG APT_PACKAGE="git gcc libpq-dev"
 ARG OPTIONAL_BUILD='README.md'
-ARG FRONTEND_DIR='web'
 
 FROM ghcr.io/astral-sh/uv:${PYTHON_VERSION}-bookworm-slim AS base
 
@@ -68,6 +67,5 @@ ARG PACKAGE
 ARG FRONTEND_DIR
 
 COPY services/${PACKAGE}/ $APP_DIR/services/${PACKAGE}/
-COPY /$FRONTEND_DIR/ $APP_DIR/$FRONTEND_DIR/
 COPY /models/ $APP_DIR/models/
 COPY /data/ $APP_DIR/data/

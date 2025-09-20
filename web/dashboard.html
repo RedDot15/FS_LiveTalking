@@ -607,7 +607,7 @@
                 console.log('Sending echo message:', message);
 
                 // Send a POST request to the '/human' endpoint.
-                fetch('http://127.0.0.1:8010/v1/human', {
+                fetch('/v1/human', {
                     body: JSON.stringify({
                         text: message,
                         type: 'echo',
@@ -637,7 +637,7 @@
                 console.log('Sending chat message:', message);
 
                 // Send a POST request to the '/human' endpoint.
-                fetch('http://127.0.0.1:8010/v1/human', {
+                fetch('/v1/human', {
                     body: JSON.stringify({
                         text: message,
                         type: 'chat',
@@ -783,7 +783,7 @@
                     // If there's any text...
                     if (recognizedText) {
                         // Send the recognized text
-                        fetch('http://127.0.0.1:8010/v1/human', {
+                        fetch('/v1/human', {
                             body: JSON.stringify({
                                 text: recognizedText,
                                 type: 'chat',

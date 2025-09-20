@@ -1,21 +1,18 @@
 from __future__ import annotations
 
-from base import BaseModel
-from base import BaseService
-from logger_dis import get_logger
+from base import BaseModel, BaseService
 from fastapi.encoders import jsonable_encoder
+from llm_client import LLMService, LLMServiceInput, MessageRole
+from logger import get_logger
 
-from .prompt import ANSWER_AGGREGATOR_SYSTEM_PROMPT
-from .prompt import ANSWER_AGGREGATOR_USER_PROMPT
-from chat_service.shared.settings import AnswerAggregatorSettings
 from chat_service.shared.models import AnswerAggregatorModel
+from chat_service.shared.settings import AnswerAggregatorSettings
 
-from llm_client import LLMService
-from llm_client import LLMServiceInput
-from llm_client import MessageRole
-
+from .prompt import ANSWER_AGGREGATOR_SYSTEM_PROMPT, ANSWER_AGGREGATOR_USER_PROMPT
 
 logger = get_logger(__name__)
+
+
 
 class AnswerAggregatorInput(BaseModel):
     question: str

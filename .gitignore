@@ -25,3 +25,10 @@ dist
 env
 
 .wav
+
+uv.lock
+
+./ernerf/
+test.py
+
+checkpoints/

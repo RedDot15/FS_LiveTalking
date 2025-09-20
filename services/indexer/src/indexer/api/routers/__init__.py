@@ -3,14 +3,9 @@ from __future__ import annotations
 import io
 import json
 
-from fastapi import APIRouter
-from fastapi import Request
-from fastapi import BackgroundTasks
-
-from indexer.api.helpers.exception_handler import ExceptionHandler
-from indexer.api.helpers.exception_handler import ResponseMessage
-from logger_dis import get_logger
-
+from fastapi import APIRouter, BackgroundTasks, Request
+from indexer.api.helpers.exception_handler import ExceptionHandler, ResponseMessage
+from logger import get_logger
 
 logger = get_logger(__name__)
 index_router = APIRouter()
