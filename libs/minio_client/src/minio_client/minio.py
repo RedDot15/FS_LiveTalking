@@ -9,7 +9,13 @@ from datetime import datetime, timedelta
 
 logger = get_logger(__name__)
 
-class MinioConnection:
+class MinioInputs(BaseModel):
+    bucket_name: str
+    src_file: str
+    des_folder: str
+    des_file: str    
+
+class MinioConnection(BaseService):
 
     setting: MinioSettings
     
@@ -107,13 +113,28 @@ class MinioConnection:
                 'save in minio': des_path,
                 'url': url,
             }      
+            return url
+        
 
+    def get_object(self, bucket_name, folder_name, file_name, local_file_name):
+        filepath = f'/{folder_name}/{file_name}'
+        try:
+            self.client.fget_object(
+                bucket_name=bucket_name,
+                object_name=filepath,
+                file_path=local_file_name
+            )
+        except Exception as e:
+            logger.exception(e)
+        return 'Success'
+    
     # Xóa bucket rỗng   
     def remove_bucket(self, bucket_name):
         try:
             self.client.remove_bucket(bucket_name)
         except Exception as e:
             logger.exception(e)
+        return 'Success'
 
     # Xóa folder và tất cả các file trong folder đó
     def remove_folder(self, bucket_name, folder_name):
@@ -126,3 +147,14 @@ class MinioConnection:
     # Lấy ra bucket version. trả về off nếu không bật tính năng này
     def get_bucket_version(self, bucket_name):
         return self.client.get_bucket_versioning(bucket_name).status
+
+    # Proccess để tạo bukcet + upload file luôn 
+    def process(self, inputs: MinioInputs):
+        self.make_bucket(inputs.bucket_name)
+        self.put_object_from_local_path(
+            inputs.bucket_name,
+            inputs.src_file,
+            inputs.des_folder,
+            inputs.des_file,
+        )
+        return "Successfully process"
