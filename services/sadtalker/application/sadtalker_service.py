@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from fastapi import UploadFile
-
 from typing import Any
 
 from pydantic import ConfigDict

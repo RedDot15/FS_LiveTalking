@@ -34,3 +34,4 @@ test.py
 checkpoints/
 gfpgan/
 sadtalker_data/
+wav2lip_data/

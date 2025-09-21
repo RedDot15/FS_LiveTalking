@@ -5,9 +5,6 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "minio-client",
-    "python-dotenv>=1.1.1",
-    "requests>=2.32.5",
 ]
 
 [tool.uv.workspace]
@@ -26,7 +23,8 @@ members = [
     "libs/humanplayer",
     "libs/minio_client",
     "libs/postgresql_client",
-    "libs/mongo_client",
+    "libs/mongo_client", 
+    "services/wav2lip",
 ]
 
 [tool.uv.sources]
