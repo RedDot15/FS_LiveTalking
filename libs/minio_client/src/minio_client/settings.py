@@ -1,4 +1,4 @@
-from pydantic import BaseModel, SecretStr
+from base import BaseModel
 
 class MinioSettings(BaseModel):
     endpoint: str

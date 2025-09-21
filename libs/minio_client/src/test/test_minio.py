@@ -1,4 +1,4 @@
-from minio_client import MinioConnection, MinioSettings
+from minio_client import MinioConnection, MinioSettings, MinioInputs
 from dotenv import load_dotenv
 import os
 
@@ -17,18 +17,36 @@ minio_client = MinioConnection(setting=setting)
 source_file = "testfile.txt"
 
 # The destination bucket and filename on the MinIO server
-bucket_name = "python-test-bucket"
+bucket_name = "python-test-bucket-fix"
 destination_folder = "Manh-Test-Folder"
 destination_file = "my-test-file.txt"
+local_file_name = "test_down.txt"
 
-# Make bucket 
-minio_client.make_bucket(bucket_name)
+# # Make bucket 
+# minio_client.make_bucket(bucket_name)
 
-# Upload object from local path
-minio_client.put_object_from_local_path(bucket_name, 
-                                        source_file, 
-                                        destination_folder,
-                                        destination_file)
+# # Upload object from local path
+# url = minio_client.put_object_from_local_path(bucket_name, 
+#                                         source_file, 
+#                                         destination_folder,
+#                                         destination_file)
+# print(url)
+process_message = minio_client.process(
+    inputs=MinioInputs(
+        bucket_name=bucket_name,
+        src_file=source_file,
+        des_folder=destination_folder,
+        des_file=destination_file
+    )
+)
+print(process_message)
+
+# Get objedct
+message = minio_client.get_object(bucket_name,
+                                  destination_folder,
+                                  destination_file,
+                                  local_file_name)
+print(f'Download statsu: {message}')
 
 # List bucket
 objects = (minio_client.list_items_in_bucket(bucket_name))
