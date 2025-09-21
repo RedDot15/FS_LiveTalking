@@ -1,0 +1,33 @@
+sadtalker:
+  result_dir: './results'
+  ref_eyeblink: null
+  ref_pose: null
+  checkpoint_dir: 'shared/tools/checkpoints/'
+  config_dir: 'shared/tools/config'
+  pose_style: 0
+  batch_size: 2
+  size: 256
+  expression_scale: 1.0
+  input_yaw: null
+  input_pitch: null
+  input_roll: null
+  enhancer: null
+  preprocess: 'crop'
+  net_recon: 'resnet50'
+  init_path: null
+  use_last_fc: false
+  bfm_folder: 'shared/tools/checkpoints/BFM_Fitting/'
+  bfm_model: 'BFM_model_front.mat'
+  focal: 1015.0
+  center: 112.0
+  camera_d: 10.0
+  z_near: 5.0
+  z_far: 15.0
+  device: 'cuda'
+  face3dvis: false
+  still: false
+  background_enhancer: null
+  verbose: false
+
+minio:
+  secure: false

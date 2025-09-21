@@ -3,6 +3,7 @@ volumes:
   minio:
   postgres:
   mongodb:
+  sadtalker_data:
 
 networks:
   multidimension:
@@ -23,8 +24,8 @@ services:
     image: quay.io/minio/minio
     container_name: minio
     ports:
-      - 9000:9000
-      - 9001:9001
+      - ${MINIO__HTTP_PORT}:9000
+      - ${MINIO__GUI_PORT}:9001
     networks:
       - multidimension
     volumes:
@@ -145,11 +146,53 @@ services:
         source: ./libs/
         target: /home/reunion/app/libs/
 
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
     environment:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - LLM__MODEL_NAME=${LLM__MODEL_NAME}
       - LIPREAL__XTTS__REF_FILE=${LIPREAL__XTTS__REF_FILE}
       - LIPREAL__XTTS__TTS_SERVER=${LIPREAL__XTTS__TTS_SERVER}
+
+  sadtalker:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile.sadtalker
+
+    ports:
+      - "3636:3636"
+    
+    networks:
+      - multidimension
+    command: uvicorn main:app --host 0.0.0.0 --port 3636 --reload
+
+    volumes:
+      - type: bind
+        source: ./services/sadtalker
+        target: /home/reunion/app/services/sadtalker
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+      - ./sadtalker_data:/sadtalker/results
+
+    environment:
+      - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
+      - MINIO__ENDPOINT=${MINIO__HOST}:${MINIO__HTTP_PORT}
+      
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   frontend:
     build:

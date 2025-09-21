@@ -32,3 +32,5 @@ uv.lock
 test.py
 
 checkpoints/
+gfpgan/
+sadtalker_data/
