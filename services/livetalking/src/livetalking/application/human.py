@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 
 from livetalking.shared.models import HumanType
 
-class HumanApplicationInput(BaseModel):
+class HumanApplicationInput(CustomBaseModel):
     sessionid: int | None = None
     type: HumanType
     text: str

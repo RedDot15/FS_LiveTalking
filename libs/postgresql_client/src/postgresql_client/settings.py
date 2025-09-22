@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 
-class PostgresSettings(BaseModel):
-    username: str
+
+class PostgresSettings(CustomBaseModel):
+    user: str
     password: str
     host: str
+    port: str
     db: str
-    

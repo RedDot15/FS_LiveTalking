@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 
-from base import BaseModel
+from base import CustomBaseModel
 from base import BaseService
 
 from typing import Annotated
@@ -24,12 +24,12 @@ from logger import get_logger
 
 logger = get_logger(__name__)
 
-class OfferApplicationInput(BaseModel):
+class OfferApplicationInput(CustomBaseModel):
     sdp: str
     type: str
     character_name: str
     
-class OfferApplicationOutput(BaseModel):
+class OfferApplicationOutput(CustomBaseModel):
     sdp: str
     type: str
     sessionid: int

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 from pydantic import Field
 
 
-class AnswerAggregatorModel(BaseModel):
+class AnswerAggregatorModel(CustomBaseModel):
     answer: str = Field(
         description="The generated answer to the user's question based on the provided context.",
     )

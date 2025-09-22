@@ -6,7 +6,7 @@ from typing import Any
 import asyncio
 import re
 
-from base import BaseModel
+from base import CustomBaseModel
 from realistic import LipReal  # Giả định BaseReal được import từ đây hoặc nơi khác
 from llm_client import LLMService, LLMServiceInput
 from llm_client import Message
@@ -37,7 +37,7 @@ async def llm_response(nerfreal: LipReal, text: str):
     full_text = ""
     if isinstance(response.response, str):
         full_text = response.response
-    elif isinstance(response.response, BaseModel):
+    elif isinstance(response.response, CustomBaseModel):
         if hasattr(response.response, 'content'):
             full_text = response.response.content
         elif hasattr(response.response, 'text'):

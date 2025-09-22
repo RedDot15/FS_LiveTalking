@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from base import BaseModel
+from base import CustomBaseModel
 from fastapi import status
 from fastapi.responses import JSONResponse
 from structlog.stdlib import BoundLogger
@@ -17,7 +17,7 @@ class ResponseMessage(str, Enum):
     UNPROCESSABLE_ENTITY = 'Input is not allowed !!!'
 
 
-class ExceptionHandler(BaseModel):
+class ExceptionHandler(CustomBaseModel):
     logger: BoundLogger
     service_name: str
 

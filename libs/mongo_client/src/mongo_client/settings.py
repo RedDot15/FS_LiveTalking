@@ -1,6 +1,6 @@
-from base import BaseModel
+from base import CustomBaseModel
 
-class MongoSettings(BaseModel):
+class MongoSettings(CustomBaseModel):
     db: str
     username: str
     password: str

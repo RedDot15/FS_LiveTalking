@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -7,29 +8,22 @@ from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
 from functools import cached_property
 
-from .model import Base
-from .controller import (
-    UserController,
-    RoleController,
-    PermissionController
-)
+from base import BaseService
 
-class PostgreSQL(
-    UserController,
-    RoleController,
-    PermissionController,
-):
-    def __init__(self, user, password, host, db, port):
-        self.user = user
-        self.password = password
-        self.host = host
-        self.db = db
-        self.port = port
-        
+from .model import CustomBaseModel
+from .controller import UserController, RoleController, PermissionController
+from .settings import PostgresSettings
+
+
+class PostgreSQL(UserController, RoleController, PermissionController, BaseService):
+    postgres_settings: PostgresSettings
+
     @cached_property
     def sessionmaker(self) -> sessionmaker:
-        engine = create_engine(f'postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}')
-        Base.metadata.create_all(engine)
+        engine = create_engine(
+            f"postgresql+psycopg2://{self.postgres_settings.user}:{self.postgres_settings.password}@{self.postgres_settings.host}:{self.postgres_settings.port}/{self.postgres_settings.db}"
+        )
+        CustomBaseModel.metadata.create_all(engine)
         return sessionmaker(autoflush=False, bind=engine)
 
     @contextmanager
@@ -39,3 +33,6 @@ class PostgreSQL(
             yield session
         finally:
             session.close()
+
+    def process(self, inputs: Any) -> Any:
+        raise NotImplementedError("This method is not used in MongoDBHandler.")

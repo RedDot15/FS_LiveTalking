@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 
 from livetalking.shared.models import RecordType
 
-class AudioTypeApplicationInput(BaseModel):
+class AudioTypeApplicationInput(CustomBaseModel):
     sessionid: int | None = None
     audiotype: str | None = None
     reinit: bool | None = None
     
-class RecordApplicationInput(BaseModel):
+class RecordApplicationInput(CustomBaseModel):
     sessionid: int
     type: RecordType
     
-class IsSpeakingApplicationInput(BaseModel):
+class IsSpeakingApplicationInput(CustomBaseModel):
     sessionid: int
     

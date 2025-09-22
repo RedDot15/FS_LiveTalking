@@ -7,7 +7,7 @@ from typing import Union
 from av.frame import Frame
 from av.packet import Packet
 
-from base import BaseModel
+from base import CustomBaseModel
 from logger import get_logger
 
 import asyncio

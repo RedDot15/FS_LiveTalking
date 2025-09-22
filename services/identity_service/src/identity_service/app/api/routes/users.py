@@ -1,22 +1,18 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import col, delete, func, select
+from fastapi import APIRouter, Depends, HTTPException, Request
+from postgresql_client.model.models import UserModel
 
-from app import crud
-from app.api.deps import (
-    CurrentUser,
-    SessionDep,
-    get_current_active_superuser,
+from identity_service.app.api.deps import (
+    CurrentToken,
+    has_authority,
 )
-from app.core.config import settings
-from app.core.security import get_password_hash, verify_password
-from app.models import (
-    Item,
+from identity_service.app.core.config import settings
+from identity_service.app.core.security import get_password_hash, verify_password
+from identity_service.app.models import (
     Message,
     UpdatePassword,
-    User,
     UserCreate,
     UserPublic,
     UserRegister,
@@ -24,45 +20,56 @@ from app.models import (
     UserUpdate,
     UserUpdateMe,
 )
-from app.utils import generate_new_account_email, send_email
+from identity_service.app.utils import generate_new_account_email, send_email
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get(
     "/",
-    dependencies=[Depends(get_current_active_superuser)],
+    dependencies=[Depends(has_authority(authority="READ_USERS"))],
     response_model=UsersPublic,
 )
-def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:
+def read_users(request: Request, skip: int = 0, limit: int = 100) -> Any:
     """
     Retrieve users.
     """
-
-    count_statement = select(func.count()).select_from(User)
-    count = session.exec(count_statement).one()
-
-    statement = select(User).offset(skip).limit(limit)
-    users = session.exec(statement).all()
-
-    return UsersPublic(data=users, count=count)
+    with request.app.state.postgres.get_session() as session:
+        user_public_list = []
+        for user_model in request.app.state.postgres.get_users(
+            session=session, offset=skip, limit=limit
+        ):
+            user_public_list.append(UserPublic.model_validate(user_model))
+        return UsersPublic(data=user_public_list)
 
 
 @router.post(
-    "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
+    "/", dependencies=[Depends(has_authority(authority="CREATE_USER"))], response_model=UserPublic
 )
-def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
+def create_user(*, request: Request, user_in: UserCreate) -> Any:
     """
     Create new user.
     """
-    user = crud.get_user_by_email(session=session, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system.",
+    db_obj: UserModel = None
+    with request.app.state.postgres.get_session() as session:
+        db_obj = UserModel()
+
+        user_data = user_in.model_dump(
+            exclude_none=True,  exclude={"role_ids", "password"}
         )
 
-    user = crud.create_user(session=session, user_create=user_in)
+        for key, value in user_data.items():
+            if value is not None:
+                setattr(db_obj, key, value)
+
+        setattr(db_obj, "id", uuid.uuid4())
+        setattr(db_obj, "password", get_password_hash(user_in.password))
+
+        db_obj = request.app.state.postgres.insert_user(
+            session=session, data=db_obj, role_ids=user_in.roles_ids
+        )
+
+    # Send email
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.email, password=user_in.password
@@ -72,155 +79,177 @@ def create_user(*, session: SessionDep, user_in: UserCreate) -> Any:
             subject=email_data.subject,
             html_content=email_data.html_content,
         )
-    return user
+
+    # Convert UserModel -> UserPublic
+    user_public = UserPublic.model_validate(db_obj)
+
+    return user_public
 
 
 @router.patch("/me", response_model=UserPublic)
 def update_user_me(
-    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
+    *, request: Request, user_in: UserUpdateMe, current_token: CurrentToken
 ) -> Any:
     """
     Update own user.
     """
+    with request.app.state.postgres.get_session() as session:
+        db_obj = request.app.state.postgres.get_user_by_id(session, current_token.id)
 
-    if user_in.email:
-        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
-        if existing_user and existing_user.id != current_user.id:
-            raise HTTPException(
-                status_code=409, detail="User with this email already exists"
-            )
-    user_data = user_in.model_dump(exclude_unset=True)
-    current_user.sqlmodel_update(user_data)
-    session.add(current_user)
-    session.commit()
-    session.refresh(current_user)
-    return current_user
+        user_data = user_in.model_dump(exclude_none=True)
+
+        for key, value in user_data.items():
+            if value is not None:
+                setattr(db_obj, key, value)
+
+        return request.app.state.postgres.update_user(
+            session=session,
+            data=db_obj,
+        )
 
 
 @router.patch("/me/password", response_model=Message)
 def update_password_me(
-    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser
+    *, request: Request, body: UpdatePassword, current_token: CurrentToken
 ) -> Any:
     """
     Update own password.
     """
-    if not verify_password(body.current_password, current_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect password")
     if body.current_password == body.new_password:
         raise HTTPException(
             status_code=400, detail="New password cannot be the same as the current one"
         )
-    hashed_password = get_password_hash(body.new_password)
-    current_user.hashed_password = hashed_password
-    session.add(current_user)
-    session.commit()
+
+    with request.app.state.postgres.get_session() as session:
+        user = request.app.state.postgres.get_user_by_id(session, current_token.id)
+        if not verify_password(body.current_password, user.password):
+            raise HTTPException(status_code=400, detail="Incorrect password")
+
+        user.password = get_password_hash(body.new_password)
+        request.app.state.postgres.update_user(session=session, data=user)
+
     return Message(message="Password updated successfully")
 
 
 @router.get("/me", response_model=UserPublic)
-def read_user_me(current_user: CurrentUser) -> Any:
+def read_user_me(request: Request, current_token: CurrentToken) -> Any:
     """
     Get current user.
     """
-    return current_user
+    with request.app.state.postgres.get_session() as session:
+        return request.app.state.postgres.get_user_by_id(session, current_token.id)
 
 
 @router.delete("/me", response_model=Message)
-def delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:
+def delete_user_me(request: Request, current_token: CurrentToken) -> Any:
     """
     Delete own user.
     """
-    if current_user.is_superuser:
-        raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
-        )
-    session.delete(current_user)
-    session.commit()
+    with request.app.state.postgres.get_session() as session:
+        return request.app.state.postgres.delete_user(session, current_token.id)
+
     return Message(message="User deleted successfully")
 
 
 @router.post("/signup", response_model=UserPublic)
-def register_user(session: SessionDep, user_in: UserRegister) -> Any:
+def register_user(request: Request, user_in: UserRegister) -> Any:
     """
     Create new user without the need to be logged in.
     """
-    user = crud.get_user_by_email(session=session, email=user_in.email)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this email already exists in the system",
+
+    with request.app.state.postgres.get_session() as session:
+        db_obj = UserModel()
+
+        user_data = user_in.model_dump(
+            exclude_none=True,  exclude={"password"}
         )
-    user_create = UserCreate.model_validate(user_in)
-    user = crud.create_user(session=session, user_create=user_create)
-    return user
+
+        for key, value in user_data.items():
+            if value is not None:
+                setattr(db_obj, key, value)
+
+        setattr(db_obj, "id", uuid.uuid4())
+        setattr(db_obj, "password", get_password_hash(user_in.password))
+
+        default_role_id = request.app.state.postgres.get_role_by_name(
+            session=session, name="USER"
+        )
+
+        db_obj = request.app.state.postgres.insert_user(
+            session=session, data=db_obj, role_ids=[default_role_id]
+        )
+
+        return UserPublic.model_validate(db_obj)
 
 
 @router.get("/{user_id}", response_model=UserPublic)
 def read_user_by_id(
-    user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser
+    request: Request, user_id: uuid.UUID, current_token: CurrentToken
 ) -> Any:
     """
     Get a specific user by id.
     """
-    user = session.get(User, user_id)
-    if user == current_user:
-        return user
-    if not current_user.is_superuser:
-        raise HTTPException(
-            status_code=403,
-            detail="The user doesn't have enough privileges",
-        )
-    return user
+    with request.app.state.postgres.get_session() as session:
+        user_model = request.app.state.postgres.get_user_by_id(session, user_id)
+
+        if current_token.id == user_id:
+            return UserPublic.model_validate(user_model)
+
+        if not current_token.permission == "ADMIN":
+            raise Exception
+
+        return UserPublic.model_validate(user_model)
 
 
 @router.patch(
     "/{user_id}",
-    dependencies=[Depends(get_current_active_superuser)],
+    dependencies=[Depends(has_authority(authority="UPDATE_USER"))],
     response_model=UserPublic,
 )
 def update_user(
     *,
-    session: SessionDep,
+    request: Request,
     user_id: uuid.UUID,
     user_in: UserUpdate,
 ) -> Any:
     """
     Update a user.
     """
-
-    db_user = session.get(User, user_id)
-    if not db_user:
-        raise HTTPException(
-            status_code=404,
-            detail="The user with this id does not exist in the system",
-        )
-    if user_in.email:
-        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
-        if existing_user and existing_user.id != user_id:
+    with request.app.state.postgres.get_session() as session:
+        db_user = request.app.state.postgres.get_user_by_id(session, user_id)
+        if not db_user:
             raise HTTPException(
-                status_code=409, detail="User with this email already exists"
+                status_code=404,
+                detail="The user with this id does not exist in the system",
             )
 
-    db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
-    return db_user
+        user_data = user_in.model_dump(
+            exclude_none=True, exclude={"role_ids", "password"}
+        )
+
+        for key, value in user_data.items():
+            if value is not None:
+                setattr(db_user, key, value)
+
+        if "password" in user_data:
+            hashed_password = get_password_hash(user_data["password"])
+            db_user.password = hashed_password
+
+        db_user = request.app.state.postgres.update_user(
+            session=session, data=db_user, role_ids=user_data["role_ids"]
+        )
+
+        return UserPublic.model_validate(db_user)
 
 
-@router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
+@router.delete("/{user_id}", dependencies=[Depends(has_authority(authority="DELETE_USER"))])
 def delete_user(
-    session: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
+    request: Request, current_token: CurrentToken, user_id: uuid.UUID
 ) -> Message:
     """
     Delete a user.
     """
-    user = session.get(User, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    if user == current_user:
-        raise HTTPException(
-            status_code=403, detail="Super users are not allowed to delete themselves"
-        )
-    statement = delete(Item).where(col(Item.owner_id) == user_id)
-    session.exec(statement)  # type: ignore
-    session.delete(user)
-    session.commit()
+    with request.app.state.postgres.get_session() as session:
+        return request.app.state.postgres.delete_user(session, user_id)
+
     return Message(message="User deleted successfully")

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 
 
-class AnswerAggregatorSettings(BaseModel):
+class AnswerAggregatorSettings(CustomBaseModel):
     model: str
     context_window: int

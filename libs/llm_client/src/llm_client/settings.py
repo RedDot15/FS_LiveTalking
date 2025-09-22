@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 
-class LLMSetting(BaseModel):
+class LLMSetting(CustomBaseModel):
     openai_key: str
     model_name: str
 

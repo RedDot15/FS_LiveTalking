@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from base import BaseModel
+from base import CustomBaseModel
 
-class ChromaDBSetting(BaseModel):
+class ChromaDBSetting(CustomBaseModel):
     host: str
     port: int
     document_collections: str

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
-from base import BaseModel
+from base import CustomBaseModel
 from typing_extensions import Required
 from typing_extensions import TypedDict
 
@@ -16,7 +16,7 @@ class BaseImageUrl(TypedDict, total=False):
     url: Required[str]
 
 
-class BaseLLMMessage(BaseModel):
+class BaseLLMMessage(CustomBaseModel):
     """Base Message for LLM, all message used by LLM should inherit this model"""
 
     type: TypeMessage = TypeMessage.TEXT
@@ -34,7 +34,7 @@ class CompletionMessage(BaseLLMMessage):
     role: MessageRole
 
 
-class TokensLLM(BaseModel):
+class TokensLLM(CustomBaseModel):
     """Tokens used by LLM"""
 
     prompt_tokens: int = 0
@@ -43,4 +43,4 @@ class TokensLLM(BaseModel):
 
 
 Message = list[CompletionMessage]
-Response = str | BaseModel
+Response = str | CustomBaseModel
