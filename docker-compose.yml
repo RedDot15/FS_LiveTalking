@@ -185,6 +185,9 @@ services:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
       - MINIO__ENDPOINT=${MINIO__HOST}:${MINIO__HTTP_PORT}
+
+    depends_on:
+      - minio
       
     deploy:
       resources:
@@ -193,6 +196,43 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  wav2lip:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile
+      args:
+          - PYTHON_VERSION=python3.11
+          - PACKAGE=wav2lip
+          - OPTIONAL_BUILD=src/wav2lip/__init__.py
+          - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
+    ports:
+      - "8020:8020"
+    networks:
+      - multidimension
+    command: uv run wav2lip
+    volumes:
+      - type: bind
+        source: ./services/wav2lip
+        target: /home/reunion/app/services/wav2lip
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+      - ./wav2lip_data:/home/reunion/app/wav2lip_data
+    environment:
+      - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
+      - MINIO__ENDPOINT=${MINIO__HOST}:${MINIO__HTTP_PORT}
+    depends_on:
+      - minio
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
 
   frontend:
     build:

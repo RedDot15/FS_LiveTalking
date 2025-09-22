@@ -1,5 +1,5 @@
 [project]
-name = "livetalking"
+name = "wav2lip"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -8,27 +8,30 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "aiortc>=1.10.1",
     "asgi-correlation-id>=4.3.4",
-    "fastapi>=0.116.1",
-    "humanplayer",
-    "librosa>=0.11.0",
-    "llm-client",
+    "base",
+    "fastapi>=0.116.2",
+    "logger",
+    "minio-client",
+    "opencv-python>=4.12.0.88",
     "pydantic-settings[yaml]>=2.10.1",
     "python-dotenv>=1.1.1",
-    "realistic",
     "requests>=2.32.5",
+    "scipy>=1.15.3",
+    "structlog>=25.4.0",
+    "torch>=2.8.0",
+    "tqdm>=4.67.1",
     "uvicorn>=0.35.0",
 ]
 
 [project.scripts]
-livetalking = "livetalking:main"
+wav2lip = "wav2lip:main"
 
 [build-system]
-requires = ["uv_build>=0.8.0,<0.9"]
+requires = ["uv_build>=0.8.7,<0.9.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-realistic = { workspace = true }
-humanplayer = { workspace = true }
-llm-client = { workspace = true }
+base = { workspace = true }
+logger = { workspace = true }
+minio-client = { workspace = true }
