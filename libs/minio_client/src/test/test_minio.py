@@ -21,6 +21,7 @@ bucket_name = "python-test-bucket-fix"
 destination_folder = "Manh-Test-Folder"
 destination_file = "my-test-file.txt"
 local_file_name = "test_down.txt"
+local_folder_path = os.getcwd().replace("\\","/")
 
 # # Make bucket 
 # minio_client.make_bucket(bucket_name)
@@ -46,7 +47,7 @@ message = minio_client.get_object(bucket_name,
                                   destination_folder,
                                   destination_file,
                                   local_file_name)
-print(f'Download statsu: {message}')
+print(f'Download file to local path: {message}')
 
 # List bucket
 objects = (minio_client.list_items_in_bucket(bucket_name))
@@ -66,3 +67,10 @@ objects = (minio_client.list_items_in_bucket(bucket_name))
 print(f"After delete {destination_folder}: ")
 for obj in objects:
     print(obj.object_name)
+
+# Upload whole folder to minio
+print("*"*50)
+print(minio_client.put_folder(bucket_name, destination_folder, local_folder_path))
+# minio_client.remove_folder(bucket_name, destination_folder)
+
+print(minio_client.get_folder(bucket_name, destination_folder, "test", "."))
