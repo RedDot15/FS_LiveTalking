@@ -10,10 +10,12 @@ requires-python = ">=3.10"
 dependencies = [
     "aiortc>=1.10.1",
     "asgi-correlation-id>=4.3.4",
+    "base",
     "fastapi>=0.116.1",
     "humanplayer",
     "librosa>=0.11.0",
     "llm-client",
+    "logger",
     "pydantic-settings[yaml]>=2.10.1",
     "python-dotenv>=1.1.1",
     "realistic",
@@ -32,3 +34,5 @@ build-backend = "uv_build"
 realistic = { workspace = true }
 humanplayer = { workspace = true }
 llm-client = { workspace = true }
+base = { workspace = true }
+logger = { workspace = true }

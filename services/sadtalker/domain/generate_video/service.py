@@ -126,7 +126,8 @@ class GenerateVideoService(BaseService):
             audio_path, 
             self.settings.device, 
             ref_eyeblink_coeff_path, 
-            still=self.settings.still)
+            still=self.settings.still,
+            idlemode=self.settings.idlemode)
         coeff_path = audio_to_coeff.generate(batch, save_dir, self.settings.pose_style, ref_pose_coeff_path)
 
         #coeff2video
@@ -160,14 +161,16 @@ class GenerateVideoService(BaseService):
             img_size=self.settings.size
         )
         
+        logger.info('VIDEO GENERATION COMPLETED, SAVING AND UPLOADING TO MINIO')
+        
         shutil.move(result, save_dir + '.mp4')
         video_path = save_dir + '.mp4'
         
-        save_path = self.minio_client.put_object_from_local_path(
+        save_path = self.minio_client.put_object(
             bucket_name=input.bucket_name,
             src_file=video_path,
             des_folder_name=input.character_name,
-            des_file=os.path.basename(video_path)
+            des_file_name=os.path.basename(video_path)
         )
         
         logger.info('The generated video is saved at', extra={'video_path': video_path + '.mp4'})

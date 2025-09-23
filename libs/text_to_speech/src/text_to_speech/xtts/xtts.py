@@ -20,7 +20,8 @@ class XTTS(BaseTTS):
         super().__init__(parent=parent)
         
         self.settings = settings
-        self.speaker = self.get_speaker(self.settings.ref_file)
+        self.speaker = {}
+        # self.speaker = self.get_speaker(self.settings.ref_file)
     
     def txt_to_audio(self,msg):
         # Use XTTS to convert text to audio
@@ -32,8 +33,8 @@ class XTTS(BaseTTS):
             self.xtts(
                 text,
                 self.speaker,
-                "vi", #en args.language,  # Set the language to Chinese (zh-cn)
-                self.settings.TTS_SERVER, # The URL of the TTS server
+                "en", #en args.language,  # Set the language to Chinese (zh-cn)
+                self.settings.tts_server, # The URL of the TTS server
                 "20" #args.stream_chunk_size  # The size of each audio chunk in milliseconds
             ),
             msg
@@ -50,21 +51,32 @@ class XTTS(BaseTTS):
         # Return the JSON response, which contains the speaker's information
         # return response.json()
 
-    def get_speaker(self, ref_audio):
-        return {'speaker_wav': ref_audio}
+    # def get_speaker(self, ref_audio):
+    #     return {'speaker_wav': ref_audio}
 
     def xtts(self,text, speaker, language, server_url, stream_chunk_size) -> Iterator[bytes]:
         # Generate streaming audio from text using the XTTS service
         start = time.perf_counter()
         # Add the text, language, and chunk size to the speaker dictionary for the request payload
-        speaker["text"] = text
-        speaker["language"] = language
-        speaker["stream_chunk_size"] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
+        # speaker["text"] = text
+        # speaker["language"] = language
+        # speaker['stream'] = True
+        # speaker['character_name'] = 'kien'
+        
+        payload = {
+            "text": text,
+            "language": language,
+            "stream": True,
+            "character_name": "kien",
+        }
+        
+        # speaker["stream_chunk_size"] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
         try:
             # Send a GET request to the server's '/tts_stream' endpoint
-            res = requests.get(
-                f"{server_url}/tts_stream",
-                params=speaker,
+            res = requests.post(
+                server_url, 
+                json=payload, 
+                stream=True,
             )
 
             # Log the time it took to make the POST request
