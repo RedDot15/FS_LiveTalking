@@ -5,7 +5,9 @@ import os
 load_dotenv()
 
 setting = MinioSettings(
-    endpoint = f"{os.getenv('MINIO__HOST')}:{os.getenv('MINIO__HTTP_PORT')}",
+    # endpoint = f"{os.getenv('MINIO__HOST')}:{os.getenv('MINIO__HTTP_PORT')}",
+    host = os.getenv('MINIO__HOST'),
+    http_port = os.getenv('MINIO__HTTP_PORT'),
     access_key = os.getenv('MINIO__ACCESS_KEY'),
     secret_key = os.getenv('MINIO__SECRET_KEY'),
     secure = False,
@@ -22,6 +24,7 @@ destination_folder = "Manh-Test-Folder"
 destination_file = "my-test-file.txt"
 local_file_name = "test_down.txt"
 local_folder_path = os.getcwd().replace("\\","/")
+# local_folder_path = "/home/repo/FS_LiveTalking/libs/minio_client/src/test"
 
 # # Make bucket 
 # minio_client.make_bucket(bucket_name)
@@ -32,34 +35,34 @@ local_folder_path = os.getcwd().replace("\\","/")
 #                                         destination_folder,
 #                                         destination_file)
 # print(url)
-process_message = minio_client.process(
-    inputs=MinioInputs(
-        bucket_name=bucket_name,
-        src_file=source_file,
-        des_folder=destination_folder,
-        des_file=destination_file
-    )
-)
-print(process_message)
+# process_message = minio_client.process(
+#     inputs=MinioInputs(
+#         bucket_name=bucket_name,
+#         src_file=source_file,
+#         des_folder=destination_folder,
+#         des_file=destination_file
+#     )
+# )
+# print(process_message)
 
-# Get objedct
-message = minio_client.get_object(bucket_name,
-                                  destination_folder,
-                                  destination_file,
-                                  local_file_name)
-print(f'Download file to local path: {message}')
+# # Get objedct
+# message = minio_client.get_object(bucket_name,
+#                                   destination_folder,
+#                                   destination_file,
+#                                   local_file_name)
+# print(f'Download file to local path: {message}')
 
-# List bucket
-objects = (minio_client.list_items_in_bucket(bucket_name))
-print(f"Bucket {bucket_name} have: ")
-for obj in objects:
-    print(obj.object_name)
+# # List bucket
+# objects = (minio_client.list_items_in_bucket(bucket_name))
+# print(f"Bucket {bucket_name} have: ")
+# for obj in objects:
+#     print(obj.object_name)
 
-# Get version of a bucket
-version = minio_client.get_bucket_version(bucket_name)
-print(version)
+# # Get version of a bucket
+# version = minio_client.get_bucket_version(bucket_name)
+# print(version)
 
-# Delete folder
+# # Delete folder
 minio_client.remove_folder(bucket_name, destination_folder)
 
 # Check whether "Manh-Test-Folder" got deleted or not
@@ -70,7 +73,9 @@ for obj in objects:
 
 # Upload whole folder to minio
 print("*"*50)
-print(minio_client.put_folder(bucket_name, destination_folder, local_folder_path))
+print(minio_client.put_folder(bucket_name, destination_folder, f"{local_folder_path}"))
+print(minio_client.put_folder(bucket_name, destination_folder, f"{local_folder_path}/audios"))
 # minio_client.remove_folder(bucket_name, destination_folder)
 
-print(minio_client.get_folder(bucket_name, destination_folder, "test", "."))
+print(minio_client.get_folder(bucket_name, destination_folder, "audios", "."))
+# print(minio_client.get_folder(bucket_name, destination_folder, "videos", "."))
