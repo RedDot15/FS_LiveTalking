@@ -3,7 +3,8 @@ from __future__ import annotations
 from base import BaseModel
 
 class MinioSettings(BaseModel):
-    endpoint: str
+    host: str
+    http_port: int
     access_key: str
     secret_key: str
     secure: bool = False

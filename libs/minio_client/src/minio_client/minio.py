@@ -22,7 +22,8 @@ class MinioConnection(BaseService):
     
     @property
     def client(self) -> Minio:
-        return Minio(endpoint = self.setting.endpoint,
+        endpoint = f"{self.setting.host}:{self.setting.http_port}"
+        return Minio(endpoint = endpoint,
                     access_key = self.setting.access_key,
                     secret_key = self.setting.secret_key,
                     secure = self.setting.secure,
@@ -112,6 +113,7 @@ class MinioConnection(BaseService):
                 self.client.remove_object(bucket_name, obj.object_name)
         except Exception as e:
             logger.error(extra={e})
+            
     # Lấy ra bucket version. trả về off nếu không bật tính năng này
     def get_bucket_version(self, bucket_name: str):
         return self.client.get_bucket_versioning(bucket_name).status
@@ -134,20 +136,17 @@ class MinioConnection(BaseService):
     # local_folder_path: đường dẫn tuyệt đối tới folder muốn upload lên minio
     # Trả về: vị trí lưu trên minio dạng {bucket_name}/{des_folder_name}/{tên_folder_ở_local} ví dụ: reunion/kien/avatars
     def put_folder(self, bucket_name: str, des_folder_name: str, local_folder_path: str):
-        basename = os.path.basename(local_folder_path)
         for root, dirs, files in os.walk(local_folder_path):
             for file in files:
-                path = os.path.join(root, file)
+                path = os.path.join(root, file).replace("\\","/")
                 rel_path = os.path.relpath(path).replace("\\","/")
-                path = f"{local_folder_path}/{rel_path}"
-                des_folder_path = f'{des_folder_name}/{basename}'
                 self.put_object(
                     bucket_name,
                     path,
-                    des_folder_path,
+                    des_folder_name,
                     rel_path,
                 )
-        return f"{bucket_name}/{des_folder_path}"
+        return f"{bucket_name}/{des_folder_name}"
 
     # Download toàn bộ folder từ minio
     # Truyền vào:
