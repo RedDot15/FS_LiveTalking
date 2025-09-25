@@ -23,10 +23,11 @@ class MinioConnection(BaseService):
     @property
     def client(self) -> Minio:
         endpoint = f"{self.setting.host}:{self.setting.http_port}"
-        return Minio(endpoint = endpoint,
-                    access_key = self.setting.access_key,
-                    secret_key = self.setting.secret_key,
-                    secure = self.setting.secure,
+        return Minio(
+            endpoint = endpoint,
+            access_key = self.setting.access_key,
+            secret_key = self.setting.secret_key,
+            secure = self.setting.secure,
         )
     
     # Tạo bucket mới
@@ -138,8 +139,12 @@ class MinioConnection(BaseService):
     def put_folder(self, bucket_name: str, des_folder_name: str, local_folder_path: str):
         for root, dirs, files in os.walk(local_folder_path):
             for file in files:
-                path = os.path.join(root, file).replace("\\","/")
-                rel_path = os.path.relpath(path).replace("\\","/")
+                path = os.path.join(root, file).replace("\\", "/")
+                
+                # SỬA LẠI DÒNG NÀY
+                # Thêm `start=local_folder_path` để có đường dẫn tương đối chính xác
+                rel_path = os.path.relpath(path, start=local_folder_path).replace("\\", "/")
+                
                 self.put_object(
                     bucket_name,
                     path,

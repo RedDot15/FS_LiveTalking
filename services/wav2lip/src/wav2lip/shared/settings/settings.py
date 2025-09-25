@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     nosmooth: bool
     pads: list
     face_det_batch_size: int
+    
+    bucket_name: str
 
     minio: MinioSettings
 

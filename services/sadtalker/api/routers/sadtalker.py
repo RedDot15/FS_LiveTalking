@@ -40,7 +40,6 @@ def sadtalker(request: Request, sadtalker_input: SadTalkerServiceInput) -> JSONR
     try:
         response = sadtalker_service.process(
             input=SadTalkerServiceInput(
-                bucket_name=sadtalker_input.bucket_name,
                 character_name=sadtalker_input.character_name,
                 image_url=sadtalker_input.image_url,
                 audio_url=sadtalker_input.audio_url

@@ -11,16 +11,19 @@ from pydantic_settings import YamlConfigSettingsSource
 
 from llm_client import LLMSetting
 from realistic import LipRealSettings
+from minio_client import MinioSettings
 
 load_dotenv(find_dotenv('.env'), override=True)
 
 class Settings(BaseSettings):
     
     model: str
-    avatar_id: str
     max_session: int
     
+    bucket_name: str
+    
     llm: LLMSetting
+    minio: MinioSettings
     lipreal: LipRealSettings
     
     class Config:

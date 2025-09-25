@@ -69,7 +69,10 @@ class MinioConnection(BaseService):
     # des_folder_name: tên folder (thư mục chứa character) muốn tạo trong Minio
     # des_file_name: tên object (file) muốn lưu trong Minio
     def put_object(self, bucket_name: str, src_file: str, des_folder_name: str, des_file_name: str) -> str:
-        des_path = f'/{des_folder_name}/{des_file_name}'
+        # BỎ DẤU "/" Ở ĐẦU CHUỖI NÀY
+        des_path = f'{des_folder_name}/{des_file_name}'
+        
+        # Hàm check_file_name_exists của bạn cũng cần xử lý đường dẫn không có dấu "/" ở đầu
         if not self.check_file_name_exists(bucket_name=bucket_name,
                                         file_name=des_path):
             
@@ -77,7 +80,8 @@ class MinioConnection(BaseService):
                                     file_path=src_file,
                                     object_name=des_path)
                 
-            return f'{bucket_name}/{des_path}'
+        # Trả về đường dẫn đúng
+        return f'{bucket_name}/{des_path}'
         
     # Truyền vào:
     # bucket_name: tên bucket
