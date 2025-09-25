@@ -25,9 +25,10 @@ sadtalker:
   z_far: 15.0
   device: 'cuda'
   face3dvis: false
-  still: false
+  still: true
   background_enhancer: null
   verbose: false
+  idlemode: false
 
 minio:
   secure: false

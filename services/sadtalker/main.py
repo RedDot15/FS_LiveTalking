@@ -10,7 +10,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routers import sadtalker_router
 from shared.utils import get_settings
 from infra.minio_client import MinioConnection
-from infra.minio_client import MinioSettings
 
 settings = get_settings()
 

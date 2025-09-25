@@ -4,6 +4,7 @@ volumes:
   postgres:
   mongodb:
   sadtalker_data:
+  voice_clone_data:
 
 networks:
   multidimension:
@@ -184,7 +185,8 @@ services:
     environment:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
-      - MINIO__ENDPOINT=${MINIO__HOST}:${MINIO__HTTP_PORT}
+      - MINIO__HOST=${MINIO__HOST}
+      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
 
     depends_on:
       - minio
@@ -222,7 +224,8 @@ services:
     environment:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
-      - MINIO__ENDPOINT=${MINIO__HOST}:${MINIO__HTTP_PORT}
+      - MINIO__HOST=${MINIO__HOST}
+      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
     depends_on:
       - minio
     deploy:
@@ -233,11 +236,64 @@ services:
               count: all
               capabilities: [gpu]
     
+  voice_clone:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile.voice_clone
+
+    ports:
+      - "8002:8002"
+    
+    networks:
+      - multidimension
+    command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
+    volumes:
+      - type: bind
+        source: ./services/voice_clone
+        target: /home/reunion/app/services/voice_clone
+      - ./voice_clone_data:/voice_clone/results
+
+    environment:
+      - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
+      - MINIO__HOST=${MINIO__HOST}
+      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
+
+    depends_on:
+      - minio
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  xtts_api_server:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile.xtts
+    ports:
+      - "8002:8002"
+    networks:
+      - multidimension
+    command: uvicorn server:app --host 0.0.0.0 --port 8002 --reload
 
   frontend:
     build:
       context: .
       dockerfile: dockers/Dockerfile.frontend
+
+    volumes:
+      - type: bind
+        source: ./web
+        target: /usr/share/nginx/html
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+    networks:
+      - multidimension
 
     container_name: frontend
     ports:

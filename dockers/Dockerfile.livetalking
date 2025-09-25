@@ -68,4 +68,4 @@ ARG FRONTEND_DIR
 
 COPY services/${PACKAGE}/ $APP_DIR/services/${PACKAGE}/
 COPY /models/ $APP_DIR/models/
-COPY /data/ $APP_DIR/data/
+COPY /wav2lip_data $APP_DIR/wav2lip_data

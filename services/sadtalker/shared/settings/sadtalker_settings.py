@@ -33,3 +33,4 @@ class SadTalkerSettings(BaseModel):
     still: bool = False
     background_enhancer: Optional[str] = None
     verbose: bool = False
+    idlemode: bool = False

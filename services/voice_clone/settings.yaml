@@ -1,0 +1,15 @@
+bucket_name: 'reunion'
+prefix: 'audios'
+local_folder_path: 'audios'
+speaker_folder: 'infra/xtts/speakers'
+model_folder: 'infra/xtts/models'
+model_source: 'local'
+model_version: 'v2.0.2'
+device: 'cuda'
+deepspeed: false
+lowvram: false
+enable_cache_results: false
+output_folder: 'results'
+
+minio:
+  secure: false

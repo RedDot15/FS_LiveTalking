@@ -23,6 +23,9 @@ from shared.tools.features.face_enhancer import enhancer_generator_with_len, enh
 from shared.tools.features.paste_pic import paste_pic
 from shared.tools.features.videoio import save_video_with_watermark 
 
+from shared.logger import get_logger
+logger = get_logger(__name__)
+
 try:
     import webui  # in webui
     in_webui = True
@@ -246,7 +249,7 @@ class AnimateFromCoeff():
                 imageio.mimsave(enhanced_path, enhanced_images_gen_with_len, fps=float(25))
             
             save_video_with_watermark(enhanced_path, new_audio_path, av_path_enhancer, watermark= False)
-            print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
+            logger.info(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
             os.remove(enhanced_path)
 
         os.remove(path)

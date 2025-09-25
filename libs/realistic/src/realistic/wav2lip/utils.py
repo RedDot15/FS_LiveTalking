@@ -53,7 +53,7 @@ def load_model(path):
 # Loads avatar assets including full images, face images, and facial coordinates.
 def load_avatar(avatar_id):
     # Constructs the avatar directory path.
-    avatar_path = f"./data/avatars/{avatar_id}"
+    avatar_path = f"./wav2lip_data/avatars/{avatar_id}"
     # Constructs the path for full images.
     full_imgs_path = f"{avatar_path}/full_imgs" 
     # Constructs the path for face images.

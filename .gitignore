@@ -35,3 +35,6 @@ checkpoints/
 gfpgan/
 sadtalker_data/
 wav2lip_data/
+voice_clone_data/
+
+services/voice_clone/infra/xtts/models/
