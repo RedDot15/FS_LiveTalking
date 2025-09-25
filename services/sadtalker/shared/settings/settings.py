@@ -16,6 +16,8 @@ load_dotenv(find_dotenv('.env'), override=True)
 
 class Settings(BaseSettings):
 
+    bucket_name: str
+    
     minio: MinioSettings
     sadtalker: SadTalkerSettings
     

@@ -26,7 +26,6 @@ logger = get_logger(__name__)
 
 class Wav2lipApplicationInput(BaseModel):
     
-    bucket_name: str
     character_name: str
     video_url: str
     
@@ -60,7 +59,7 @@ class Wav2lipApplication(BaseService):
         
         video_path = self.download_video_from_minio(
             character_name=input.character_name,
-            bucket_name=input.bucket_name,
+            bucket_name=self.settings.bucket_name,
             video_url=input.video_url
         )
         
@@ -69,46 +68,90 @@ class Wav2lipApplication(BaseService):
         full_imgs_path = avatar_path / "full_imgs"
         face_imgs_path = avatar_path / "face_imgs"
         coords_path = avatar_path / "coords.pkl"
+        
+        try:
 
-        self.osmakedirs_service.process(
-            input=OsMakedirsInput(
-                path_list=[
-                    avatar_path, 
-                    full_imgs_path, 
-                    face_imgs_path
-                ]
+            self.osmakedirs_service.process(
+                input=OsMakedirsInput(
+                    path_list=[
+                        avatar_path, 
+                        full_imgs_path, 
+                        face_imgs_path
+                    ]
+                )
             )
-        )
+        except Exception as e:
+            logger.error("Error creating directories", extra={e})
+            raise e
         
-        process_video_results = self.process_video_service.process(
-            input=ProcessVideoInput(
-                video_path=video_path,
-                save_path=str(full_imgs_path),
-                ext='.png',
-                cut_frame=10000000
-            )
-        )
+        try:
         
-        face_det_results = self.face_detection_service.process(
-            input=FaceDetectionInput(
-                images=process_video_results.frames,
-                batch_size=self.settings.face_det_batch_size,
-                pads=self.settings.pads,
-                nosmooth=self.settings.nosmooth,
+            process_video_results = self.process_video_service.process(
+                input=ProcessVideoInput(
+                    video_path=video_path,
+                    save_path=str(full_imgs_path),
+                    ext='.png',
+                    cut_frame=10000000
+                )
             )
-        )
+        except Exception as e:
+            logger.error("Error processing video", extra={e})
+            raise e
+        
+        try:
+        
+            face_det_results = self.face_detection_service.process(
+                input=FaceDetectionInput(
+                    images=process_video_results.frames,
+                    batch_size=self.settings.face_det_batch_size,
+                    pads=self.settings.pads,
+                    nosmooth=self.settings.nosmooth,
+                )
+            )
+        except Exception as e:  
+            logger.error("Error in face detection", extra={e})
+            raise e
+        
+        try:
 
-        self.save_coords_service.process(
-            input=SaveCoordsInput(
-                img_size=self.settings.img_size,
-                coords_path=str(coords_path),
-                face_det_results=face_det_results,
-                face_imgs_path=str(face_imgs_path)
+            self.save_coords_service.process(
+                input=SaveCoordsInput(
+                    img_size=self.settings.img_size,
+                    coords_path=str(coords_path),
+                    face_det_results=face_det_results,
+                    face_imgs_path=str(face_imgs_path)
+                )
             )
-        )
+        except Exception as e:
+            logger.error("Error saving coordinates", extra={e})
+            raise e
         
+        if self.request.app.state.minio_client.check_file_name_exists(
+            bucket_name=self.settings.bucket_name,
+            file_name=f'{input.character_name}/avatars/coords.pkl'
+        ):
+            
+            logger.info('REMOVING OLD AVATAR DATA FROM MINIO')
+            
+            self.request.app.state.minio_client.remove_folder(
+                bucket_name=self.settings.bucket_name,
+                folder_name=f'{input.character_name}/avatars'
+            )
+        
+        try:
+        
+            avatars_path = self.request.app.state.minio_client.put_folder(
+                bucket_name=self.settings.bucket_name,
+                des_folder_name=input.character_name + '/avatars',
+                local_folder_path=avatar_path
+            )
+            
+        except Exception as e:
+            logger.error("Error uploading avatars to MinIO", extra={e})
+            raise e
+
         return Wav2lipApplicationOutput(
-            wav2lip_result_path="Not implemented yet"
+            wav2lip_result_path=avatars_path
         )
         
     def download_video_from_minio(self, character_name: str, bucket_name: str, video_url: str, suffix: str = ".mp4") -> None:

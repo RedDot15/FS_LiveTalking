@@ -146,6 +146,7 @@ services:
       - type: bind
         source: ./libs/
         target: /home/reunion/app/libs/
+      - ./data:/home/reunion/app/data
 
     deploy:
       resources:
@@ -160,6 +161,10 @@ services:
       - LLM__MODEL_NAME=${LLM__MODEL_NAME}
       - LIPREAL__XTTS__REF_FILE=${LIPREAL__XTTS__REF_FILE}
       - LIPREAL__XTTS__TTS_SERVER=${LIPREAL__XTTS__TTS_SERVER}
+      - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
+      - MINIO__HOST=${MINIO__HOST}
+      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
 
   sadtalker:
     build:
@@ -270,15 +275,6 @@ services:
               count: all
               capabilities: [gpu]
 
-  xtts_api_server:
-    build:
-      context: .
-      dockerfile: dockers/Dockerfile.xtts
-    ports:
-      - "8002:8002"
-    networks:
-      - multidimension
-    command: uvicorn server:app --host 0.0.0.0 --port 8002 --reload
 
   frontend:
     build:

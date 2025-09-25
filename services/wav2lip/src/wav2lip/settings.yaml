@@ -5,3 +5,5 @@ img_size: 256
 nosmooth: false
 pads: [0, 10, 0, 0]
 face_det_batch_size: 16
+
+bucket_name: 'reunion'

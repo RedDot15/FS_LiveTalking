@@ -16,6 +16,7 @@ dependencies = [
     "librosa>=0.11.0",
     "llm-client",
     "logger",
+    "minio-client",
     "pydantic-settings[yaml]>=2.10.1",
     "python-dotenv>=1.1.1",
     "realistic",
@@ -36,3 +37,4 @@ humanplayer = { workspace = true }
 llm-client = { workspace = true }
 base = { workspace = true }
 logger = { workspace = true }
+minio-client = { workspace = true }

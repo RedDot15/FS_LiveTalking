@@ -68,7 +68,7 @@ async def offer(request: Request, offer_input: OfferApplicationInput) -> JSONRes
             input=OfferApplicationInput(
                 sdp=offer_input.sdp,
                 type=offer_input.type,
-                avatar_id=offer_input.avatar_id
+                character_name=offer_input.character_name
             )
         )
         
@@ -76,7 +76,7 @@ async def offer(request: Request, offer_input: OfferApplicationInput) -> JSONRes
         return exception_handler.handle_exception(
             e=str(e), 
             extra={
-                'avatar_id': offer_input.avatar_id
+                'character_name': offer_input.character_name
             }
         )
 

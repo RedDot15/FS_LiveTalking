@@ -11,9 +11,10 @@ from realistic import load_model
 from logger import get_logger
 from logger import setup_logging
 
+from minio_client import MinioConnection
+
 from livetalking.api.helpers import LoggingMiddleware
 from livetalking.shared.utils import get_settings
-
 from livetalking.api.routers import livetalking_router
 
 settings = get_settings()
@@ -25,8 +26,12 @@ logger = get_logger('api')
 async def lifespan(app: FastAPI):
     
     app.state.settings = settings
+    app.state.minio_client = MinioConnection(
+        setting=settings.minio
+    )
     app.state.nerfreals = {}
     app.state.model = load_model(path=settings.model)
+    
     app.state.pcs = set()
     
     yield

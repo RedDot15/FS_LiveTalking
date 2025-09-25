@@ -41,7 +41,6 @@ async def query(request: Request, wav2lip_input: Wav2lipApplicationInput) -> JSO
     try:
         response = wav2lip_service.process(
             input=Wav2lipApplicationInput(
-                bucket_name=wav2lip_input.bucket_name,
                 video_url=wav2lip_input.video_url,
                 character_name=wav2lip_input.character_name,
             )

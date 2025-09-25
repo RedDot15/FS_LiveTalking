@@ -12,6 +12,7 @@ import time
 import queue
 
 from .models import Wav2Lip
+
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -51,16 +52,8 @@ def load_model(path):
 	return model.eval()
 
 # Loads avatar assets including full images, face images, and facial coordinates.
-def load_avatar(avatar_id):
-    # Constructs the avatar directory path.
-    avatar_path = f"./wav2lip_data/avatars/{avatar_id}"
-    # Constructs the path for full images.
-    full_imgs_path = f"{avatar_path}/full_imgs" 
-    # Constructs the path for face images.
-    face_imgs_path = f"{avatar_path}/face_imgs" 
-    # Constructs the path for coordinates file.
-    coords_path = f"{avatar_path}/coords.pkl"
-    
+def load_avatar(full_imgs_path, face_imgs_path, coords_path):
+
     # Loads facial coordinates from a pickle file.
     with open(coords_path, 'rb') as f:
         coord_list_cycle = pickle.load(f)

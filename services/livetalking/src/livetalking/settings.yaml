@@ -1,7 +1,6 @@
-model: 'models/wav2lip.pth'
-avatar_id: 'wav2lip256_avatar1'
-
-max_session: 5
+model: 'services/livetalking/src/livetalking/shared/models/wav2lip.pth'
+bucket_name: 'reunion'
+max_session: 10
 
 lipreal:
   W: 450

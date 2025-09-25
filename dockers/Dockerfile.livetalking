@@ -64,8 +64,5 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM builder AS final
 
 ARG PACKAGE
-ARG FRONTEND_DIR
-
+COPY data $APP_DIR/data
 COPY services/${PACKAGE}/ $APP_DIR/services/${PACKAGE}/
-COPY /models/ $APP_DIR/models/
-COPY /wav2lip_data $APP_DIR/wav2lip_data

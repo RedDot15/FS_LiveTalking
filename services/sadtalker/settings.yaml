@@ -1,3 +1,5 @@
+bucket_name: 'reunion'
+
 sadtalker:
   result_dir: './results'
   ref_eyeblink: null

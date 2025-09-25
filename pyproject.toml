@@ -4,9 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "python-dotenv>=1.1.1",
-]
+dependencies = []
 
 [tool.uv.workspace]
 members = [
@@ -37,4 +35,3 @@ livetalking = { workspace = true }
 realistic = { workspace = true }
 text-to-speech = { workspace = true }
 indexer = { workspace = true }
-minio-client = { workspace = true }

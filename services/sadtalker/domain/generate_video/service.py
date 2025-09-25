@@ -22,7 +22,6 @@ from infra.minio_client import MinioConnection
 logger = get_logger(__name__)
 
 class GenerateVideoInput(BaseModel):
-    bucket_name: str
     character_name: str
     image_url: str
     audio_url: str
@@ -62,7 +61,7 @@ class GenerateVideoService(BaseService):
         logger.info("3DMM Extraction for source image")
 
         image_path, audio_path = self.get_url_minio(
-            bucket_name=input.bucket_name,
+            bucket_name=self.settings.bucket_name,
             character_name=input.character_name,
             image_url=input.image_url,
             audio_url=input.audio_url
@@ -165,12 +164,14 @@ class GenerateVideoService(BaseService):
         
         shutil.move(result, save_dir + '.mp4')
         video_path = save_dir + '.mp4'
+        video_filename = os.path.basename(video_path)
+        
         
         save_path = self.minio_client.put_object(
-            bucket_name=input.bucket_name,
+            bucket_name=self.settings.bucket_name,
             src_file=video_path,
-            des_folder_name=input.character_name,
-            des_file_name=os.path.basename(video_path)
+            des_folder_name=f'{input.character_name}/videos', 
+            des_file_name=video_filename
         )
         
         logger.info('The generated video is saved at', extra={'video_path': video_path + '.mp4'})
@@ -178,9 +179,12 @@ class GenerateVideoService(BaseService):
         if not self.settings.verbose:
             shutil.rmtree(save_dir)
             
+        save_path = "/".join(save_path.split("/")[2:])
+            
         return GenerateVideoOutput(save_path=save_path)
 
     def get_url_minio(self, bucket_name: str, character_name: str, image_url: str, audio_url: str) -> list[str]:
+        
         logger.info(
             'STARTING TO GENERATE PRESIGNED URLS FROM MINIO',
             extra={'bucket_name': bucket_name, 'image_url': image_url, 'audio_url': audio_url}
