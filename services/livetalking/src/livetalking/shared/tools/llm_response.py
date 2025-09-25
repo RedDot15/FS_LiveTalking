@@ -47,7 +47,6 @@ async def llm_response(nerfreal: LipReal, text: str):
         logger.warning("LLM did not return any text content to process.")
         return
 
-    # 3. Tách thành câu và gửi đi với khoảng nghỉ
     sentences = re.split(r'(?<=[,.!?;:，。！？：；])\s*', full_text)
     sentences = [s.strip() for s in sentences if s and s.strip()]
 
@@ -60,7 +59,6 @@ async def llm_response(nerfreal: LipReal, text: str):
             logger.info(f"Sending sentence {i+1}/{len(sentences)}: '{sentence}'")
             nerfreal.put_msg_txt(sentence)
 
-            # Sử dụng 'await' với asyncio.sleep trong một hàm async
             await asyncio.sleep(0.2)
 
     logger.info("All sentences sent to nerfreal successfully.")

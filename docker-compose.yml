@@ -30,7 +30,7 @@ services:
     networks:
       - multidimension
     volumes:
-      - minio:/minio
+      - ./minio:/data
     environment:
       - MINIO_ROOT_USER=${MINIO__ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO__SECRET_KEY}
@@ -274,7 +274,6 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-
 
   frontend:
     build:

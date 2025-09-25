@@ -32,6 +32,7 @@ class SadTalkerService(BaseService):
     @property
     def genetate_video_service(self) -> GenerateVideoService:
         return GenerateVideoService(
+            bucket_name=self.settings.bucket_name,
             settings=self.settings.sadtalker,
             minio_client=self.request.app.state.minio_client
         )

@@ -33,10 +33,11 @@ async def human(request: Request, human_input: HumanApplicationInput) -> JSONRes
 
     # response based on type
     if human_input.type == HumanType.ECHO:
-        logger.warning('im here')
+        logger.info('ECHO message received, sending back the same text.')
         request.app.state.nerfreals[sessionid].put_msg_txt(human_input.text)
         
     elif human_input.type == HumanType.CHAT:
+        logger.info('CHAT message received, processing with LLM.')
         await llm_response(nerfreal=request.app.state.nerfreals[sessionid], text=human_input.text)
 
     return JSONResponse(
