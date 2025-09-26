@@ -31,6 +31,7 @@ class GenerateVideoOutput(BaseModel):
 
 class GenerateVideoService(BaseService):
 
+    bucket_name: str
     settings: SadTalkerSettings
     minio_client: MinioConnection
 
@@ -61,7 +62,7 @@ class GenerateVideoService(BaseService):
         logger.info("3DMM Extraction for source image")
 
         image_path, audio_path = self.get_url_minio(
-            bucket_name=self.settings.bucket_name,
+            bucket_name=self.bucket_name,
             character_name=input.character_name,
             image_url=input.image_url,
             audio_url=input.audio_url
@@ -168,7 +169,7 @@ class GenerateVideoService(BaseService):
         
         
         save_path = self.minio_client.put_object(
-            bucket_name=self.settings.bucket_name,
+            bucket_name=self.bucket_name,
             src_file=video_path,
             des_folder_name=f'{input.character_name}/videos', 
             des_file_name=video_filename
