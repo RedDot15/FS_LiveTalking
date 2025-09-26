@@ -42,43 +42,7 @@ async def index(request: Request,
     except Exception as e:
         raise e
 
-    # Upload minio
-    try:
-        minio_response = await index_application.process(
-            # inputs=character_inputs
-            inputs = CharacterInputs(
-                name=name,
-                knowledge_file=knowledge_file,
-                avatar_image=avatar_image,
-            )
-        )
-    except Exception as e:
-        raise e
-    
-    # Upload mongodb
-    try:
-        mongodb_result = await index_application.upload_to_mongodb(
-            inputs=CharacterMongoDBInputs(
-                name=name,
-                avatar_url=minio_response.avatar_url
-            )
-        )
-    except Exception as e:
-        raise e    
-
-    # parse file
-    try:
-        parse_text = await index_application.parse_file(
-            inputs=ParserInput(
-                knowledge_file=knowledge_file
-            )
-        )
-    except Exception as e:
-        raise e
     return exception_handler.handle_success(
         # thanh cong
-        jsonable_encoder(minio_response)
+        jsonable_encoder(index_application)
     )
-
-    
-    

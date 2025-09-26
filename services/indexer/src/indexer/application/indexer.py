@@ -12,6 +12,8 @@ from indexer.domain.gen_uuid import GenUUIDService, CharacterIdInputs, Character
 from indexer.domain.upload_mongodb import CharacterUploadMongoDBService, CharacterMongoDBInputs, CharacterMongoDBOutputs
 from indexer.domain.parser import ParserService, ParserInput, ParserOutput
 
+class IndexerApplicationOutput(BaseModel):
+    json_response: str
 
 class IndexerApplication(BaseService):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -38,19 +40,6 @@ class IndexerApplication(BaseService):
     def parse_file_init(self) -> ParserService:
         return ParserService()
 
-    # nghich luon
-    async def process(self, inputs: CharacterInputs) -> CharacterOutputs:
-        minio_response = await self.upload_minio_init.process(
-            character_inputs = CharacterInputs(
-                name = inputs.name,
-                knowledge_file = inputs.knowledge_file,
-                avatar_image = inputs.avatar_image,
-            )
-        )
-        return CharacterOutputs(
-            avatar_url = minio_response.avatar_url,
-            knowledge_url = minio_response.knowledge_url,
-        )
     async def gen_uuid(self, inputs: CharacterIdInputs) -> CharacterIdOutputs:
         character_id = await self.gen_uuid_init.process(
             character_id=CharacterIdInputs(
@@ -72,4 +61,34 @@ class IndexerApplication(BaseService):
         md_text = await self.parse_file_init.process(
             inputs=inputs
         )
-        return ParserOutput(parsed_text=md_text)        
+        return ParserOutput(parsed_text=md_text) 
+    
+    # nghich luon
+    async def process(self, inputs: CharacterInputs) -> CharacterOutputs:
+        minio_response = await self.upload_minio_init.process(
+            character_inputs = CharacterInputs(
+                name = inputs.name,
+                knowledge_file = inputs.knowledge_file,
+                avatar_image = inputs.avatar_image,
+            )
+        )
+
+        character_id = await self.gen_uuid_init.process(
+            inputs=CharacterIdInputs(
+                name=inputs.name
+            )
+        )
+        mongo_upload_data = CharacterMongoDBInputs(
+            name = inputs.name,
+            avatar_url=minio_response.avatar_url
+        )
+
+        markdown_text = await self.parse_file(
+            inputs=ParserInput(
+                knowledge_file=inputs.knowledge_file
+            )
+        )
+        return IndexerApplicationOutput(
+            json_response="Succeed"
+        )
+           
