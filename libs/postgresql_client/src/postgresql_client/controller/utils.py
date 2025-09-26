@@ -60,15 +60,14 @@ def _get_data_by_id(
 
 
 def _insert(
-    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, data: CustomBaseModel
+    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, db_obj: CustomBaseModel
 ) -> CustomBaseModel:
     try:
-        obj = data
-        session.add(obj)
+        session.add(db_obj)
         session.commit()
-        session.refresh(obj)
+        session.refresh(db_obj)
 
-        return obj
+        return db_obj
 
     except Exception as e:
         logger.exception(f"Error inserting {model_cls}: {e}", channel=data)
@@ -76,26 +75,15 @@ def _insert(
 
 
 def _update(
-    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, data: CustomBaseModel
+    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, db_obj: CustomBaseModel
 ) -> CustomBaseModel:
     try:
-        obj = session.get(model_cls, data.id)
-        if obj:
-            for key, value in data.model_dump(exclude_none=True).items():
-                if value is not None:
-                    setattr(obj, key, value)
+        session.commit()
+        session.refresh(db_obj)
 
-            session.commit()
-            session.refresh(obj)
-
-            return obj
-
-        else:
-            logger.info(f"No {model_cls} found with id: {data.id}")
-            return None
-
+        return db_obj
     except Exception as e:
-        logger.exception(f"Error updating {model_cls}: {e}", channel=data)
+        logger.exception(f"Error updating {model_cls}: {e}", channel=db_obj)
         raise e
 
 
@@ -103,12 +91,12 @@ def _delete(
     logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, id: str
 ) -> CustomBaseModel:
     try:
-        obj = session.get(model_cls, id)
-        if obj:
-            session.delete(obj)
+        db_obj = session.get(model_cls, id)
+        if db_obj:
+            session.delete(db_obj)
             session.commit()
 
-            return obj
+            return db_obj
         else:
             logger.info(f"No {model_cls} found with id: {id}")
             return None

@@ -106,70 +106,62 @@ class UserController(ABC):
             raise e
 
     def insert_user(
-        self, session: Session, data: UserModel, role_ids: list[str]
+        self, session: Session, db_obj: UserModel, role_ids: list[str]
     ) -> UserModel:
         try:
-            user_obj = data
-            session.add(user_obj)
+            session.add(db_obj)
             session.flush()
 
             new_roles = [
-                UserRoleModel(user_id=user_obj.id, role_id=UUID(role_id))
+                UserRoleModel(user_id=db_obj.id, role_id=UUID(role_id))
                 for role_id in role_ids
             ]
-            user_obj.user_roles = new_roles
+            db_obj.user_roles = new_roles
 
             session.commit()
-            session.refresh(user_obj)
+            session.refresh(db_obj)
 
-            return self.get_user_by_id(session, str(user_obj.id))
+            return db_obj
 
         except Exception as e:
             session.rollback()
-            logger.exception(f"Error inserting user: {e}", data=data, role_ids=role_ids)
+            logger.exception(f"Error inserting user: {e}", data=db_obj, role_ids=role_ids)
             raise e
 
     def update_user(
-        self, session: Session, data: UserModel, role_ids: list[str] | None = None
+        self, session: Session, db_obj: UserModel, role_ids: list[str] | None = None
     ) -> UserModel:
         try:
-            user_obj = session.get(UserModel, data.id)
-            if not user_obj:
-                logger.info(f"No User found with id: {data.id}")
+            if not db_obj:
+                logger.info(f"No User found with id: {db_obj.id}")
                 return None
 
-            for key, value in data.model_dump(
-                exclude_none=True, exclude={"id", "roles"}
-            ).items():
-                if value is not None:
-                    setattr(user_obj, key, value)
-
             if role_ids:
-                user_obj.user_roles.clear()
+                db_obj.user_roles.clear()
 
                 new_roles = [
-                    UserRoleModel(user_id=UUID(data.id), role_id=UUID(role_id))
+                    UserRoleModel(user_id=UUID(db_obj.id), role_id=UUID(role_id))
                     for role_id in role_ids
                 ]
-                user_obj.user_roles = new_roles
+                db_obj.user_roles = new_roles
 
             session.commit()
-            session.refresh(user_obj)
+            session.refresh(db_obj)
 
-            return self.get_user_by_id(session, str(user_obj.id))
+            return self.get_user_by_id(session, str(db_obj.id))
 
         except Exception as e:
             session.rollback()
-            logger.exception(f"Error updating user: {e}", data=data)
+            logger.exception(f"Error updating user: {e}", data=db_obj)
             raise e
 
     def delete_user(self, session: Session, id: str) -> UserModel | None:
         try:
-            user_obj = session.get(UserModel, id)
-            if user_obj:
-                session.delete(user_obj)
+            db_obj = session.get(UserModel, id)
+            if db_obj:
+                session.delete(db_obj)
                 session.commit()
-                return user_obj
+                return db_obj
             else:
                 logger.info(f"No User found with id: {id}")
                 return None

@@ -7,12 +7,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from identity_service.app.api.deps import (
     CurrentToken,
-    has_authority,
+    has_authority
 )
 from identity_service.app.core import security
 from identity_service.app.core.config import settings
 from identity_service.app.core.security import get_password_hash, verify_password
-from identity_service.app.models import Message, NewPassword, Token, UserPublic
+from identity_service.app.models import Message, NewPassword, Token, UserPublic, TokenPayload
 from identity_service.app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -21,7 +21,6 @@ from identity_service.app.utils import (
 )
 
 router = APIRouter(tags=["login"])
-
 
 @router.post("/login/access-token")
 def login_access_token(
@@ -35,7 +34,7 @@ def login_access_token(
             session=session,
             username=form_data.username,
         )
-        if not db_user or verify_password(form_data.password, db_user.password):
+        if not db_user or not verify_password(form_data.password, db_user.password):
             raise HTTPException(status_code=400, detail="Incorrect username or password")
 
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -45,14 +44,13 @@ def login_access_token(
             )
         )
 
-
-@router.post("/login/test-token", response_model=UserPublic)
-def test_token(current_token: CurrentToken) -> Any:
+@router.post("/login/test-token", response_model=TokenPayload)
+def test_token(token: Token) -> Any:
     """
     Test access token
     """
-    return current_token
-
+    print("Token received for testing:", token)  
+    return TokenPayload(**security.verify_token(token=token.access_token))
 
 @router.post("/password-recovery/{email}")
 def recover_password(request: Request, email: str) -> Message:
@@ -76,10 +74,11 @@ def recover_password(request: Request, email: str) -> Message:
             subject=email_data.subject,
             html_content=email_data.html_content,
         )
+
         return Message(message="Password recovery email sent")
 
 
-@router.post("/reset-password/")
+@router.post("/reset-password")
 def reset_password(request: Request, body: NewPassword) -> Message:
     """
     Reset password
@@ -96,7 +95,7 @@ def reset_password(request: Request, body: NewPassword) -> Message:
             )
         hashed_password = get_password_hash(password=body.new_password)
         user.password = hashed_password
-        request.app.state.postgres.update_user(session=session, data=user)
+        request.app.state.postgres.update_user(session=session, db_obj=user)
         return Message(message="Password updated successfully")
 
 

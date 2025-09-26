@@ -19,11 +19,9 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 def get_current_token(token: TokenDep) -> TokenPayload:
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
-        )
+        payload = security.decode_token(token)
         return TokenPayload(**payload)
-    except (InvalidTokenError, ValidationError):
+    except (ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
@@ -38,7 +36,7 @@ def has_authority(authority: str):
     def has_permission(
         current_token: CurrentToken,
     ) -> TokenPayload:
-        if authorization not in current_token.scope:
+        if authority not in current_token.scope:
             raise HTTPException(
                 status_code=403, detail="The user doesn't have enough privileges"
             )

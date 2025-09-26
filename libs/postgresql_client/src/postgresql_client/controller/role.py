@@ -88,23 +88,22 @@ class RoleController(ABC):
             raise e
 
     def insert_role(
-        self, session: Session, data: RoleModel, permission_ids: list[str]
+        self, session: Session, db_obj: RoleModel, permission_ids: list[str]
     ) -> RoleModel:
         try:
-            role_obj = data
-            session.add(role_obj)
+            session.add(db_obj)
             session.flush()
 
             new_permissions = [
-                RolePermissionModel(role_id=data.id, permission_id=UUID(perm_id))
+                RolePermissionModel(role_id=db_obj.id, permission_id=UUID(perm_id))
                 for perm_id in permission_ids
             ]
-            role_obj.role_permissions = new_permissions
+            db_obj.role_permissions = new_permissions
 
             session.commit()
-            session.refresh(role_obj)
+            session.refresh(db_obj)
 
-            return self.get_role_by_id(session, str(role_obj.id))
+            return self.get_role_by_id(session, str(db_obj.id))
 
         except Exception as e:
             session.rollback()
@@ -114,36 +113,19 @@ class RoleController(ABC):
             raise e
 
     def update_role(
-        self, session: Session, data: RoleModel, permission_ids: list[str]
+        self, session: Session, db_obj: RoleModel, permission_ids: list[str]
     ) -> RoleModel | None:
         try:
-            role_obj = (
-                session.query(RoleModel)
-                .options(
-                    joinedload(RoleModel.role_permissions).joinedload(
-                        RolePermissionModel.permission
-                    )
-                )
-                .filter(RoleModel.id == data.id)
-                .one_or_none()
-            )
-            if not role_obj:
-                logger.info(f"No Role found with id: {data.id}")
-                return None
-
-            if data.name:
-                role_obj.name = data.name
-
-            role_obj.role_permissions.clear()
-
-            new_permissions = [
-                RolePermissionModel(role_id=UUID(data.id), permission_id=UUID(perm_id))
-                for perm_id in permission_ids
-            ]
-            role_obj.role_permissions = new_permissions
+            if permission_ids:
+                db_obj.role_permissions.clear()
+                new_permissions = [
+                    RolePermissionModel(role_id=UUID(db_obj.id), permission_id=UUID(perm_id))
+                    for perm_id in permission_ids
+                ]
+                db_obj.role_permissions = new_permissions
 
             session.commit()
-            return self.get_role_by_id(session, str(role_obj.id))
+            return db_obj
 
         except Exception as e:
             session.rollback()

@@ -3,8 +3,47 @@ import uuid
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
-# Shared properties
+######## Admin API ########
+class UserCreate(SQLModel):
+    username: str
+    password: str = Field(min_length=8, max_length=40)
+    name: str
+    avatar_url: str
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    phone_number: str
+    role_ids: list[str] = []
 
+class UserUpdate(SQLModel):
+    password: str
+    name: str
+    avatar_url: str
+    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
+    phone_number: str
+    role_ids: list[str] = []
+######## End Admin API ########
+
+######## User API ########
+class UserRegister(SQLModel):
+    username: str
+    password: str = Field(min_length=8, max_length=40)
+    name: str
+    avatar_url: str
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    phone_number: str
+
+class UserUpdateMe(SQLModel):
+    name: str
+    avatar_url: str
+    email: EmailStr | None = Field(unique=True, index=True, max_length=255)
+    phone_number: str
+
+class UpdatePassword(SQLModel):
+    current_password: str = Field(min_length=8, max_length=40)
+    new_password: str = Field(min_length=8, max_length=40)
+######## End User API ########
+
+
+######## Response ########
 class PermissionPublic(SQLModel):
     id: uuid.UUID
     name: str
@@ -18,53 +57,10 @@ class RolePublic(SQLModel):
     def model_validate(cls, role_db):
         permissions = [
             PermissionPublic.model_validate(rp.permission)
-            for rp in role_db.rolePermissions
+            for rp in role_db.role_permissions
         ]
-        return cls(permissions=permissions, **role_db.dict())
+        return cls(id=role_db.id, name=role_db.name, permissions=permissions)
 
-# Properties to receive via API on creation
-class UserCreate(SQLModel):
-    username: str
-    password: str = Field(min_length=8, max_length=40)
-    name: str
-    avatar_url: str
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
-    phone_number: str
-    roles_ids: list[str] = []
-
-
-class UserRegister(SQLModel):
-    username: str
-    password: str = Field(min_length=8, max_length=40)
-    name: str
-    avatar_url: str
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
-    phone_number: str
-
-
-# Properties to receive via API on update, all are optional
-class UserUpdate(SQLModel):
-    password: str
-    name: str
-    avatar_url: str
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
-    phone_number: str
-    role_ids: list[str] = []
-
-
-class UserUpdateMe(SQLModel):
-    name: str
-    avatar_url: str
-    email: EmailStr | None = Field(unique=True, index=True, max_length=255)
-    phone_number: str
-
-
-class UpdatePassword(SQLModel):
-    current_password: str = Field(min_length=8, max_length=40)
-    new_password: str = Field(min_length=8, max_length=40)
-
-
-# Properties to return via API, id is always required
 class UserPublic(SQLModel):
     id: uuid.UUID
     username: str
@@ -80,7 +76,7 @@ class UserPublic(SQLModel):
             RolePublic.model_validate(user_role.role)
             for user_role in user_db.user_roles
         ]
-        return cls(roles=roles, **user_db.dict())
+        return cls(id=user_db.id, username=user_db.username, name=user_db.name, avatar_url=user_db.avatar_url, email=user_db.email, phone_number=user_db.phone_number, roles=roles)
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
@@ -99,7 +95,7 @@ class Token(SQLModel):
 # Contents of JWT token
 class TokenPayload(SQLModel):
     id: str | None = None
-    sub: str | None = None
+    scope: str | None = None
 
 
 class NewPassword(SQLModel):
