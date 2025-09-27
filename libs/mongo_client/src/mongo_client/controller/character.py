@@ -9,7 +9,7 @@ class CharacterHandler(BaseService):
 
     # Create a new character
     def create_character(self, character: Character):
-        character._id = ObjectId(character._id)
+        # character._id = ObjectId(character._id)
         result = self.collection.insert_one(character.__dict__)
         return result
 

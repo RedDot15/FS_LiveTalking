@@ -21,12 +21,12 @@ class MongoDBHandler(BaseService):
 
     @cached_property
     def get_mongo_client(self) -> MongoClient:
-        # Construct the URI using the already-assigned mongo_settings attribute
-        uri = f"mongodb://{self.mongo_settings.username}:{self.mongo_settings.password}@{self.mongo_settings.host}:{self.mongo_settings.port}/"
+        # Construct the correct URI with the database name and authSource
+        uri = f"mongodb://{self.mongo_settings.username}:{self.mongo_settings.password}@{self.mongo_settings.host}:{self.mongo_settings.port}/{self.mongo_settings.db}?authSource=admin"
         
-        # Initialize the client and database
+        # Initialize the client. No need to select the DB again as it's in the URI.
         self._client = MongoClient(uri)
-        self._db = self._client[self.mongo_settings.db]
+        self._db = self._client.get_database() # More robust way to get the DB from the URI
         
         self.create_all_indexes()
 
