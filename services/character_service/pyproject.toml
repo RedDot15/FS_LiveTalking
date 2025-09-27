@@ -1,5 +1,5 @@
 [project]
-name = "livetalking"
+name = "character-service"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -8,33 +8,24 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "aiortc>=1.10.1",
     "asgi-correlation-id>=4.3.4",
     "base",
-    "fastapi>=0.116.1",
-    "humanplayer",
-    "librosa>=0.11.0",
-    "llm-client",
+    "fastapi>=0.116.2",
     "logger",
-    "minio-client",
+    "mongo-client",
     "pydantic-settings[yaml]>=2.10.1",
     "python-dotenv>=1.1.1",
-    "realistic",
-    "requests>=2.32.5",
     "uvicorn>=0.35.0",
 ]
 
 [project.scripts]
-livetalking = "livetalking:main"
+character_service = "character_service:main"
 
 [build-system]
-requires = ["uv_build>=0.8.0,<0.9"]
+requires = ["uv_build>=0.8.7,<0.9.0"]
 build-backend = "uv_build"
 
 [tool.uv.sources]
-realistic = { workspace = true }
-humanplayer = { workspace = true }
-llm-client = { workspace = true }
 base = { workspace = true }
 logger = { workspace = true }
-minio-client = { workspace = true }
+mongo-client = { workspace = true }

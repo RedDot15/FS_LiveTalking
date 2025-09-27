@@ -12,7 +12,6 @@ networks:
     
 services:
   chromadb:
-    container_name: chromadb
     image: ghcr.io/chroma-core/chroma:latest
     volumes:
       - chromadb:/chroma/.chroma/index
@@ -23,7 +22,6 @@ services:
 
   minio:
     image: quay.io/minio/minio
-    container_name: minio
     ports:
       - ${MINIO__HTTP_PORT}:9000
       - ${MINIO__GUI_PORT}:9001
@@ -39,7 +37,6 @@ services:
 
   postgres:
     image: postgres:17.0-alpine
-    container_name: postgres
     ports:
       - ${POSTGRES__PORT}:5432
     networks:
@@ -53,7 +50,6 @@ services:
 
   mongodb:
     image: mongo:7.0.23
-    container_name: mongodb
     ports:
       - ${MONGO__PORT}:27017
     networks:
@@ -64,6 +60,20 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO__USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO__PASSWORD}
+
+  mongo-gui:
+    image: mongo-express
+    ports:
+      - "8081:8081"
+    networks:
+      - multidimension
+    depends_on:
+      - mongodb
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=${MONGO__HOST}
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO__USER}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO__PASSWORD}
 
   rag_service:
     build:
@@ -274,6 +284,36 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  character_service:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile
+      args:
+        - PYTHON_VERSION=python3.11
+        - PACKAGE=character_service
+        - OPTIONAL_BUILD=src/character_service/__init__.py
+
+    ports:
+      - "3006:3006"
+    
+    networks:
+      - multidimension
+    command: uv run character_service
+
+    volumes:
+      - type: bind
+        source: ./services/character_service
+        target: /home/reunion/app/services/character_service
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+    environment:
+      - MONGODB__HOST=${MONGO__HOST}
+      - MONGODB__PORT=27017
+      - MONGODB__USERNAME=${MONGO__USER}
+      - MONGODB__PASSWORD=${MONGO__PASSWORD}
+      - MONGODB__DB=${MONGO__DB}
 
   frontend:
     build:

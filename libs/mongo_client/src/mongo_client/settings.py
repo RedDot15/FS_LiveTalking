@@ -5,6 +5,5 @@ class MongoSettings(BaseModel):
     username: str
     password: str
     host: str
-    port: str
-    
+    port: int
     
