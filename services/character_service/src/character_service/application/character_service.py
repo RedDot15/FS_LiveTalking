@@ -21,7 +21,7 @@ class CharacterServiceApplication(BaseService):
     request: Annotated[Any, Field(exclude=True)]
     settings: Annotated[Any, Field(exclude=True)]
 
-    async def process(self) -> CharacterServiceOutput:
+    def process(self) -> CharacterServiceOutput:
         
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             

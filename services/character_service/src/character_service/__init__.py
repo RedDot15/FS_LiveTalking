@@ -25,7 +25,11 @@ settings = get_settings()
 async def lifespan(app: FastAPI):
     app.state.settings = settings
     app.state.mongodb_client = MongoDBHandler(
-        mongo_settings=app.state.settings.mongodb
+        db=app.state.settings.mongodb.db,
+        username=app.state.settings.mongodb.username,
+        password=app.state.settings.mongodb.password,
+        host=app.state.settings.mongodb.host,
+        port=app.state.settings.mongodb.port,
     )
     
     yield

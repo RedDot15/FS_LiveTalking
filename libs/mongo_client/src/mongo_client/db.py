@@ -1,48 +1,62 @@
-from typing import Any
-from pymongo import MongoClient
-from pymongo import ASCENDING, DESCENDING
+from __future__ import annotations
+
+from typing import Any, Generator
+from pymongo import MongoClient, ASCENDING, DESCENDING
+from pymongo.database import Database
 from .settings import MongoSettings
 from base import BaseService
 from contextlib import contextmanager
-from functools import cached_property
-from typing import Generator
-from pymongo.database import Database
- 
-class MongoDBHandler(BaseService):
-    mongo_settings: MongoSettings
-    
-    @contextmanager
-    def get_database(self) -> Generator[Database, None, None]:
-        try:
-            self.get_mongo_client
-            yield self._db
-        finally:
-            self._client.close()
 
-    @cached_property
-    def get_mongo_client(self) -> MongoClient:
-        # Construct the correct URI with the database name and authSource
-        uri = f"mongodb://{self.mongo_settings.username}:{self.mongo_settings.password}@{self.mongo_settings.host}:{self.mongo_settings.port}/{self.mongo_settings.db}?authSource=admin"
+class MongoDBHandler:
+
+    def __init__(self, db: str, username: str, password: str, host: str, port: int):
+        """
+        Initialize the handler, establish a connection to MongoDB, and create indexes.
+        The connection is established only once when the object is created.
+        """
+        self.db = db
+        self.username = username
+        self.password = password
+        self.host = host
+        self.port = port
         
-        # Initialize the client. No need to select the DB again as it's in the URI.
+        uri = (
+            f"mongodb://{self.username}:{self.password}@"
+            f"{self.host}:{self.port}/"
+            f"{self.db}?authSource=admin"
+        )
+        
         self._client = MongoClient(uri)
-        self._db = self._client.get_database() # More robust way to get the DB from the URI
-        
-        self.create_all_indexes()
+        self._db = self._client[self.db]
 
-        return self._client
-    
-    def create_all_indexes(self):
-        """Creates all necessary indexes for the collections."""
-        # Create an index on the `id` field for the 'characters' collection
+        self._create_all_indexes()
+
+    def _create_all_indexes(self):
+        """Create all necessary indexes for the collections."""
+        if self._db is None:
+            return
+
         self._db.characters.create_index([("name", ASCENDING)], unique=True)
-        
-        # # Create indexes for the 'conversations' collection
-        self._db.conversations.create_index([("participants_hash", ASCENDING),("created_at", DESCENDING)])
-
-        # # Create indexes for the 'qa_pairs' collection
+        self._db.conversations.create_index([("participants_hash", ASCENDING), ("created_at", DESCENDING)])
         self._db.qa_pairs.create_index([("conversation_id", ASCENDING), ("created_at", ASCENDING)])
 
+    @contextmanager
+    def get_database(self) -> Generator[Database, None, None]:
+        """
+        Context manager to provide the database object.
+        The connection is already established in __init__.
+        """
+        try:
+            yield self._db
+        finally:
+            pass
+
+    def close_connection(self):
+        """
+        This method will be called by the lifespan to close the connection when the application shuts down.
+        """
+        if self._client:
+            self._client.close()
+            
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used in MongoDBHandler.")
-
