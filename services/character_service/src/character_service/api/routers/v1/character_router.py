@@ -10,13 +10,13 @@ from character_service.application import CharacterServiceApplication
 
 from character_service.shared.utils import get_settings
 
-character_router = APIRouter(prefix='/v1')
+character_router = APIRouter()
 
 settings = get_settings()
 logger = get_logger(__name__)
 
 @character_router.get('/characters')
-async def list_characters(request: Request) -> JSONResponse:
+def list_characters(request: Request) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -36,7 +36,7 @@ async def list_characters(request: Request) -> JSONResponse:
         )
 
     try:
-        response = await character_service.process()
+        response = character_service.process()
         
     except Exception as e:
         return exception_handler.handle_exception(e=str(e))
