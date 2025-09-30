@@ -63,19 +63,20 @@ local_folder_path = os.getcwd().replace("\\","/")
 # print(version)
 
 # # Delete folder
-minio_client.remove_folder(bucket_name, destination_folder)
-
-# Check whether "Manh-Test-Folder" got deleted or not
-objects = (minio_client.list_items_in_bucket(bucket_name))
-print(f"After delete {destination_folder}: ")
-for obj in objects:
-    print(obj.object_name)
-
-# Upload whole folder to minio
-print("*"*50)
-print(minio_client.put_folder(bucket_name, destination_folder, f"{local_folder_path}"))
-print(minio_client.put_folder(bucket_name, destination_folder, f"{local_folder_path}/audios"))
 # minio_client.remove_folder(bucket_name, destination_folder)
 
-print(minio_client.get_folder(bucket_name, destination_folder, "audios", "."))
-# print(minio_client.get_folder(bucket_name, destination_folder, "videos", "."))
+# # Check whether "Manh-Test-Folder" got deleted or not
+# objects = (minio_client.list_items_in_bucket(bucket_name))
+# print(f"After delete {destination_folder}: ")
+# for obj in objects:
+#     print(obj.object_name)
+
+# # Upload whole folder to minio
+# print("*"*50)
+# print(minio_client.put_folder(bucket_name, destination_folder, f"{local_folder_path}"))
+# print(minio_client.put_folder(bucket_name, destination_folder, f"{local_folder_path}/audios"))
+# # minio_client.remove_folder(bucket_name, destination_folder)
+
+# print(minio_client.get_folder(bucket_name, destination_folder, "audios", "."))
+# # print(minio_client.get_folder(bucket_name, destination_folder, "videos", "."))
+minio_client.remove_folder(bucket_name="reunion", folder_name="Doraemon")

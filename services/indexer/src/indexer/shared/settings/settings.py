@@ -14,12 +14,12 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv('.env'), override=True)
 
-class MinioSettings(BaseSettings):
+class _MinioSettings(BaseSettings):
     minio: MinioSettings
 
     class Config:
         env_nested_delimiter = '__'
-        yaml_file = str(Path(__file__).parent.parent.parent / 'settings.yaml')
+        yaml_file = str(Path(__file__).parent.parent.parent / 'settingsMinio.yaml')
 
     @classmethod
     def settings_customise_sources(
@@ -38,12 +38,12 @@ class MinioSettings(BaseSettings):
             YamlConfigSettingsSource(settings_cls),
         )
     
-class MongoDBSettings(BaseSettings):
+class _MongoDBSettings(BaseSettings):
     mongo: MongoSettings
 
     class Config:
         env_nested_delimiter = '__'
-        yaml_file = str(Path(__file__).parent.parent.parent / 'settings.yaml')
+        yaml_file = str(Path(__file__).parent.parent.parent / 'settingsMongo.yaml')
 
     @classmethod
     def settings_customise_sources(

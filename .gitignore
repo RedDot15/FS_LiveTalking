@@ -40,4 +40,7 @@ services/voice_clone/infra/xtts/models/
 services/livetalking/src/livetalking/shared/models/wav2lip.pth
 minio
 
+mockdata
+test_service.py
+
 FS_LiveTalking.code-workspace

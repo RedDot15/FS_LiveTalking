@@ -1,5 +1,0 @@
-minio:
-  secure: False
-
-mongo:
-  host: 'localhost'

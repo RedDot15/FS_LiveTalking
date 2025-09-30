@@ -64,30 +64,31 @@ class IndexerApplication(BaseService):
         return ParserOutput(parsed_text=md_text) 
     
     # nghich luon
-    async def process(self, inputs: CharacterInputs) -> CharacterOutputs:
-        minio_response = await self.upload_minio_init.process(
+    async def process(self, inputs: CharacterInputs):
+        minio_response: CharacterOutputs = await self.upload_minio_init.process(
             character_inputs = CharacterInputs(
                 name = inputs.name,
                 knowledge_file = inputs.knowledge_file,
                 avatar_image = inputs.avatar_image,
+                audio_file=inputs.audio_file,
             )
         )
+        print(minio_response)
+        # character_id = await self.gen_uuid_init.process(
+        #     inputs=CharacterIdInputs(
+        #         name=inputs.name
+        #     )
+        # )
+        # mongo_upload_data = CharacterMongoDBInputs(
+        #     name = inputs.name,
+        #     avatar_url=minio_response.avatar_url
+        # )
 
-        character_id = await self.gen_uuid_init.process(
-            inputs=CharacterIdInputs(
-                name=inputs.name
-            )
-        )
-        mongo_upload_data = CharacterMongoDBInputs(
-            name = inputs.name,
-            avatar_url=minio_response.avatar_url
-        )
-
-        markdown_text = await self.parse_file(
-            inputs=ParserInput(
-                knowledge_file=inputs.knowledge_file
-            )
-        )
+        # markdown_text = await self.parse_file(
+        #     inputs=ParserInput(
+        #         knowledge_file=inputs.knowledge_file
+        #     )
+        # )
         return IndexerApplicationOutput(
             json_response="Succeed"
         )

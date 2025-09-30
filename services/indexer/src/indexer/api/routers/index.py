@@ -28,6 +28,7 @@ async def index(request: Request,
                 name: str = Form(...),
                 knowledge_file: UploadFile = File(...),
                 avatar_image: UploadFile = File(...),
+                audio_file: UploadFile = File(...),
                 ) -> JSONResponse:
     
     exception_handler = ExceptionHandler(
@@ -42,6 +43,19 @@ async def index(request: Request,
     except Exception as e:
         raise e
 
+    try:
+        response = await index_application.process(
+            inputs=CharacterInputs(
+                name=name,
+                knowledge_file=knowledge_file,
+                avatar_image=avatar_image,
+                audio_file=audio_file,
+            )
+        )
+    except Exception as e:
+        raise e
+    print(response)
+    
     return exception_handler.handle_success(
         # thanh cong
         jsonable_encoder(index_application)
