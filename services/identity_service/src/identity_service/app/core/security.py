@@ -28,7 +28,7 @@ def create_access_token(db_user: UserModel | Any, expires_delta: timedelta) -> s
 
 def verify_token(token: str):
     try:
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=[security.ALGORITHM])
+        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except (InvalidTokenError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

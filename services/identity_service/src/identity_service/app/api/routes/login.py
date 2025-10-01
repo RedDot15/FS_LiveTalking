@@ -8,7 +8,7 @@ from authorization import TokenPayload
 
 from ...core.config import settings
 from ...core.security import create_access_token, get_password_hash, verify_password, verify_token
-from ....app.models import Message, NewPassword, Token, TokenPayload
+from ....app.models import Message, NewPassword, Token
 from ....app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -93,30 +93,3 @@ def reset_password(request: Request, body: NewPassword) -> Message:
         user.password = hashed_password
         request.app.state.postgres.update_user(session=session, db_obj=user)
         return Message(message="Password updated successfully")
-
-
-# @router.post(
-#     "/password-recovery-html-content/{email}",
-#     dependencies=[Depends(has_authorization)],
-#     response_class=HTMLResponse,
-# )
-# def recover_password_html_content(request: Request, email: str) -> Any:
-#     """
-#     HTML Content for Password Recovery
-#     """
-#     with request.app.state.postgres.get_session() as session:
-#         user = request.app.state.postgres.get_user_by_email(session=session, email=email)
-
-#         if not user:
-#             raise HTTPException(
-#                 status_code=404,
-#                 detail="The user with this username does not exist in the system.",
-#             )
-#         password_reset_token = generate_password_reset_token(email=email)
-#         email_data = generate_reset_password_email(
-#             email_to=user.email, email=email, token=password_reset_token
-#         )
-
-#         return HTMLResponse(
-#             content=email_data.html_content, headers={"subject:": email_data.subject}
-#         )
