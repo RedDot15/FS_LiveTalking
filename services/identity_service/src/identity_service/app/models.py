@@ -85,18 +85,10 @@ class UsersPublic(SQLModel):
 class Message(SQLModel):
     message: str
 
-
 # JSON payload containing access token
 class Token(SQLModel):
     access_token: str
     token_type: str = "bearer"
-
-
-# Contents of JWT token
-class TokenPayload(SQLModel):
-    id: str | None = None
-    scope: str | None = None
-
 
 class NewPassword(SQLModel):
     token: str

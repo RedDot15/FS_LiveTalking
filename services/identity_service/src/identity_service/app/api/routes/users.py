@@ -1,16 +1,17 @@
 import uuid
-from typing import Any, Annotated
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from postgresql_client.model.models import UserModel
 
-from identity_service.app.api.deps import (
+from authorization import (
     CurrentToken,
-    has_authority,
+    has_authority
 )
-from identity_service.app.core.config import settings
-from identity_service.app.core.security import get_password_hash, verify_password
-from identity_service.app.models import (
+
+from ....app.core.config import settings
+from ....app.core.security import get_password_hash, verify_password
+from ....app.models import (
     Message,
     UpdatePassword,
     UserCreate,
@@ -18,10 +19,12 @@ from identity_service.app.models import (
     UserRegister,
     UsersPublic,
     UserUpdate,
-    UserUpdateMe,
-    TokenPayload
+    UserUpdateMe
 )
-from identity_service.app.utils import generate_new_account_email, send_email
+from ....app.utils import (
+    generate_new_account_email, 
+    send_email
+)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -50,6 +53,16 @@ def register_user(request: Request, user_in: UserRegister) -> Any:
         db_obj = request.app.state.postgres.insert_user(
             session=session, db_obj=db_obj, role_ids=[str(default_role_id)]
         )
+
+        if settings.emails_enabled and user_in.email:
+            email_data = generate_new_account_email(
+                email_to=user_in.email, username=user_in.email, password=user_in.password
+            )
+            send_email(
+                email_to=user_in.email,
+                subject=email_data.subject,
+                html_content=email_data.html_content,
+            )
 
         return UserPublic.model_validate(db_obj)
 

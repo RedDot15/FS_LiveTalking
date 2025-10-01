@@ -1,14 +1,13 @@
-from typing import Annotated
 
-import jwt
+from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
+import jwt
 from pydantic import ValidationError
 
-from identity_service.app.core import security
-from identity_service.app.core.config import settings
-from identity_service.app.models import TokenPayload
+from .model import TokenPayload
+from .settings import settings
+
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"
@@ -19,7 +18,9 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 def get_current_token(token: TokenDep) -> TokenPayload:
     try:
-        payload = security.decode_token(token)
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_signature": False}
+        )
         return TokenPayload(**payload)
     except (ValidationError):
         raise HTTPException(

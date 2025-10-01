@@ -26,6 +26,7 @@ members = [
     "services/wav2lip", 
     "services/character_service",
     "services/identity_service",
+    "libs/authorization",
 ]
 
 [tool.uv.sources]

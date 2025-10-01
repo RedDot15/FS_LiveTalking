@@ -1,7 +1,4 @@
-import secrets
-import warnings
-from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 
 from postgresql_client import PostgresSettings
 from pydantic import (
@@ -33,6 +30,7 @@ class Settings(BaseSettings):
 
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str 
+    ALGORITHM: str
     # 60 minutes
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     FRONTEND_HOST: str = "http://localhost:5173"

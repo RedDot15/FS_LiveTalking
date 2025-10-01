@@ -2,18 +2,14 @@ from datetime import timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from identity_service.app.api.deps import (
-    CurrentToken,
-    has_authority
-)
-from identity_service.app.core import security
-from identity_service.app.core.config import settings
-from identity_service.app.core.security import get_password_hash, verify_password
-from identity_service.app.models import Message, NewPassword, Token, UserPublic, TokenPayload
-from identity_service.app.utils import (
+from authorization import TokenPayload
+
+from ...core.config import settings
+from ...core.security import create_access_token, get_password_hash, verify_password, verify_token
+from ....app.models import Message, NewPassword, Token, TokenPayload
+from ....app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
     send_email,
@@ -39,7 +35,7 @@ def login_access_token(
 
         access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         return Token(
-            access_token=security.create_access_token(
+            access_token=create_access_token(
                 db_user ,expires_delta=access_token_expires
             )
         )
@@ -50,7 +46,7 @@ def test_token(token: Token) -> Any:
     Test access token
     """
     print("Token received for testing:", token)  
-    return TokenPayload(**security.verify_token(token=token.access_token))
+    return TokenPayload(**verify_token(token=token.access_token))
 
 @router.post("/password-recovery/{email}")
 def recover_password(request: Request, email: str) -> Message:

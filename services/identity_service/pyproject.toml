@@ -18,12 +18,14 @@ dependencies = [
     "bcrypt==4.0.1",
     "pydantic-settings<3.0.0,>=2.2.1",
     "pyjwt<3.0.0,>=2.8.0",
-    "postgresql-client",
     "uvicorn>=0.35.0",
+    "postgresql-client",
+    "authorization",
 ]
 
 [tool.uv.sources]
 postgresql-client = { workspace = true }
+authorization = { workspace = true }
 
 [project.scripts]
 identity_service = "identity_service:main"
