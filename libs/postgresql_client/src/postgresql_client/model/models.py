@@ -6,11 +6,11 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, DeclarativeBase
 
 
-class CustomBaseModel(DeclarativeBase):
+class Base(DeclarativeBase):
     pass
 
 
-class UserModel(CustomBaseModel):
+class UserModel(Base):
     __tablename__ = "user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = Column(String, unique=True, nullable=False)
@@ -24,7 +24,7 @@ class UserModel(CustomBaseModel):
     )
 
 
-class RoleModel(CustomBaseModel):
+class RoleModel(Base):
     __tablename__ = "role"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, unique=True, nullable=False)
@@ -36,7 +36,7 @@ class RoleModel(CustomBaseModel):
     )
 
 
-class PermissionModel(CustomBaseModel):
+class PermissionModel(Base):
     __tablename__ = "permission"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, unique=True, nullable=False)
@@ -45,7 +45,7 @@ class PermissionModel(CustomBaseModel):
     )
 
 
-class UserRoleModel(CustomBaseModel):
+class UserRoleModel(Base):
     __tablename__ = "user_role"
     user_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), primary_key=True)
     role_id = Column(UUID(as_uuid=True), ForeignKey("role.id"), primary_key=True)
@@ -53,7 +53,7 @@ class UserRoleModel(CustomBaseModel):
     role = relationship("RoleModel", back_populates="user_roles")
 
 
-class RolePermissionModel(CustomBaseModel):
+class RolePermissionModel(Base):
     __tablename__ = "role_permission"
     role_id = Column(UUID(as_uuid=True), ForeignKey("role.id"), primary_key=True)
     permission_id = Column(

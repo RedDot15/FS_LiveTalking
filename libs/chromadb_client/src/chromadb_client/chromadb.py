@@ -3,16 +3,16 @@ from __future__ import annotations
 from .settings import ChromaDBSetting
 
 import chromadb
-from base import CustomBaseModel
+from base import BaseModel
 from base import BaseService
 from chromadb.config import Settings
 # from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
-class ChromaDBInput(CustomBaseModel):
+class ChromaDBInput(BaseModel):
     query: str
     topk: int = 10
     
-class ChromaDBOutput(CustomBaseModel):
+class ChromaDBOutput(BaseModel):
     results: list[str]
 
 

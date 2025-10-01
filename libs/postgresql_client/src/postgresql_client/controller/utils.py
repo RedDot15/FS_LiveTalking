@@ -6,12 +6,12 @@ from collections.abc import Sequence
 
 from structlog.stdlib import BoundLogger
 
-from ..model import CustomBaseModel
+from ..model import Base
 
 
 def _get_data(
     logger: BoundLogger,
-    model_cls: type[CustomBaseModel],
+    model_cls: type[Base],
     session: Session,
     filter: dict[str, object] | None = None,
     order_by: Sequence | None = None,
@@ -42,8 +42,8 @@ def _get_data(
 
 
 def _get_data_by_id(
-    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, id: str
-) -> CustomBaseModel:
+    logger: BoundLogger, model_cls: type[Base], session: Session, id: str
+) -> Base:
     try:
         obj = session.get(model_cls, id)
         if obj:
@@ -60,8 +60,8 @@ def _get_data_by_id(
 
 
 def _insert(
-    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, db_obj: CustomBaseModel
-) -> CustomBaseModel:
+    logger: BoundLogger, model_cls: type[Base], session: Session, db_obj: Base
+) -> Base:
     try:
         session.add(db_obj)
         session.commit()
@@ -75,8 +75,8 @@ def _insert(
 
 
 def _update(
-    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, db_obj: CustomBaseModel
-) -> CustomBaseModel:
+    logger: BoundLogger, model_cls: type[Base], session: Session, db_obj: Base
+) -> Base:
     try:
         session.commit()
         session.refresh(db_obj)
@@ -88,8 +88,8 @@ def _update(
 
 
 def _delete(
-    logger: BoundLogger, model_cls: type[CustomBaseModel], session: Session, id: str
-) -> CustomBaseModel:
+    logger: BoundLogger, model_cls: type[Base], session: Session, id: str
+) -> Base:
     try:
         db_obj = session.get(model_cls, id)
         if db_obj:

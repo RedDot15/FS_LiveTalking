@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from postgresql_client.model.models import CustomBaseModel
+from postgresql_client.model.models import Base
 
 from alembic import context
 
@@ -33,7 +33,7 @@ config.set_main_option('sqlalchemy.url', SQLALCHEMY_DATABASE_URL)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = CustomBaseModel.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

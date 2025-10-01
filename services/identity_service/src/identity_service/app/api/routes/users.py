@@ -9,9 +9,9 @@ from authorization import (
     has_authority
 )
 
-from ....app.core.config import settings
-from ....app.core.security import get_password_hash, verify_password
-from ....app.models import (
+from identity_service.app.core.config import settings
+from identity_service.app.core.security import get_password_hash, verify_password
+from identity_service.app.models import (
     Message,
     UpdatePassword,
     UserCreate,
@@ -21,7 +21,7 @@ from ....app.models import (
     UserUpdate,
     UserUpdateMe
 )
-from ....app.utils import (
+from identity_service.app.utils import (
     generate_new_account_email, 
     send_email
 )

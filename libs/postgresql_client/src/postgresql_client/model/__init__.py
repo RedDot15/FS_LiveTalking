@@ -1,6 +1,6 @@
 from __future__ import annotations
 from .models import (
-    CustomBaseModel,
+    Base,
     UserModel,
     RoleModel,
     PermissionModel,
@@ -9,7 +9,7 @@ from .models import (
 )
 
 __all__ = [
-    "CustomBaseModel",
+    "Base",
     "UserModel",
     "RoleModel",
     "PermissionModel",

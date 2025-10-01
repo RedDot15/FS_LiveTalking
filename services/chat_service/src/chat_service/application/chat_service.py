@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any
 
-from base import CustomBaseModel, BaseService
+from base import BaseModel, BaseService
 from logger import get_logger
 from pydantic import ConfigDict, Field
 
@@ -13,12 +13,12 @@ from chat_service.domain.answer_aggregator import (
 from chat_service.shared.tools import get_context
 
 logger = get_logger(__name__)
-class ChatServiceInput(CustomBaseModel):
+class ChatServiceInput(BaseModel):
     question: str
     character_name: str
     
     
-class ChatServiceOutput(CustomBaseModel):
+class ChatServiceOutput(BaseModel):
     answer: str
     
     

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from base import CustomBaseModel
+from base import BaseModel
 from base import BaseService
 from contextlib import contextmanager
 from contextlib import asynccontextmanager 
@@ -19,12 +19,12 @@ from typing import cast
 
 from openai import OpenAI, AsyncOpenAI
 
-class LLMServiceInput(CustomBaseModel):
+class LLMServiceInput(BaseModel):
     message: Message
     model: str
-    return_type: type[CustomBaseModel] | None = None
+    return_type: type[BaseModel] | None = None
     
-class LLMServiceOutput(CustomBaseModel):
+class LLMServiceOutput(BaseModel):
     response: Response
     
 class LLMService(BaseService):
@@ -105,7 +105,7 @@ class LLMService(BaseService):
         self,
         message: Message,
         model: str,
-        return_type: type[CustomBaseModel] | None,
+        return_type: type[BaseModel] | None,
     ) -> Dict[str, Any]:
         
         if 'gpt' in model.lower():
@@ -147,7 +147,7 @@ class LLMService(BaseService):
         self,
         response: Dict[str, Any],
         count_token: bool,
-        return_type: type[CustomBaseModel] | None,
+        return_type: type[BaseModel] | None,
     ) -> LLMServiceOutput:
         """
         Post-process the response from chat completion API.

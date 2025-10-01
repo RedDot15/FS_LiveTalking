@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from base import CustomBaseModel
+from base import BaseModel
 
-class MinioSettings(CustomBaseModel):
+class MinioSettings(BaseModel):
     host: str
     http_port: int
     access_key: str

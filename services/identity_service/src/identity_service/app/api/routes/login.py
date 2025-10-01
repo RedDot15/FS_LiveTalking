@@ -6,10 +6,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from authorization import TokenPayload
 
-from ...core.config import settings
-from ...core.security import create_access_token, get_password_hash, verify_password, verify_token
-from ....app.models import Message, NewPassword, Token
-from ....app.utils import (
+from identity_service.app.api.core.config import settings
+from identity_service.app.api.core.security import create_access_token, get_password_hash, verify_password, verify_token
+from identity_service.app.models import Message, NewPassword, Token
+from identity_service.app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
     send_email,

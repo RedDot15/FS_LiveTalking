@@ -16,15 +16,15 @@ services:
     volumes:
       - chromadb:/chroma/.chroma/index
     ports:
-      - 8000:${CHROMADB__PORT}
+      - ${CHROMADB__PORT}:8000
     networks:
       - multidimension
 
   minio:
     image: quay.io/minio/minio
     ports:
-      - 9036:${MINIO__HTTP_PORT}
-      - 9037:${MINIO__GUI_PORT}
+      - ${MINIO__HTTP_PORT}:9000
+      - ${MINIO__GUI_PORT}:9001
     networks:
       - multidimension
     volumes:
@@ -32,12 +32,13 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO__ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO__SECRET_KEY}
+
     command: server --console-address ":9001" /data
 
   postgres:
     image: postgres:17.0-alpine
     ports:
-      - 5432:${POSTGRES__PORT}
+      - ${POSTGRES__PORT}:5432
     networks:
       - multidimension
     volumes:
@@ -50,7 +51,7 @@ services:
   mongodb:
     image: mongo:7.0.23
     ports:
-      - 27017:${MONGO__PORT}
+      - ${MONGO__PORT}:27017
     networks:
       - multidimension
     volumes:
@@ -82,13 +83,16 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=rag_service
         - OPTIONAL_BUILD=src/rag_service/__init__.py
+
     ports:
       - "3005:3005"
+    
     networks:
       - multidimension
     command: uv run rag_service
     depends_on:
       - chromadb
+
     volumes:
       - type: bind
         source: ./services/rag_service
@@ -108,11 +112,14 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=chat_service
         - OPTIONAL_BUILD=src/chat_service/__init__.py
+  
     ports:
-      - "3000:3000"
+      - 3000:3000
+    
     networks:
       - multidimension
     command: uv run chat_service
+
     volumes:
       - type: bind
         source: ./services/chat_service
@@ -120,6 +127,7 @@ services:
       - type: bind
         source: ./libs/
         target: /home/reunion/app/libs/
+
     environment:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - RAG_SERVICE_URL=${RAG_SERVICE_URL}
@@ -172,11 +180,14 @@ services:
         - PACKAGE=livetalking
         - OPTIONAL_BUILD=src/livetalking/__init__.py
         - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
+  
     ports:
-      - "8010:8010"
+      - 8010:8010
+    
     networks:
       - multidimension
     command: uv run livetalking
+
     volumes:
       - type: bind
         source: ./services/livetalking

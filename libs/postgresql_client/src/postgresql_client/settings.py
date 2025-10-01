@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from base import CustomBaseModel
+from base import BaseModel
 
-
-class PostgresSettings(CustomBaseModel):
+class PostgresSettings(BaseModel):
     user: str
     password: str
     host: str

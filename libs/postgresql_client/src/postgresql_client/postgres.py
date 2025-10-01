@@ -9,11 +9,13 @@ from contextlib import contextmanager
 from functools import cached_property
 
 from base import BaseService
-
-from .model import CustomBaseModel
-from .controller import UserController, RoleController, PermissionController
+from .model import Base
+from .controller import (
+    UserController,
+    RoleController,
+    PermissionController
+)
 from .settings import PostgresSettings
-
 
 class PostgreSQL(UserController, RoleController, PermissionController, BaseService):
     postgres_settings: PostgresSettings
@@ -23,7 +25,7 @@ class PostgreSQL(UserController, RoleController, PermissionController, BaseServi
         engine = create_engine(
             f"postgresql+psycopg2://{self.postgres_settings.user}:{self.postgres_settings.password}@{self.postgres_settings.host}:{self.postgres_settings.port}/{self.postgres_settings.db}"
         )
-        CustomBaseModel.metadata.create_all(engine)
+        Base.metadata.create_all(engine)
         return sessionmaker(autoflush=False, bind=engine)
 
     @contextmanager

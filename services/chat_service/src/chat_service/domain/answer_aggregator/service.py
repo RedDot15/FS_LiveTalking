@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from base import CustomBaseModel, BaseService
+from base import BaseModel, BaseService
 from fastapi.encoders import jsonable_encoder
 from llm_client import LLMService, LLMServiceInput, MessageRole
 from logger import get_logger
@@ -14,13 +14,13 @@ logger = get_logger(__name__)
 
 
 
-class AnswerAggregatorInput(CustomBaseModel):
+class AnswerAggregatorInput(BaseModel):
     question: str
     context: list[str]
     character_name: str
     language: str = 'VIETNAMESE'
     
-class AnswerAggregatorOutput(CustomBaseModel):
+class AnswerAggregatorOutput(BaseModel):
 
     answer: str
     able_to_answer: bool

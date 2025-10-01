@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from base import CustomBaseModel
+from base import BaseModel
 
 from text_to_speech import XTTSSettings
 
-class LipRealSettings(CustomBaseModel):
+class LipRealSettings(BaseModel):
     W: int
     H: int
     fps: int
