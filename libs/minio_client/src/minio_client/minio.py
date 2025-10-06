@@ -10,7 +10,7 @@ import os
 
 logger = get_logger(__name__)
 
-class MinioInputs(BaseModel):
+class MinioInputs(CustomBaseModel):
     bucket_name: str
     src_file: str
     des_folder: str

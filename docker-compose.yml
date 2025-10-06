@@ -132,6 +132,45 @@ services:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - RAG_SERVICE_URL=${RAG_SERVICE_URL}
 
+  identity_service:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile
+      args:
+        - PYTHON_VERSION=python3.11
+        - PACKAGE=identity_service
+        - OPTIONAL_BUILD=src/identity_service/__init__.py
+    ports:
+      - "8762:8762"
+    networks:
+      - multidimension
+    command: uv run identity_service
+    volumes:
+      - type: bind
+        source: ./services/identity_service
+        target: /home/reunion/app/services/identity_service
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+    environment:
+      - FRONTEND_HOST=${FRONTEND_HOST}
+      - PROJECT_NAME=${PROJECT_NAME}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAILS_FROM_EMAIL=${EMAILS_FROM_EMAIL}
+      - SMTP_TLS=${SMTP_TLS}
+      - SMTP_SSL=${SMTP_SSL}
+      - SMTP_PORT=${SMTP_PORT}
+      - POSTGRES_SETTINGS__USER=${POSTGRES__USER}
+      - POSTGRES_SETTINGS__PASSWORD=${POSTGRES__PASSWORD}
+      - POSTGRES_SETTINGS__HOST=${POSTGRES__HOST}
+      - POSTGRES_SETTINGS__PORT=${POSTGRES__PORT}
+      - POSTGRES_SETTINGS__DB=${POSTGRES__DB}
+
   livetalking:
     build:
       context: .

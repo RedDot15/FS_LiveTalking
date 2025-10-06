@@ -40,3 +40,5 @@ voice_clone_data/
 services/voice_clone/infra/xtts/models/
 services/livetalking/src/livetalking/shared/models/wav2lip.pth
 minio
+
+FS_LiveTalking.code-workspace
