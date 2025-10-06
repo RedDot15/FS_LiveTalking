@@ -19,7 +19,7 @@ class ConversationHandler(BaseService):
 
     # Get conversation by id
     def get_conversation_by_id(self, conversation_id: str):
-        data = self.collection.find_one({"_id": ObjectId(conversation_id)})
+        data = self.collection.find_one({"_id": conversation_id})
         return data
     
     # Update conversation by id (can only update name)
@@ -28,13 +28,13 @@ class ConversationHandler(BaseService):
             "name": updated_conversation_name,
         }
         return self.collection.update_one(
-            {"_id": ObjectId(conversation_id)},
+            {"_id": conversation_id},
             {"$set": update_data}
         )
     
     # Delete conversation by id
     def delete_conversation_by_id(self, conversation_id: str):
-        return self.collection.delete_one({"_id": ObjectId(conversation_id)})
+        return self.collection.delete_one({"_id": conversation_id})
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")
