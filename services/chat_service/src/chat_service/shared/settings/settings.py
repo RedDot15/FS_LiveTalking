@@ -9,6 +9,7 @@ from pydantic_settings import BaseSettings
 from pydantic_settings import PydanticBaseSettingsSource
 from pydantic_settings import YamlConfigSettingsSource
 
+from mongo_client import MongoSettings
 from llm_client import LLMSetting
 from .answer_aggregator import AnswerAggregatorSettings
 
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     rag_service_url: str
     llm: LLMSetting
     answer_aggregator_settings: AnswerAggregatorSettings
-    
+    mongodb: MongoSettings
     
     class Config:
         env_nested_delimiter = '__'

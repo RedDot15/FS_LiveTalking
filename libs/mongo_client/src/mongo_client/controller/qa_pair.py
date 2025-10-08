@@ -11,10 +11,10 @@ class QAPairHandler(BaseService):
     # Create new qa_pair
     def create_qa_pair(self, qa_pair: QAPair):
         result = self.collection.insert_one(qa_pair.__dict__)
-        return result.inserted_id
+        return result
 
     # Get all qa_pairs by conversation_id with (created_at order: asc)
-    def get_qa_pair_by_conversation_id(self, conversation_id: str):
+    def get_qa_pairs_by_conversation_id(self, conversation_id: str):
         data = self.collection.find({"conversation_id": conversation_id}).sort("created_at", 1)
         return list(data)
     

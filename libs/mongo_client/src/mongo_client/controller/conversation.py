@@ -10,7 +10,7 @@ class ConversationHandler(BaseService):
     # Create new conversation
     def create_conversation(self, conversation: Conversation):
         result = self.collection.insert_one(conversation.__dict__)
-        return result.inserted_id
+        return result
 
     # Get all conversation by participants_hash with (created_at order: desc)
     def get_conversation_by_participants_hash(self, participants_hash: str):

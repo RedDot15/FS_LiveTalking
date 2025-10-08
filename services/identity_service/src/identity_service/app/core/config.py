@@ -28,11 +28,11 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    API_V1_STR: str
+    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str 
     ALGORITHM: str
     # 60 minutes
-    ACCESS_TOKEN_EXPIRE_MINUTES: int 
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     FRONTEND_HOST: str
 
     BACKEND_CORS_ORIGINS: Annotated[
@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     SMTP_USER: str | None 
     SMTP_PASSWORD: str | None 
     EMAILS_FROM_EMAIL: EmailStr | None
-    EMAILS_FROM_NAME: EmailStr | None
+    EMAILS_FROM_NAME: EmailStr | None = None
 
     @model_validator(mode="after")
     def _set_default_emails_from(self) -> Self:

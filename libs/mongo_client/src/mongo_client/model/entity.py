@@ -8,6 +8,7 @@ class Character:
 
 @dataclass
 class Conversation:
+    _id: str
     name: str
     participants_hash: str
     character_id: str
@@ -15,11 +16,11 @@ class Conversation:
 
 @dataclass
 class QAPair:
+    _id: str
     question: str
     answer: str
     response_time: int
-
-    conversation_id: str = field(default=None)
-    created_at: datetime = field(default=None)
-    updated_at: datetime = field(default=None)
+    created_at: datetime 
+    updated_at: datetime 
+    conversation_id: str 
 
