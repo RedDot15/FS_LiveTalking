@@ -25,24 +25,22 @@ if __name__ == "__main__":
     db_name = os.getenv("MONGO__DB")
     user = os.getenv("MONGO__USER")
     password = os.getenv("MONGO__PASSWORD")
-    host = os.getenv("MONGO__HOST")
-    port = os.getenv("MONGO__PORT")
+    host = 'localhost'
+    port = '27018'
 
     db_handler = MongoDBHandler(
-        mongo_settings = MongoSettings(
-            db=db_name, 
-            username=user, 
-            password=password, 
-            host=host, 
-            port=port
-        )
+        db=db_name, 
+        username=user, 
+        password=password, 
+        host=host, 
+        port=port
     )
     
     with db_handler.get_database() as db:
         ################# Character #################
-        char_handler = CharacterHandler(collection=db["characters"])
+        # char_handler = CharacterHandler(collection=db["characters"])
 
-        # new_char = Character(_id="68bd554c45e2ada165a9b582", name="AI Assistant 2")
+        # new_char = Character(_id="237c22ca-bc50-416d-a79f-b01459765349", name="AI Assistant 2")
         # print(char_handler.create_character(new_char))
 
         print(char_handler.get_character())
@@ -71,7 +69,7 @@ if __name__ == "__main__":
         ################# QA pair #################
         # qa_handler = QAPairHandler(collection=db["qa_pairs"])
 
-        # new_qa = QAPair(conversation_id="convo_456", question="What's the capital of France?", answer="Paris", created_at=datetime.now(), updated_at=datetime.now(), response_time=500)
+        # new_qa = QAPair(_id="e9949653-50ac-46ff-b943-66d0be9db690", conversation_id="4b28e333-5f5c-4a04-a242-ee9329edd51a", question="What's the capital of France?", answer="Paris", created_at=datetime.now(), updated_at=datetime.now(), response_time=500)
         # print(qa_handler.create_qa_pair(new_qa))
 
         # print(qa_handler.get_qa_pair_by_conversation_id("convo_456"))
