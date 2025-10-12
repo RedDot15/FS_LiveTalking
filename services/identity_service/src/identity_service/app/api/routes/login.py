@@ -4,8 +4,6 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
-from authorization import TokenPayload
-
 from identity_service.app.core.config import settings
 from identity_service.app.core.security import create_access_token, get_password_hash, verify_password, verify_token
 from identity_service.app.models import Message, NewPassword, Token
@@ -40,13 +38,21 @@ def login_access_token(
             )
         )
 
-@router.post("/login/test-token", response_model=TokenPayload)
-def test_token(token: Token) -> Any:
+@router.post("/test-token")
+def test_token(token: Token):
     """
     Test access token
     """
     print("Token received for testing:", token)  
-    return TokenPayload(**verify_token(token=token.access_token))
+    verify_token(token=token.access_token)
+
+@router.post("/logout")
+def logout(token: Token):
+    """
+    Logout access token
+    """
+    print("Logout token:", token)  
+    verify_token(token=token.access_token)
 
 @router.post("/password-recovery/{email}")
 def recover_password(request: Request, email: str) -> Message:
