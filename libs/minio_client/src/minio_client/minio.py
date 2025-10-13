@@ -22,7 +22,8 @@ class MinioConnection(BaseService):
     
     @property
     def client(self) -> Minio:
-        endpoint = f"{self.setting.host}:{self.setting.http_port}"
+        # endpoint = f"{self.setting.host}:{self.setting.http_port}"
+        endpoint = f"{self.setting.host}:9000"
         return Minio(
             endpoint = endpoint,
             access_key = self.setting.access_key,
@@ -78,7 +79,7 @@ class MinioConnection(BaseService):
         ---
         - Trả về : vị trí lưu file trên Minio
         """
-        des_path = f'/{des_folder_name}/{des_file_name}'
+        des_path = f'{des_folder_name}/{des_file_name}'
         if not self.check_file_name_exists(bucket_name=bucket_name,
                                         file_name=des_path):
             

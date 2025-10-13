@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from .settings import _MinioSettings, _MongoDBSettings
+from .settings import Settings
 
 __all__ = [
-    '_MinioSettings',
-    '_MongoDBSettings',
+    'Settings',
 ]

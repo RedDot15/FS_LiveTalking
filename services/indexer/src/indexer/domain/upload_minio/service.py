@@ -33,13 +33,21 @@ class CharacterOutputs(BaseModel):
 class CharacterUploadMinioService(BaseService):
     minio_client: MinioConnection
 
+    def get_final_url(self, full_path: str) -> str:
+        parts = full_path.split('/')
+        
+        last_two_parts = parts[-2:]
+        
+        return "/".join(last_two_parts)
+
     async def process(self, character_inputs: CharacterInputs):
         try:
             self.minio_client.make_bucket("reunion")
             file: UploadFile = character_inputs.knowledge_file
             temp_dir = "temp_files"
             os.makedirs(temp_dir, exist_ok=True)
-
+            object_name = character_inputs.name
+            # ================================KNOWLEDGE================================
             # Đường dẫn file tạm
             file_name = file.filename
             temp_file_path = os.path.join(temp_dir, file_name)
@@ -49,51 +57,62 @@ class CharacterUploadMinioService(BaseService):
                 shutil.copyfileobj(file.file, buffer)
 
             # Upload file knowledge lên MinIO 
-            object_name = character_inputs.name
+            file_type = "knowledges"
+            file_name = f"{file_type}/{file_name}"
             knowledge_url = self.minio_client.put_object(bucket_name="reunion",
-                                                                    src_file=temp_file_path,
-                                                                    des_folder_name=object_name,
-                                                                    des_file_name=file_name)
+                                                        src_file=temp_file_path,
+                                                        des_folder_name=object_name,
+                                                        des_file_name=file_name)
+            await file.seek(0)
             os.remove(temp_file_path)
-            
+            # ================================IMAGES================================
             avatar_image: UploadFile = character_inputs.avatar_image
+            file_name = avatar_image.filename
             temp_file_path = os.path.join(temp_dir, avatar_image.filename)
             # Lưu file người dùng upload vào thư mục tạm
             with open(temp_file_path, "wb") as buffer:
                 shutil.copyfileobj(avatar_image.file, buffer)
+            file_type = "images"
+            file_name = f"{file_type}/{file_name}"
 
             avatar_url = self.minio_client.put_object(bucket_name="reunion",
-                                                                src_file=temp_file_path,
-                                                                des_folder_name=object_name,
-                                                                des_file_name=avatar_image.filename)
+                                                        src_file=temp_file_path,
+                                                        des_folder_name=object_name,
+                                                        des_file_name=file_name)
 
+            await avatar_image.seek(0)
             os.remove(temp_file_path)
-            
+            # ================================AUDIOS================================
             audio_file: UploadFile = character_inputs.audio_file
+            file_name = audio_file.filename
             temp_file_path = os.path.join(temp_dir, audio_file.filename)
             # Lưu file người dùng upload vào thư mục tạm
             with open(temp_file_path, "wb") as buffer:
                 shutil.copyfileobj(audio_file.file, buffer)
+            file_type = "audios"
+            file_name = f"{file_type}/{file_name}"
 
             audio_url = self.minio_client.put_object(bucket_name="reunion",
                                                                 src_file=temp_file_path,
                                                                 des_folder_name=object_name,
-                                                                des_file_name=audio_file.filename)
+                                                                des_file_name=file_name)
 
+            await audio_file.seek(0)
             os.remove(temp_file_path)
             os.removedirs(temp_dir)
             
             return CharacterOutputs(
-                avatar_url=avatar_url,
-                knowledge_url=knowledge_url,
-                audio_url=audio_url,
+                avatar_url=self.get_final_url(avatar_url),
+                knowledge_url=self.get_final_url(knowledge_url),
+                audio_url=self.get_final_url(audio_url),
             )
         
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return CharacterOutputs(
-                avatar_url="FAIL",
-                knowledge_url="FAIL",
+                avatar_url=f"FAIL: {type(e).__name__}",
+                knowledge_url=str(e),
                 audio_url="FAIL",
             )
-            raise e
 

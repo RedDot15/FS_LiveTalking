@@ -11,23 +11,50 @@ from logger import get_logger
 from logger import setup_logging
 from minio_client import MinioConnection
 from mongo_client import MongoDBHandler
+from chromadb_client import ChromaDB
+from litellm import LiteLLMService
 
 from indexer.api.routers import index_router
-from indexer.shared.utils import get_minio_settings, get_mongodb_settings
+from indexer.shared.utils import get_settings
 from indexer.api.helpers import LoggingMiddleware
 
 setup_logging(json_logs=False, log_level='INFO')
 logger = get_logger('api')
 
-minio_settings = get_minio_settings()
-mongodb_settings = get_mongodb_settings()
+glb_settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.minio_settings = minio_settings
-    app.state.minio_client = MinioConnection(setting = app.state.minio_settings.minio)
-    app.state.mongodb_settings = mongodb_settings
-    app.state.mongodb_handler = MongoDBHandler(mongo_settings = app.state.mongodb_settings.mongo)
+    app.state.minio_settings = glb_settings.minio
+    app.state.minio_client = MinioConnection(setting = app.state.minio_settings)
+
+    app.state.mongodb_settings = glb_settings.mongo
+    app.state.mongodb_handler = MongoDBHandler(
+        db=app.state.mongodb_settings.db,
+        username=app.state.mongodb_settings.user,
+        password=app.state.mongodb_settings.password,
+        host=app.state.mongodb_settings.host,
+        port=app.state.mongodb_settings.port,
+    )
+
+    app.state.chromadb_settings = glb_settings.chromadb
+    app.state.chroma_client = ChromaDB(chromadb_setting = app.state.chromadb_settings)
+
+    app.state.litellm_settings = glb_settings.litellm
+    app.state.litellm_service = LiteLLMService(
+        url=app.state.litellm_settings.url,
+        model=app.state.litellm_settings.model,
+        embedding_model=app.state.litellm_settings.embedding_model,
+        frequency_penalty=app.state.litellm_settings.frequency_penalty,
+        n=app.state.litellm_settings.n,
+        presence_penalty=app.state.litellm_settings.presence_penalty,
+        temperature=app.state.litellm_settings.temperature,
+        top_p=app.state.litellm_settings.top_p,
+        max_completion_tokens=app.state.litellm_settings.max_completion_tokens,
+        encoding_format=app.state.litellm_settings.encoding_format,
+        dimensions=app.state.litellm_settings.dimensions,
+        max_length=app.state.litellm_settings.max_length,
+    )
     yield
 
 app = FastAPI(

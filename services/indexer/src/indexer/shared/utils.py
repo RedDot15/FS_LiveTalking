@@ -9,18 +9,14 @@ from functools import wraps
 
 from logger import get_logger
 
-from .settings import _MinioSettings, _MongoDBSettings
+from .settings import Settings
 
 logger = get_logger(__name__)
 
 
 @lru_cache
-def get_minio_settings():
-    return _MinioSettings()  # type: ignore
-
-@lru_cache
-def get_mongodb_settings():
-    return _MongoDBSettings()  # type: ignore
+def get_settings():
+    return Settings()  # type: ignore
 
 def clean_str(input: str) -> str:
     """Clean an input string by removing HTML escapes, control characters, and other unwanted characters."""

@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     app.state.settings = settings
     app.state.mongodb_client = MongoDBHandler(
         db=app.state.settings.mongodb.db,
-        username=app.state.settings.mongodb.username,
+        username=app.state.settings.mongodb.user,
         password=app.state.settings.mongodb.password,
         host=app.state.settings.mongodb.host,
         port=app.state.settings.mongodb.port,

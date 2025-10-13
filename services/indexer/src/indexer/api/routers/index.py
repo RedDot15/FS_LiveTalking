@@ -54,7 +54,6 @@ async def index(request: Request,
         )
     except Exception as e:
         raise e
-    print(response)
     
     return exception_handler.handle_success(
         # thanh cong

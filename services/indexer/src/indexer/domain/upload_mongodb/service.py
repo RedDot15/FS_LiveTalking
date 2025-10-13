@@ -7,27 +7,26 @@ import os
 import shutil
 from mongo_client import MongoDBHandler, MongoSettings
 from mongo_client.model import Character
+from mongo_client.controller import CharacterHandler
 
 class CharacterMongoDBInputs(BaseModel):
-    # character_id: str
+    character_id: str
     name: str
-    avatar_url: str
 
 class CharacterMongoDBOutputs(BaseModel):
     result: str
 
 class CharacterUploadMongoDBService(BaseService):
     db_handler: MongoDBHandler
-    async def upload_to_mongo(self, inputs: CharacterMongoDBInputs):
+    async def process(self, inputs: CharacterMongoDBInputs):
         new_character = Character(
             name = inputs.name,
-            avatar_url = inputs.avatar_url,
+            _id = inputs.character_id,
         )
         try:
-            result = self.db_handler.create_character(new_character)
+            with self.db_handler.get_database() as db:
+                char_handler = CharacterHandler(collection=db["characters"])
+                result = char_handler.create_character(new_character)
         except Exception as e:
             raise e
-        return CharacterMongoDBOutputs(result=result.inserted_id)
-    
-    async def process(self, inputs):
-        return super().process(inputs)
+        return CharacterMongoDBOutputs(result=str(result))

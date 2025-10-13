@@ -22,7 +22,8 @@ class MinioConnection(BaseService):
     
     @property
     def client(self) -> Minio:
-        endpoint = f"{self.setting.host}:{self.setting.http_port}"
+        # endpoint = f"{self.setting.host}:{self.setting.http_port}"
+        endpoint = f"{self.setting.host}:9000"
         return Minio(endpoint = endpoint,
                     access_key = self.setting.access_key,
                     secret_key = self.setting.secret_key,
