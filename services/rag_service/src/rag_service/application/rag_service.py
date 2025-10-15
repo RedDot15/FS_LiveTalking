@@ -9,6 +9,7 @@ from fastapi import Request
 
 
 class RagServiceInput(BaseModel):
+    character_id: str
     topk: int
     query: str 
     
@@ -25,6 +26,7 @@ class RagServiceApplication(BaseService):
         
         results = self.request.app.state.chromadb.process(
             input=ChromaDBInput(
+                character_id=input.character_id,
                 query=input.query,
                 topk=input.topk
             )
