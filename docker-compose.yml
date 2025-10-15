@@ -45,7 +45,6 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO__ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO__SECRET_KEY}
-
     command: server --console-address ":9001" /data
 
   postgres:
@@ -122,14 +121,13 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=chat_service
         - OPTIONAL_BUILD=src/chat_service/__init__.py
-  
     ports:
-      - 3000:3000
-    
+      - "3000:3000"
+    depends_on:
+      - mongodb
     networks:
       - multidimension
     command: uv run chat_service
-
     volumes:
       - type: bind
         source: ./services/chat_service
@@ -137,10 +135,15 @@ services:
       - type: bind
         source: ./libs/
         target: /home/reunion/app/libs/
-
     environment:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - RAG_SERVICE_URL=${RAG_SERVICE_URL}
+      - LIVETALKING_SERVICE_URL=${LIVETALKING_SERVICE_URL}
+      - MONGODB__HOST=${MONGO__HOST}
+      - MONGODB__PORT=27017
+      - MONGODB__USERNAME=${MONGO__USER}
+      - MONGODB__PASSWORD=${MONGO__PASSWORD}
+      - MONGODB__DB=${MONGO__DB}
 
   identity_service:
     build:
@@ -191,14 +194,11 @@ services:
         - PACKAGE=livetalking
         - OPTIONAL_BUILD=src/livetalking/__init__.py
         - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
-  
     ports:
-      - 8010:8010
-    
+      - "8010:8010"
     networks:
       - multidimension
     command: uv run livetalking
-
     volumes:
       - type: bind
         source: ./services/livetalking
@@ -207,7 +207,6 @@ services:
         source: ./libs/
         target: /home/reunion/app/libs/
       - ./data:/home/reunion/app/data
-
     deploy:
       resources:
         reservations:
@@ -215,7 +214,6 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-
     environment:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - LLM__MODEL_NAME=${LLM__MODEL_NAME}
@@ -230,14 +228,11 @@ services:
     build:
       context: .
       dockerfile: dockers/Dockerfile.sadtalker
-
     ports:
       - "3636:3636"
-    
     networks:
       - multidimension
     command: uvicorn main:app --host 0.0.0.0 --port 3636 --reload
-
     volumes:
       - type: bind
         source: ./services/sadtalker
@@ -246,16 +241,13 @@ services:
         source: ./libs/
         target: /home/reunion/app/libs/
       - ./sadtalker_data:/sadtalker/results
-
     environment:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
       - MINIO__HOST=${MINIO__HOST}
       - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
-
     depends_on:
       - minio
-      
     deploy:
       resources:
         reservations:
@@ -305,10 +297,8 @@ services:
     build:
       context: .
       dockerfile: dockers/Dockerfile.voice_clone
-
     ports:
       - "8002:8002"
-    
     networks:
       - multidimension
     command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
@@ -317,16 +307,13 @@ services:
         source: ./services/voice_clone
         target: /home/reunion/app/services/voice_clone
       - ./voice_clone_data:/voice_clone/results
-
     environment:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
       - MINIO__HOST=${MINIO__HOST}
       - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
-
     depends_on:
       - minio
-
     deploy:
       resources:
         reservations:
@@ -343,17 +330,13 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=character_service
         - OPTIONAL_BUILD=src/character_service/__init__.py
-
     ports:
       - "3006:3006"
-
     depends_on:
       - mongodb
-    
     networks:
       - multidimension
     command: uv run character_service
-
     volumes:
       - type: bind
         source: ./services/character_service
@@ -372,7 +355,6 @@ services:
     build:
       context: .
       dockerfile: dockers/Dockerfile.frontend
-
     volumes:
       - type: bind
         source: ./web
@@ -382,7 +364,6 @@ services:
         target: /etc/nginx/nginx.conf
     networks:
       - multidimension
-
     container_name: frontend
     ports:
       - "8080:80"

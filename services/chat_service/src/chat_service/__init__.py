@@ -51,7 +51,7 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-app.include_router(chat_router)
+# app.include_router(chat_router)
 app.include_router(conversation_router)
 app.include_router(qa_pairs_router)
 

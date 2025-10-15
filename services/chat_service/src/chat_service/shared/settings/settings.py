@@ -17,6 +17,7 @@ load_dotenv(find_dotenv('.env'), override=True)
 
 class Settings(BaseSettings):
 
+    livetalking_service_url: str
     rag_service_url: str
     llm: LLMSetting
     answer_aggregator_settings: AnswerAggregatorSettings
