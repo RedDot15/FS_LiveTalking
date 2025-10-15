@@ -6,6 +6,8 @@ from base import BaseModel, BaseService
 from logger import get_logger
 from pydantic import ConfigDict, Field
 
+from mongo_client.controller import QAPairHandler
+
 from chat_service.domain.answer_aggregator import (
     AnswerAggregatorInput,
     AnswerAggregatorService,
@@ -15,7 +17,9 @@ from chat_service.shared.tools import get_context
 logger = get_logger(__name__)
 class ChatServiceInput(BaseModel):
     question: str
+    character_id: str
     character_name: str
+    conversation_id: str | None
     
     
 class ChatServiceOutput(BaseModel):
@@ -34,16 +38,26 @@ class ChatServiceApplication(BaseService):
             llm=self.request.app.state.llm,
             settings=self.settings.answer_aggregator_settings
         )
+    
     async def process(self, input: ChatServiceInput) -> ChatServiceOutput:
-        context = await get_context(question=input.question)
+        context = await get_context(character_id=input.character_id, question=input.question)
         
         logger.info(f'Total context is: {len(context)}')
         
+        if input.conversation_id:
+            with self.request.app.state.mongodb_client.get_database() as mongodb:
+                try:
+                    qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
+                    qa_pairs = qa_pair_handler.get_k_most_recent_qa_pair_by_conversation_id(conversation_id=input.conversation_id, k=3)
+                except Exception as e:
+                    raise Exception(f"Error accessing MongoDB: {str(e)}")
+
         answer = await self.answer_aggregator.process(
             inputs=AnswerAggregatorInput(
                 question=input.question,
                 context=context,
-                character_name=input.character_name
+                character_name=input.character_name,
+                qa_pairs=qa_pairs
             )
         )
         

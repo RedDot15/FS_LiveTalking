@@ -60,4 +60,8 @@ ANSWER_AGGREGATOR_USER_PROMPT = """
 <context>
 {context}
 </context>
+
+<qa_pairs>
+{qa_pairs}
+</qa_pairs>
 """

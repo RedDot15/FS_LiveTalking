@@ -3,8 +3,8 @@ from __future__ import annotations
 from .chat_service import ChatServiceInput
 from .chat_service import ChatServiceOutput
 from .chat_service import ChatServiceApplication
-from .conversation_service import ConversationInput
-from .conversation_service import ConversationOutput
+from .conversation_service import ConversationInput, CreateConversationInput
+from .conversation_service import ConversationOutput, CreateConversationOutput
 from .conversation_service import ConversationService
 from .qa_pair_service import QAPairInput
 from .qa_pair_service import QAPairOutput
@@ -15,6 +15,8 @@ __all__ = ['ChatServiceInput',
            'ChatServiceApplication',
            'ConversationInput',
            'ConversationOutput',
+           'CreateConversationInput',
+           'CreateConversationOutput',
            'ConversationService',
            'QAPairInput',
            'QAPairOutput',

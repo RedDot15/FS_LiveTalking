@@ -18,6 +18,7 @@ class AnswerAggregatorInput(BaseModel):
     question: str
     context: list[str]
     character_name: str
+    qa_pairs: list | None
     language: str = 'VIETNAMESE'
     
 class AnswerAggregatorOutput(BaseModel):
@@ -32,12 +33,12 @@ class AnswerAggregatorService(BaseService):
     
     async def process(self, inputs: AnswerAggregatorInput) -> AnswerAggregatorOutput:
         
-        
         message = self.build_conversation(
-            context=inputs.context[: self.settings.context_window],
+            context=inputs.context[:self.settings.context_window],
             raw_question=inputs.question,
             character_name=inputs.character_name,
             language=inputs.language,
+            qa_pairs=inputs.qa_pairs
         )
         
         response = await self.llm.aprocess(
@@ -45,7 +46,6 @@ class AnswerAggregatorService(BaseService):
                 message=message,
                 return_type=AnswerAggregatorModel,
                 model=self.settings.model,
-                
             ),
         )
         
@@ -74,6 +74,7 @@ class AnswerAggregatorService(BaseService):
         context: str,
         raw_question: str,
         character_name: str,
+        qa_pairs: list,
         language: str
     ) -> list[dict]:
         """
@@ -104,6 +105,7 @@ class AnswerAggregatorService(BaseService):
                 'content': ANSWER_AGGREGATOR_USER_PROMPT.format(
                     context=context,
                     raw_question=raw_question,
+                    qa_pairs=qa_pairs
                 ),
             },
         ]
