@@ -9,6 +9,7 @@ from chromadb.config import Settings
 # from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 
 class ChromaDBInput(BaseModel):
+    character_id: str
     query: str
     topk: int = 10
     
@@ -20,8 +21,8 @@ class ChromaDB(BaseService):
     chromadb_setting: ChromaDBSetting
     
     @property
-    def client(self) -> chromadb.HttpClient:
-        http_client = chromadb.HttpClient(
+    def client(self) -> chromadb.ClientAPI:
+        return chromadb.HttpClient(
             host=self.chromadb_setting.host,
             port=self.chromadb_setting.port,
             settings=Settings(
@@ -29,23 +30,16 @@ class ChromaDB(BaseService):
                 anonymized_telemetry=self.chromadb_setting.anonymized_telemetry
             )
         )
-        
-        return http_client.get_or_create_collection(
-            name=self.chromadb_setting.document_collections,
-            # embedding_function=SentenceTransformerEmbeddingFunction(
-            #     model_name=self.chromadb_setting.model_name
-            # )
-        )
     
-    def add_document(self, documents: list[str], metadatas: list[dict], ids: list):
-        self.client.add(
-            documents=documents, 
-            metadatas=metadatas, 
-            ids=ids
+    def add_document(self, character_id: str, documents: list[str], metadatas: list[dict], ids: list):
+        self.client.get_or_create_collection(name=character_id).add(
+                documents=documents, 
+                metadatas=metadatas, 
+                ids=ids
         )
         
     def process(self, input: ChromaDBInput) -> ChromaDBOutput:
-        results = self.client.query(
+        results = self.client.get_or_create_collection(name=input.character_id).query(
             query_texts=input.query,
             n_results=input.topk
         )
