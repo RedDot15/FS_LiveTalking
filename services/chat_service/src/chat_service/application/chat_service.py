@@ -24,6 +24,7 @@ class ChatServiceInput(BaseModel):
     
 class ChatServiceOutput(BaseModel):
     answer: str
+    conversation_summary: str | None
     
     
 class ChatServiceApplication(BaseService):
@@ -61,4 +62,7 @@ class ChatServiceApplication(BaseService):
             )
         )
         
-        return ChatServiceOutput(answer=answer.answer)
+        return ChatServiceOutput(
+            answer=answer.answer,
+            conversation_summary=answer.conversation_summary    
+        )

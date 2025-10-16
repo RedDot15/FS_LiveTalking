@@ -7,16 +7,13 @@ import uuid
 from base import BaseModel, BaseService
 from logger import get_logger
 from pydantic import ConfigDict, Field
-from fastapi import Request
 
-from chat_service.shared.utils import get_settings
 from chat_service.shared.tools import request_livetalking_echo
 
 from .chat_service import ChatServiceApplication, ChatServiceInput
 
 from mongo_client.controller import ConversationHandler, CharacterHandler, QAPairHandler
 from mongo_client.model import Conversation, QAPair
-
 
 logger = get_logger(__name__)
 
@@ -81,20 +78,21 @@ class ConversationService(BaseService):
                     character_name=character.name,
                     conversation_id=None))
                 answer = chat_service_output.answer
+                conversation_summary = chat_service_output.conversation_summary
 
                 # Record end time
                 end_time = datetime.now()
                 # Calculate response duration in seconds (as a float or string)
                 response_duration = (end_time - start_time).microseconds() 
 
-                # TODO: Call to LiveTalking
+                # Request LiveTalking to echo
                 request_livetalking_echo(answer, input.sessionid)
 
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation = conversation_handler.create_conversation(conversation=Conversation(
                     _id=uuid.uuid4(), 
-                    name=answer, 
+                    name=conversation_summary or input.question[:50],
                     participants_hash=participants_hash, 
                     character_id=input.character_id, 
                     created_at=datetime.now()))

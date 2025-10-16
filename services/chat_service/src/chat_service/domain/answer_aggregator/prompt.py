@@ -47,6 +47,7 @@ Your task is to answer the raw_question faithfully in {language}, using only the
 - Your answer must be returned in a structured format with all required fields as defined by the schema, including:
   + answer: Your response, which is the answer to the user's question or the fixed response above if there is no relevant information.
   + able_to_answer: true if you can answer the question based on the provided context, false otherwise.
+  + conversation_summary: A **concise summary** (maximum 5 words) that titles the conversation based on the **raw_question** and the **answer**. This must be in {language}. If the answer is the fixed phrase, this field should be null or an empty string.
 - Always include all required fields in your output, even if they are failed, empty or false.
 </output>
 

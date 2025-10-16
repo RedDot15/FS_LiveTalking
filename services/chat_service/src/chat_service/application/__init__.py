@@ -6,8 +6,8 @@ from .chat_service import ChatServiceApplication
 from .conversation_service import ConversationInput, CreateConversationInput
 from .conversation_service import ConversationOutput, CreateConversationOutput
 from .conversation_service import ConversationService
-from .qa_pair_service import QAPairInput
-from .qa_pair_service import QAPairOutput
+from .qa_pair_service import QAPairInput, CreateQAPairInput
+from .qa_pair_service import QAPairOutput, CreateQAPairOutput
 from .qa_pair_service import QAPairService
 
 __all__ = ['ChatServiceInput',
@@ -20,4 +20,6 @@ __all__ = ['ChatServiceInput',
            'ConversationService',
            'QAPairInput',
            'QAPairOutput',
+           'CreateQAPairInput',
+           'CreateQAPairOutput',
            'QAPairService']

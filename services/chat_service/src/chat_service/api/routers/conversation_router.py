@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 settings = get_settings()
 
 @conversation_router.get('/conversations')
-async def get_conversations_by_character_id(request: Request, current_token: CurrentToken, character_id: str, background_tasks: BackgroundTasks) -> JSONResponse:
+async def get_conversations_by_character_id(request: Request, current_token: CurrentToken, body: ConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -34,14 +34,12 @@ async def get_conversations_by_character_id(request: Request, current_token: Cur
         )
 
     try:
+        body.user_id = current_token.id
         response = await conversation_service.process(
-            input=ConversationInput(
-                user_id=current_token.id,
-                character_id=character_id
-            )
+            input=body
         )
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': character_id})
+        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': body.character_id})
 
     return exception_handler.handle_success(
         jsonable_encoder(
@@ -50,7 +48,7 @@ async def get_conversations_by_character_id(request: Request, current_token: Cur
     )
 
 @conversation_router.post('/conversations')
-async def create_new_conversation(request: Request, current_token: CurrentToken, question: str, character_id: str, sessionid: int, background_tasks: BackgroundTasks) -> JSONResponse:
+async def create_new_conversation(request: Request, current_token: CurrentToken, body: CreateConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -68,16 +66,12 @@ async def create_new_conversation(request: Request, current_token: CurrentToken,
         )
 
     try:
+        body.user_id = current_token.id
         response = await conversation_service.create_new_conversation(
-            input=CreateConversationInput(
-                question=question,
-                user_id=current_token.id,
-                character_id=character_id,
-                sessionid=sessionid
-            )
+            input=body
         )
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': character_id})
+        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': body.character_id})
 
     return exception_handler.handle_success(
         jsonable_encoder(

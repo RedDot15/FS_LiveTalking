@@ -12,3 +12,5 @@ class AnswerAggregatorModel(BaseModel):
     able_to_answer: bool = Field(
         description='Indicates whether the system was able to provide a meaningful answer',
     )
+
+    conversation_summary: str | None = None

@@ -22,9 +22,9 @@ class AnswerAggregatorInput(BaseModel):
     language: str = 'VIETNAMESE'
     
 class AnswerAggregatorOutput(BaseModel):
-
     answer: str
     able_to_answer: bool
+    conversation_summary: str | None
     
 class AnswerAggregatorService(BaseService):
     
@@ -34,7 +34,7 @@ class AnswerAggregatorService(BaseService):
     async def process(self, inputs: AnswerAggregatorInput) -> AnswerAggregatorOutput:
         
         message = self.build_conversation(
-            context=inputs.context[:self.settings.context_window],
+            context="\n\n".join(inputs.context[:self.settings.context_window]),
             raw_question=inputs.question,
             character_name=inputs.character_name,
             language=inputs.language,
@@ -49,6 +49,7 @@ class AnswerAggregatorService(BaseService):
             ),
         )
         
+        # TODO: self._create_empty_output()
         if not response:
             return self._create_empty_output()
 
@@ -66,6 +67,7 @@ class AnswerAggregatorService(BaseService):
         return AnswerAggregatorOutput(
             answer=answer_aggregator_output.answer,
             able_to_answer=answer_aggregator_output.able_to_answer,
+            conversation_summary=answer_aggregator_output.conversation_summary
         )
         
     
