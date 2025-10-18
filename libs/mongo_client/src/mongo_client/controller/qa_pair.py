@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Any
 from ..model import QAPair
-from bson.objectid import ObjectId
 from base import BaseService
 from pymongo.collection import Collection
 
@@ -22,9 +21,13 @@ class QAPairHandler(BaseService):
     def get_k_most_recent_qa_pair_by_conversation_id(self, conversation_id: str, k: int):
         data = self.collection.find({"conversation_id": conversation_id}).sort("created_at", -1).limit(k)
         return list(data)
-    
+
+    def get_qa_pair_by_id(self, qa_pair_id: str):
+        data = self.collection.find_one({"_id": qa_pair_id})
+        return data
+
     # Update qa_pair by id ( can only update (question,answer,response_time) )
-    def update_qa_pair_by_id(self, qa_pair_id: str, qa_pair: QAPair):
+    def update_qa_pair_by_id(self, qa_pair: QAPair):
         update_data = {
             "question": qa_pair.question,
             "answer": qa_pair.answer,
@@ -32,7 +35,7 @@ class QAPairHandler(BaseService):
             "updated_at": datetime.now()
         }
         return self.collection.update_one(
-            {"_id": qa_pair_id},
+            {"_id": qa_pair._id},
             {"$set": update_data}
         )
     

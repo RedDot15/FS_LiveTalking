@@ -1,6 +1,5 @@
 from typing import Any
 from ..model import Conversation
-from bson.objectid import ObjectId
 from base import BaseService
 from pymongo.collection import Collection
 
