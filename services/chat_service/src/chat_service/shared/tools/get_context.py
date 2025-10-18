@@ -17,7 +17,7 @@ async def get_context(character_id: str, question: str) -> list[str]:
     try:
         settings = get_settings()
         async with httpx.AsyncClient() as client:
-            response = await client.get(
+            response = await client.post(
                 url=settings.rag_service_url,
                 json={
                     'character_id': character_id,

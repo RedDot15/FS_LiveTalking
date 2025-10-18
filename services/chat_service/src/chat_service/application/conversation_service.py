@@ -6,11 +6,12 @@ import uuid
 
 from base import BaseModel, BaseService
 from logger import get_logger
+from mongo_client.model.entity import Character
 from pydantic import ConfigDict, Field
 
 from chat_service.shared.tools import request_livetalking_echo
 
-from .chat_service import ChatServiceApplication, ChatServiceInput
+from .chat_service import ChatServiceApplication, ChatServiceInput, ChatServiceOutput
 
 from mongo_client.controller import ConversationHandler, CharacterHandler, QAPairHandler
 from mongo_client.model import Conversation, QAPair
@@ -26,12 +27,19 @@ class ConversationOutput(BaseModel):
 
 class CreateConversationInput(BaseModel):
     question: str
-    user_id: str
+    user_id: str = "default"
     character_id: str
     sessionid: int
 
 class CreateConversationOutput(BaseModel):
     answer: str
+    
+class DeleteConversationInput(BaseModel):
+    conversation_id: str
+    user_id: str = "default"
+
+class DeleteConversationOutput(BaseModel):
+    conversation_id: str
     
 class ConversationService(BaseService):
     
@@ -66,48 +74,71 @@ class ConversationService(BaseService):
             try:
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
-                character = character_handler.get_character_by_id(character_id=input.character_id)
+                character: Character = character_handler.get_character_by_id(character_id=input.character_id)
 
                 # Record start time
                 start_time = datetime.now()
 
                 # Get response from llm
-                chat_service_output = chat_service.process(ChatServiceInput(
+                chat_service_output: ChatServiceOutput = await chat_service.process(ChatServiceInput(
                     question=input.question, 
                     character_id=input.character_id, 
-                    character_name=character.name,
-                    conversation_id=None))
+                    character_name=character['name'],
+                    conversation_id=None,
+                    add_summary=True))
                 answer = chat_service_output.answer
                 conversation_summary = chat_service_output.conversation_summary
+                
+                print("answer:", answer)
+                print("summary:", conversation_summary)
 
                 # Record end time
                 end_time = datetime.now()
                 # Calculate response duration in seconds (as a float or string)
-                response_duration = (end_time - start_time).microseconds() 
+                response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                request_livetalking_echo(answer, input.sessionid)
+                await request_livetalking_echo(answer, input.sessionid)
 
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
-                conversation = conversation_handler.create_conversation(conversation=Conversation(
-                    _id=uuid.uuid4(), 
+                conversation: Conversation = conversation_handler.create_conversation(conversation=Conversation(
+                    _id=str(uuid.uuid4()), 
                     name=conversation_summary or input.question[:50],
                     participants_hash=participants_hash, 
                     character_id=input.character_id, 
                     created_at=datetime.now()))
 
+
                 # Insert into DB new qa_pair
                 qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
                 qa_pair_handler.create_qa_pair(QAPair(
-                    _id=uuid.uuid4(), 
+                    _id=str(uuid.uuid4()), 
                     question=input.question, 
                     answer=answer, 
                     response_time=str(response_duration), 
                     created_at=datetime.now(), 
                     updated_at=datetime.now(), 
-                    conversation_id=conversation._id))
+                    conversation_id=conversation.inserted_id))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
         return CreateConversationOutput(answer=answer)
+    
+    async def delete_conversation(self, input: DeleteConversationInput) -> DeleteConversationOutput:
+
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                # Get character
+                conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
+
+                # Validate conversation owner
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
+                    raise Exception(f"Unauthorize user: {input.user_id}")
+
+                conversation_handler.delete_conversation_by_id(conversation_id=input.conversation_id)
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+
+        return CreateConversationOutput(answer=input.conversation_id)

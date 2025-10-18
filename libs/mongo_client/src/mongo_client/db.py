@@ -6,6 +6,7 @@ from pymongo.database import Database
 from .settings import MongoSettings
 from base import BaseService
 from contextlib import contextmanager
+from bson.binary import UuidRepresentation
 
 class MongoDBHandler:
 

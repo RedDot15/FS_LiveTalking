@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from base import BaseModel
 from base import BaseService
+from logger import get_logger
 from chromadb_client import ChromaDB
 from chromadb_client import ChromaDBInput
 
 from fastapi import Request
 
+logger = get_logger(__name__)
 
 class RagServiceInput(BaseModel):
     character_id: str
@@ -32,4 +34,6 @@ class RagServiceApplication(BaseService):
             )
         )
         
+        logger.info(f'rag results: {results}')
+
         return RagServiceOutput(results=results.results)

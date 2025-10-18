@@ -5,10 +5,10 @@ from fastapi.encoders import jsonable_encoder
 from llm_client import LLMService, LLMServiceInput, MessageRole
 from logger import get_logger
 
-from chat_service.shared.models import AnswerAggregatorModel
+from chat_service.shared.models import AnswerAggregatorModel, NoSummaryAnswerAggregatorModel
 from chat_service.shared.settings import AnswerAggregatorSettings
 
-from .prompt import ANSWER_AGGREGATOR_SYSTEM_PROMPT, ANSWER_AGGREGATOR_USER_PROMPT
+from .prompt import ANSWER_AGGREGATOR_SYSTEM_PROMPT, ANSWER_AGGREGATOR_USER_PROMPT, NO_SUMMARY_ANSWER_AGGREGATOR_SYSTEM_PROMPT
 
 logger = get_logger(__name__)
 
@@ -20,6 +20,7 @@ class AnswerAggregatorInput(BaseModel):
     character_name: str
     qa_pairs: list | None
     language: str = 'VIETNAMESE'
+    add_summary: bool
     
 class AnswerAggregatorOutput(BaseModel):
     answer: str
@@ -38,25 +39,42 @@ class AnswerAggregatorService(BaseService):
             raw_question=inputs.question,
             character_name=inputs.character_name,
             language=inputs.language,
-            qa_pairs=inputs.qa_pairs
+            qa_pairs=inputs.qa_pairs,
+            add_summary=inputs.add_summary
         )
+
+        logger.info(f'message: {message}')
         
-        response = await self.llm.aprocess(
-            LLMServiceInput(
-                message=message,
-                return_type=AnswerAggregatorModel,
-                model=self.settings.model,
-            ),
-        )
+        if inputs.add_summary:
+            response = await self.llm.aprocess(
+                LLMServiceInput(
+                    message=message,
+                    return_type=AnswerAggregatorModel,
+                    model=self.settings.model,
+                ),
+            )
+        else:
+            response = await self.llm.aprocess(
+                LLMServiceInput(
+                    message=message,
+                    return_type=NoSummaryAnswerAggregatorModel,
+                    model=self.settings.model,
+                ),
+            )
         
         # TODO: self._create_empty_output()
         if not response:
             return self._create_empty_output()
 
-        answer_aggregator_output = AnswerAggregatorModel(
-            **jsonable_encoder(response.response),
-        )
-        
+        if inputs.add_summary:
+            answer_aggregator_output = AnswerAggregatorModel(
+                **jsonable_encoder(response.response),
+            )
+        else:
+            answer_aggregator_output = NoSummaryAnswerAggregatorModel(
+                **jsonable_encoder(response.response),
+            )
+
         logger.info(
             'Answer aggregation processing completed successfully',
             extra={
@@ -67,7 +85,7 @@ class AnswerAggregatorService(BaseService):
         return AnswerAggregatorOutput(
             answer=answer_aggregator_output.answer,
             able_to_answer=answer_aggregator_output.able_to_answer,
-            conversation_summary=answer_aggregator_output.conversation_summary
+            conversation_summary=answer_aggregator_output.conversation_summary if hasattr(answer_aggregator_output, 'conversation_summary') else None
         )
         
     
@@ -77,7 +95,8 @@ class AnswerAggregatorService(BaseService):
         raw_question: str,
         character_name: str,
         qa_pairs: list,
-        language: str
+        language: str,
+        add_summary: str
     ) -> list[dict]:
         """
         Build conversation messages for LLM processing.
@@ -94,20 +113,39 @@ class AnswerAggregatorService(BaseService):
         Returns:
             list[dict]: List of message dictionaries with role and content for LLM processing
         """
-        return [
-            {
-                'role': MessageRole.SYSTEM,
-                'content': ANSWER_AGGREGATOR_SYSTEM_PROMPT.format(
-                    language=language, 
-                    character_name=character_name
-                ),
-            },
-            {
-                'role': MessageRole.USER,
-                'content': ANSWER_AGGREGATOR_USER_PROMPT.format(
-                    context=context,
-                    raw_question=raw_question,
-                    qa_pairs=qa_pairs
-                ),
-            },
-        ]
+        if add_summary:
+            return [
+                {
+                    'role': MessageRole.SYSTEM,
+                    'content': ANSWER_AGGREGATOR_SYSTEM_PROMPT.format(
+                        language=language, 
+                        character_name=character_name
+                    ),
+                },
+                {
+                    'role': MessageRole.USER,
+                    'content': ANSWER_AGGREGATOR_USER_PROMPT.format(
+                        context=context,
+                        raw_question=raw_question,
+                        qa_pairs=qa_pairs
+                    ),
+                },
+            ]
+        else:
+            return [
+                {
+                    'role': MessageRole.SYSTEM,
+                    'content': NO_SUMMARY_ANSWER_AGGREGATOR_SYSTEM_PROMPT.format(
+                        language=language, 
+                        character_name=character_name
+                    ),
+                },
+                {
+                    'role': MessageRole.USER,
+                    'content': ANSWER_AGGREGATOR_USER_PROMPT.format(
+                        context=context,
+                        raw_question=raw_question,
+                        qa_pairs=qa_pairs
+                    ),
+                },
+            ]

@@ -20,6 +20,7 @@ class ChatServiceInput(BaseModel):
     character_id: str
     character_name: str
     conversation_id: str | None
+    add_summary: bool
     
     
 class ChatServiceOutput(BaseModel):
@@ -42,9 +43,12 @@ class ChatServiceApplication(BaseService):
     
     async def process(self, input: ChatServiceInput) -> ChatServiceOutput:
         context = await get_context(character_id=input.character_id, question=input.question)
-        
+
         logger.info(f'Total context is: {len(context)}')
+        logger.info(f'Context: {context}')
         
+        qa_pairs = []
+
         if input.conversation_id:
             with self.request.app.state.mongodb_client.get_database() as mongodb:
                 try:
@@ -58,11 +62,12 @@ class ChatServiceApplication(BaseService):
                 question=input.question,
                 context=context,
                 character_name=input.character_name,
-                qa_pairs=qa_pairs
+                qa_pairs=qa_pairs,
+                add_summary=input.add_summary
             )
         )
         
         return ChatServiceOutput(
             answer=answer.answer,
-            conversation_summary=answer.conversation_summary    
+            conversation_summary=answer.conversation_summary or None
         )

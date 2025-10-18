@@ -10,7 +10,7 @@ from rag_service.application import RagServiceApplication, RagServiceInput
 rag_router = APIRouter(prefix='/v1')
 logger = get_logger(__name__)
 
-@rag_router.get('/rag')
+@rag_router.post('/rag')
 async def query(request: Request, rag_input: RagServiceInput, background_tasks: BackgroundTasks) -> JSONResponse:
     
     exception_handler = ExceptionHandler(

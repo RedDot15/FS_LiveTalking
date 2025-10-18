@@ -20,7 +20,7 @@ class QAPair:
     question: str
     answer: str
     response_time: int
-    created_at: datetime 
-    updated_at: datetime 
-    conversation_id: str 
+    created_at: datetime = None
+    updated_at: datetime = None
+    conversation_id: str = None
 

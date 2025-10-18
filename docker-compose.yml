@@ -122,7 +122,7 @@ services:
         - PACKAGE=chat_service
         - OPTIONAL_BUILD=src/chat_service/__init__.py
     ports:
-      - "3000:3000"
+      - 3000:3000
     depends_on:
       - mongodb
     networks:
@@ -136,12 +136,14 @@ services:
         source: ./libs/
         target: /home/reunion/app/libs/
     environment:
+      - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - RAG_SERVICE_URL=${RAG_SERVICE_URL}
       - LIVETALKING_SERVICE_URL=${LIVETALKING_SERVICE_URL}
       - MONGODB__HOST=${MONGO__HOST}
       - MONGODB__PORT=27017
-      - MONGODB__USERNAME=${MONGO__USER}
+      - MONGODB__USER=${MONGO__USER}
       - MONGODB__PASSWORD=${MONGO__PASSWORD}
       - MONGODB__DB=${MONGO__DB}
 
@@ -195,7 +197,7 @@ services:
         - OPTIONAL_BUILD=src/livetalking/__init__.py
         - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
     ports:
-      - "8010:8010"
+      - 8010:8010
     networks:
       - multidimension
     command: uv run livetalking
@@ -298,7 +300,7 @@ services:
       context: .
       dockerfile: dockers/Dockerfile.voice_clone
     ports:
-      - "8002:8002"
+      - 8002:8002
     networks:
       - multidimension
     command: uvicorn main:app --host 0.0.0.0 --port 8002 --reload
@@ -346,10 +348,15 @@ services:
         target: /home/reunion/app/libs/
     environment:
       - MONGODB__HOST=${MONGO__HOST}
-      - MONGODB__PORT=27017
+      - MONGODB__PORT=${MONGO__PORT}
       - MONGODB__USER=${MONGO__USER}
       - MONGODB__PASSWORD=${MONGO__PASSWORD}
       - MONGODB__DB=${MONGO__DB}
+      - MINIO__HOST=${MINIO__HOST}
+      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
+      - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
+      - INDEXER_SERVICE_URL=${INDEXER_SERVICE_URL}
 
   frontend:
     build:

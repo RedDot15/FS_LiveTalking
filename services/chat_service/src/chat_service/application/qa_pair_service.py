@@ -26,16 +26,16 @@ class QAPairOutput(BaseModel):
 class CreateQAPairInput(BaseModel):
     conversation_id: str
     question: str
-    user_id: str
+    user_id: str = "default"
     sessionid: int
 
 class CreateQAPairOutput(BaseModel):
     answer: str
 
 class UpdateQAPairInput(BaseModel):
-    qa_pair_id: str
+    qa_pair_id: str = "default"
     question: str
-    user_id: str
+    user_id: str = "default"
     sessionid: int
 
 class UpdateQAPairOutput(BaseModel):
@@ -73,42 +73,43 @@ class QAPairService(BaseService):
                 conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
 
                 # Validate conversation owner
-                if conversation.participants_hash.split('_')[0] != input.user_id:
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
 
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
-                character = character_handler.get_character_by_id(character_id=conversation.character_id)
+                character = character_handler.get_character_by_id(character_id=conversation['character_id'])
 
                 # Record start time
                 start_time = datetime.now()
 
                 # Get response from llm
-                chat_service_output = chat_service.process(ChatServiceInput(
+                chat_service_output = await chat_service.process(ChatServiceInput(
                     question=input.question, 
-                    character_id=conversation.character_id, 
-                    character_name=character.name,
-                    conversation_id=None))
+                    character_id=conversation['character_id'], 
+                    character_name=character['name'],
+                    conversation_id=conversation['_id'],
+                    add_summary=False))
                 answer = chat_service_output.answer
 
                 # Record end time
                 end_time = datetime.now()
                 # Calculate response duration in seconds (as a float or string)
-                response_duration = (end_time - start_time).microseconds() 
+                response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                request_livetalking_echo(answer, input.sessionid)
+                await request_livetalking_echo(answer, input.sessionid)
 
                 # Insert into DB new qa_pair
                 qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
                 qa_pair_handler.create_qa_pair(QAPair(
-                    _id=uuid.uuid4(), 
+                    _id=str(uuid.uuid4()), 
                     question=input.question, 
                     answer=answer, 
                     response_time=str(response_duration), 
                     created_at=datetime.now(), 
                     updated_at=datetime.now(), 
-                    conversation_id=conversation._id))
+                    conversation_id=conversation['_id']))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
@@ -129,34 +130,35 @@ class QAPairService(BaseService):
                 qa_pair = qa_pair_handler.get_qa_pair_by_id(qa_pair_id=input.qa_pair_id)
                 # Get conversation
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
-                conversation = conversation_handler.get_conversation_by_id(conversation_id=qa_pair.conversation_id)
+                conversation = conversation_handler.get_conversation_by_id(conversation_id=qa_pair['conversation_id'])
 
                 # Validate conversation owner
-                if conversation.participants_hash.split('_')[0] != input.user_id:
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
 
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
-                character = character_handler.get_character_by_id(character_id=conversation.character_id)
+                character = character_handler.get_character_by_id(character_id=conversation['character_id'])
 
                 # Record start time
                 start_time = datetime.now()
 
                 # Get response from llm
-                chat_service_output = chat_service.process(ChatServiceInput(
+                chat_service_output = await chat_service.process(ChatServiceInput(
                     question=input.question, 
-                    character_id=input.character_id, 
-                    character_name=character.name,
-                    conversation_id=conversation._id))
+                    character_id=character['_id'], 
+                    character_name=character['name'],
+                    conversation_id=conversation['_id'],
+                    add_summary=False))
                 answer = chat_service_output.answer
 
                 # Record end time
                 end_time = datetime.now()
                 # Calculate response duration in seconds (as a float or string)
-                response_duration = (end_time - start_time).microseconds() 
+                response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                request_livetalking_echo(answer, input.sessionid)
+                await request_livetalking_echo(answer, input.sessionid)
 
                 # Insert into DB new qa_pair
                 qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
@@ -164,7 +166,8 @@ class QAPairService(BaseService):
                     _id=input.qa_pair_id, 
                     question=input.question, 
                     answer=answer, 
-                    response_time=str(response_duration)))
+                    response_time=str(response_duration),
+                    updated_at=datetime.now()))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
