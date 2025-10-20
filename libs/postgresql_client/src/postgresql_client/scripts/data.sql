@@ -11,7 +11,12 @@ INSERT INTO public."permission" (id,name) VALUES
 	 ('b6566ffe-33d2-4f77-a444-f605e2c443e8'::uuid,'CREATE_USER'),
 	 ('c205a222-a972-49d6-9a3c-f4021dde35c8'::uuid,'READ_USER'),
 	 ('8441f94c-cac3-46fa-a506-d685b0c5aa00'::uuid,'UPDATE_USER'),
-	 ('e03b4154-1159-449f-afff-b3a112bb1d71'::uuid,'DELETE_USER');
+	 ('e03b4154-1159-449f-afff-b3a112bb1d71'::uuid,'DELETE_USER'),
+	 ('37868ad0-6b41-48ff-a477-eae8d53f2b38'::uuid,'READ_ROLES'),
+	 ('372a5a11-7970-4398-a5d7-aa306f1357aa'::uuid,'CREATE_ROLE'),
+	 ('7dbfff5a-afa7-4956-96eb-d32922cfa23d'::uuid,'READ_ROLE'),
+	 ('964bc32e-d210-4409-84e2-a8c36ab5d516'::uuid,'UPDATE_ROLE'),
+	 ('ee95e823-dc3a-4d7b-bd70-7467a6e3c2f2'::uuid,'DELETE_ROLE');
 
 INSERT INTO public.user_role (user_id,role_id) VALUES
 	 ('0a852eab-dff7-4e0b-bc99-4edd7d13aa4d'::uuid,'419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid),
@@ -22,4 +27,9 @@ INSERT INTO public.role_permission (role_id,permission_id) VALUES
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'b6566ffe-33d2-4f77-a444-f605e2c443e8'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'c205a222-a972-49d6-9a3c-f4021dde35c8'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'8441f94c-cac3-46fa-a506-d685b0c5aa00'::uuid),
-	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'e03b4154-1159-449f-afff-b3a112bb1d71'::uuid);
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'e03b4154-1159-449f-afff-b3a112bb1d71'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'37868ad0-6b41-48ff-a477-eae8d53f2b38'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'372a5a11-7970-4398-a5d7-aa306f1357aa'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'7dbfff5a-afa7-4956-96eb-d32922cfa23d'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'964bc32e-d210-4409-84e2-a8c36ab5d516'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'ee95e823-dc3a-4d7b-bd70-7467a6e3c2f2'::uuid);

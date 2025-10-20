@@ -15,11 +15,12 @@ logger = get_logger(__name__)
 
 
 class RoleController(ABC):
-    def get_role(
+    def get_roles(
         self,
         session: Session,
         filter: dict[str, object] | None = None,
         order_by: Sequence | None = None,
+        offset: int | None = None,
         limit: int | None = None,
     ) -> list[RoleModel] | None:
         try:
@@ -32,6 +33,8 @@ class RoleController(ABC):
                 statement = statement.filter_by(**filter)
             if order_by:
                 statement = statement.order_by(*order_by)
+            if offset:
+                statement = statement.offset(offset)
             if limit:
                 statement = statement.limit(limit)
 
@@ -108,7 +111,7 @@ class RoleController(ABC):
         except Exception as e:
             session.rollback()
             logger.exception(
-                f"Error inserting role: {e}", data=data, permission_ids=permission_ids
+                f"Error inserting role: {e}", data=db_obj, permission_ids=permission_ids
             )
             raise e
 
@@ -129,7 +132,7 @@ class RoleController(ABC):
 
         except Exception as e:
             session.rollback()
-            logger.exception(f"Error updating role: {e}", data=data)
+            logger.exception(f"Error updating role: {e}", data=db_obj)
             raise e
 
     def delete_role(self, session: Session, id: str) -> RoleModel | None:

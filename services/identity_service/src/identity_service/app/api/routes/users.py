@@ -1,12 +1,13 @@
 import uuid
-from typing import Any
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from postgresql_client.model.models import UserModel
 
 from authorization import (
     CurrentToken,
-    has_authority
+    has_authority,
+    TokenPayload
 )
 
 from identity_service.app.core.config import settings
@@ -35,6 +36,13 @@ def register_user(request: Request, user_in: UserRegister) -> Any:
     """
 
     with request.app.state.postgres.get_session() as session:
+        user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this email already exists in the system.",
+            )
+
         db_obj = UserModel()
 
         user_data = user_in.model_dump(
@@ -82,6 +90,13 @@ def update_user_me(
     Update own user.
     """
     with request.app.state.postgres.get_session() as session:
+        if user_in.email:
+            existing_user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
+            if existing_user and existing_user.id != current_token.id:
+                raise HTTPException(
+                    status_code=409, detail="User with this email already exists"
+                )
+
         db_obj = request.app.state.postgres.get_user_by_id(session, current_token.id)
 
         user_data = user_in.model_dump(exclude_none=True)
@@ -140,6 +155,19 @@ def create_user(*, request: Request, user_in: UserCreate) -> Any:
     """
     db_obj: UserModel = None
     with request.app.state.postgres.get_session() as session:
+        user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this email already exists in the system.",
+            )
+        user = request.app.state.postgres.get_user_by_username(session=session, username=user_in.username)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this email already exists in the system.",
+            )
+        
         db_obj = UserModel()
 
         db_obj.id=uuid.uuid4()
@@ -192,7 +220,6 @@ def read_user_by_id(
 
 @router.put(
     "/{user_id}",
-    dependencies=[Depends(has_authority(authority="UPDATE_USER"))],
     response_model=UserPublic,
 )
 def update_user(
@@ -200,6 +227,7 @@ def update_user(
     request: Request,
     user_id: uuid.UUID,
     user_in: UserUpdate,
+    permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="UPDATE_USER"))]
 ) -> Any:
     """
     Update a user.
@@ -211,6 +239,12 @@ def update_user(
                 status_code=404,
                 detail="The user with this id does not exist in the system",
             )
+        if user_in.email:
+            existing_user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
+            if existing_user and existing_user.id != permitted_token.id:
+                raise HTTPException(
+                    status_code=409, detail="User with this email already exists"
+                )
 
         user_data = user_in.model_dump(
             exclude_none=True, exclude={"role_ids", "password"}
