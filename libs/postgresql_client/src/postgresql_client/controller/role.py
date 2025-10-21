@@ -122,7 +122,7 @@ class RoleController(ABC):
             if permission_ids:
                 db_obj.role_permissions.clear()
                 new_permissions = [
-                    RolePermissionModel(role_id=UUID(db_obj.id), permission_id=UUID(perm_id))
+                    RolePermissionModel(role_id=db_obj.id, permission_id=UUID(perm_id))
                     for perm_id in permission_ids
                 ]
                 db_obj.role_permissions = new_permissions

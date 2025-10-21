@@ -37,7 +37,7 @@ def create_role(*, request: Request, role_in: RoleCreate) -> Any:
 
     db_obj: RoleModel = None
     with request.app.state.postgres.get_session() as session:
-        role = request.app.state.postgres.get_role_by_name(session=session, email=role_in.name)
+        role = request.app.state.postgres.get_role_by_name(session=session, name=role_in.name)
         if role:
             raise HTTPException(
                 status_code=400,
@@ -50,7 +50,7 @@ def create_role(*, request: Request, role_in: RoleCreate) -> Any:
         db_obj.name=role_in.name
     
         db_obj = request.app.state.postgres.insert_role(
-            session=session, db_obj=db_obj, role_ids=role_in.permission_ids
+            session=session, db_obj=db_obj, permission_ids=role_in.permission_ids
         )
 
         # Convert RoleModel -> RolePublic
@@ -106,7 +106,7 @@ def update_role(
     if not role_in.permission_ids:
         raise HTTPException(
                     status_code=400,
-                    detail="Role_ids is required.",
+                    detail="Permission_ids is required.",
                 )
     
     with request.app.state.postgres.get_session() as session:
@@ -117,7 +117,7 @@ def update_role(
                 detail="The role with this id does not exist in the system",
             )
         existing_role = request.app.state.postgres.get_role_by_name(session=session, name=role_in.name)
-        if existing_role and existing_role.id != permitted_token.id:
+        if existing_role and existing_role.id != role_id:
             raise HTTPException(
                 status_code=409, detail="Role with this name already exists"
             )
