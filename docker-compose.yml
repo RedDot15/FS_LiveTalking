@@ -20,6 +20,19 @@ services:
     networks:
       - multidimension
 
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    ports:
+      - "9510:4000"
+    networks:
+      - multidimension
+    volumes:
+      - ./config.yaml:/app/config.yaml
+    command:
+      - "--config=/app/config.yaml"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+
   minio:
     image: quay.io/minio/minio
     ports:
