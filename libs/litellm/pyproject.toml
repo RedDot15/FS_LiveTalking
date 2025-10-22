@@ -1,0 +1,23 @@
+[project]
+name = "litellm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "huskywannacry", email = "ttkien1503@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "base",
+    "httpx>=0.28.1",
+    "logger",
+    "python-dotenv>=1.1.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.8.15,<0.9.0"]
+build-backend = "uv_build"
+
+[tool.uv.sources]
+base = { workspace = true }
+logger = { workspace = true }
