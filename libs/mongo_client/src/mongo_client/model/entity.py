@@ -39,3 +39,18 @@ class Request:
     rejected_by: str
     reject_reason: str
 
+@dataclass
+class Request:
+    _id: str
+    character_name: str
+    created_by: datetime
+    created_at: datetime
+    knowledge_file_info: dict
+    image_file_info: dict
+    audio_file_info: dict
+    status: str
+    approved_by: str
+    approved_at: str
+    rejected_by: str
+    reject_reason: str
+
