@@ -23,7 +23,7 @@ def build_scope(db_user: UserModel) -> str:
 
 def create_access_token(db_user: UserModel | Any, expires_delta: timedelta) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
-    to_encode = {"exp": expire, "id": str(db_user.id), "scope": build_scope(db_user)}
+    to_encode = {"exp": expire, "id": str(db_user.id), "scope": build_scope(db_user), "username": db_user.username}
     encoded_jwt = jwt.encode(to_encode, settings.ACCESS_TOKEN_SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 

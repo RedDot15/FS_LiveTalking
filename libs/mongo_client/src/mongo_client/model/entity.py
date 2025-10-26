@@ -5,6 +5,9 @@ from datetime import datetime
 class Character:
     _id: str
     name: str
+    knowledge_file_info: dict
+    image_file_info: dict
+    audio_file_info: dict
 
 @dataclass
 class Conversation:
@@ -54,3 +57,11 @@ class Request:
     rejected_by: str
     reject_reason: str
 
+class Rating:
+    _id: str
+    character_id: str
+    commented_by: dict
+    rating: float
+    comment: str
+    created_at: datetime
+    updated_at: datetime

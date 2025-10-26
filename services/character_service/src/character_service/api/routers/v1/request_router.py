@@ -3,7 +3,7 @@ from typing import Annotated
 
 from authorization.deps import CurrentToken, has_authority
 from authorization.model import TokenPayload
-from character_service.application.request_service import ApproveRequestInput, RequestInput, RequestRejectInput
+from character_service.application.request_service import RequestInput, RequestRejectInput
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
@@ -14,13 +14,13 @@ from character_service.application.request_service import RequestServiceApplicat
 
 from character_service.shared.utils import get_settings
 
-character_router = APIRouter()
+request_router = APIRouter()
 
 settings = get_settings()
 logger = get_logger(__name__)
 
 
-@character_router.post('/requests')
+@request_router.post('/requests')
 async def add_creation_request(request: Request, body: RequestInput, current_token: CurrentToken) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
@@ -52,7 +52,7 @@ async def add_creation_request(request: Request, body: RequestInput, current_tok
         )
     )
 
-@character_router.patch('/requests/{request_id}/approve')
+@request_router.patch('/requests/{request_id}/approve')
 async def approve_request(request: Request, request_id: str, permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="APPROVE_REQUEST"))]) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
@@ -84,7 +84,7 @@ async def approve_request(request: Request, request_id: str, permitted_token: An
         )
     )
 
-@character_router.patch('/requests/{request_id}/reject')
+@request_router.patch('/requests/{request_id}/reject')
 async def reject_request(request: Request, request_id: str, body: RequestRejectInput, permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="REJECT_REQUEST"))]) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
