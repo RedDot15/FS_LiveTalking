@@ -45,6 +45,7 @@ def test_token(token: Token):
     """
     print("Token received for testing:", token)  
     verify_token(token=token.access_token)
+    return True
 
 @router.post("/logout")
 def logout(token: Token):

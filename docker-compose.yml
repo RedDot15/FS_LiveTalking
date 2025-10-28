@@ -96,16 +96,13 @@ services:
         - PYTHON_VERSION=python3.11
         - PACKAGE=rag_service
         - OPTIONAL_BUILD=src/rag_service/__init__.py
-
     ports:
       - "3005:3005"
-    
     networks:
       - multidimension
     command: uv run rag_service
     depends_on:
       - chromadb
-
     volumes:
       - type: bind
         source: ./services/rag_service
@@ -169,7 +166,8 @@ services:
       - FRONTEND_HOST=${FRONTEND_HOST}
       - PROJECT_NAME=${PROJECT_NAME}
       - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
-      - SECRET_KEY=${SECRET_KEY}
+      - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
+      - RESET_PASSWORD_SECRET_KEY=${RESET_PASSWORD_SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_USER=${SMTP_USER}

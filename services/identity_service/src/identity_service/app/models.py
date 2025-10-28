@@ -20,6 +20,14 @@ class UserUpdate(SQLModel):
     email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
     phone_number: str
     role_ids: list[str] = []
+
+class RoleCreate(SQLModel):
+    name: str
+    permission_ids: list[str] = []
+
+class RoleUpdate(SQLModel):
+    name: str
+    permission_ids: list[str] = []
 ######## End Admin API ########
 
 ######## User API ########
@@ -80,6 +88,9 @@ class UserPublic(SQLModel):
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
+
+class RolesPublic(SQLModel):
+    data: list[RolePublic]
 
 # Generic message
 class Message(SQLModel):

@@ -19,7 +19,7 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 def get_current_token(token: TokenDep) -> TokenPayload:
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_signature": False}
+            token, settings.ACCESS_TOKEN_SECRET_KEY, algorithms=[settings.ALGORITHM], options={"verify_signature": False}
         )
         return TokenPayload(**payload)
     except (ValidationError):

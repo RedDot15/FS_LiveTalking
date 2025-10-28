@@ -24,7 +24,7 @@ def build_scope(db_user: UserModel) -> str:
 def create_access_token(db_user: UserModel | Any, expires_delta: timedelta) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"exp": expire, "id": str(db_user.id), "scope": build_scope(db_user)}
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.ACCESS_TOKEN_SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 def verify_token(token: str):
@@ -40,7 +40,7 @@ def verify_token(token: str):
 
     try:
         # Then, attempt to decode the token
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return jwt.decode(token, settings.ACCESS_TOKEN_SECRET_KEY, algorithms=[settings.ALGORITHM])
     except (InvalidTokenError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

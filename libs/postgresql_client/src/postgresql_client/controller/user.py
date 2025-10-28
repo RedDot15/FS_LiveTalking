@@ -140,7 +140,7 @@ class UserController(ABC):
                 db_obj.user_roles.clear()
 
                 new_roles = [
-                    UserRoleModel(user_id=UUID(db_obj.id), role_id=UUID(role_id))
+                    UserRoleModel(user_id=db_obj.id, role_id=UUID(role_id))
                     for role_id in role_ids
                 ]
                 db_obj.user_roles = new_roles

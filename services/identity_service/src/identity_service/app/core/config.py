@@ -29,7 +29,8 @@ class Settings(BaseSettings):
     )
 
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str 
+    ACCESS_TOKEN_SECRET_KEY: str 
+    RESET_PASSWORD_SECRET_KEY: str
     ALGORITHM: str
     # 60 minutes
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
@@ -80,7 +81,7 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _enforce_non_default_secrets(self) -> Self:
-        self._check_default_secret("SECRET_KEY", self.SECRET_KEY)
+        self._check_default_secret("SECRET_KEY", self.ACCESS_TOKEN_SECRET_KEY)
 
         return self
 
