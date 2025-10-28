@@ -14,7 +14,7 @@ sadtalker:
   input_pitch: null
   input_roll: null
   enhancer: null
-  preprocess: 'crop'
+  preprocess: 'full'
   net_recon: 'resnet50'
   init_path: null
   use_last_fc: false
