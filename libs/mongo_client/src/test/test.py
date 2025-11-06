@@ -29,23 +29,25 @@ if __name__ == "__main__":
     port = '27018'
 
     db_handler = MongoDBHandler(
-        db=db_name, 
-        username=user, 
-        password=password, 
-        host=host, 
-        port=port
+        mongo_settings = MongoSettings(
+            db=db_name, 
+            username=user, 
+            password=password, 
+            host=host, 
+            port=port
+        )
     )
     
     with db_handler.get_database() as db:
         ################# Character #################
         # char_handler = CharacterHandler(collection=db["characters"])
 
-        # new_char = Character(_id="237c22ca-bc50-416d-a79f-b01459765349", name="AI Assistant 2")
+        # new_char = Character(_id="410d4fa6-72e8-472e-b2cc-1fb5c9147d45", name="AI Assistant 4")
         # print(char_handler.create_character(new_char))
 
-        print(char_handler.get_character())
+        # print(char_handler.get_character())
 
-        # print(char_handler.get_character_by_id(character_id="68b90225e6f59bb7290ad88e"))
+        print(char_handler.get_character_by_id(character_id="932d0f5a-30f3-4296-9fdb-eba73ef5695f"))
 
         # new_char = Character(name="Nguyen", avatar_url="updated_url")
         # print(char_handler.update_character_by_id(character_id="68b90959b3c5183789417f6d", character=new_char))

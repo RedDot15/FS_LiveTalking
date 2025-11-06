@@ -32,13 +32,13 @@ class QAPairHandler(BaseService):
             "updated_at": datetime.now()
         }
         return self.collection.update_one(
-            {"_id": ObjectId(qa_pair_id)},
+            {"_id": qa_pair_id},
             {"$set": update_data}
         )
     
     # Delete qa_pair_by_id
     def delete_qa_pair_by_id(self, qa_pair_id: str):
-        return self.collection.delete_one({"_id": ObjectId(qa_pair_id)})
+        return self.collection.delete_one({"_id": qa_pair_id})
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")

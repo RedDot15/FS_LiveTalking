@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    
+]
 
 [tool.uv.workspace]
 members = [
@@ -30,11 +32,12 @@ members = [
 ]
 
 [tool.uv.sources]
-chat-service = { workspace = true }
 rag-service = { workspace = true }
 logger = { workspace = true }
 base = { workspace = true }
 livetalking = { workspace = true }
 realistic = { workspace = true }
 text-to-speech = { workspace = true }
+minio-client = { workspace = true }
+mongo-client = { workspace = true }
 indexer = { workspace = true }

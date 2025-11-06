@@ -364,7 +364,7 @@ services:
     environment:
       - MONGODB__HOST=${MONGO__HOST}
       - MONGODB__PORT=27017
-      - MONGODB__USERNAME=${MONGO__USER}
+      - MONGODB__USER=${MONGO__USER}
       - MONGODB__PASSWORD=${MONGO__PASSWORD}
       - MONGODB__DB=${MONGO__DB}
 
@@ -386,3 +386,50 @@ services:
     container_name: frontend
     ports:
       - "8080:80"
+
+  indexer:
+    build:
+      context: .
+      dockerfile: dockers/Dockerfile
+      args:
+        - PYTHON_VERSION=python3.11
+        - PACKAGE=indexer
+        - OPTIONAL_BUILD=src/indexer/__init__.py
+    ports:
+      - "3036:3036"
+    volumes:
+      - type: bind
+        source: ./services/indexer
+        target: /home/reunion/app/services/indexer
+      - type: bind
+        source: ./libs/
+        target: /home/reunion/app/libs/
+    networks:
+      - multidimension
+    command: uv run indexer
+    depends_on:
+      - minio
+      - mongodb
+      - chromadb
+      - sadtalker
+      - wav2lip
+      - litellm
+    environment:
+      - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
+      - MINIO__HOST=${MINIO__HOST}
+      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
+      - MINIO_ROOT_USER=${MINIO__ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO__SECRET_KEY}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO__USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO__PASSWORD}
+      - MONGO__USER=${MONGO__USER}
+      - MONGO__PASSWORD=${MONGO__PASSWORD}
+      - MONGO__DB=${MONGO__DB}
+      - MONGO__HOST=${MONGO__HOST}
+      - MONGO__PORT=27017
+      - CHROMADB__HOST=${CHROMADB__HOST}
+      - CHROMADB__PORT=${CHROMADB__PORT}
+      - LITELLM__MODEL=${LITELLM__MODEL}
+      - LITELLM__URL=${LITELLM__URL}
+      - LITELLM__EMBEDDING_MODEL=${LITELLM__EMBEDDING_MODEL}

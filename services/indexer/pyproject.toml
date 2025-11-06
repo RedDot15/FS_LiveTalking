@@ -8,14 +8,26 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "asgi-correlation-id>=4.3.4",
     "base",
+    "chromadb-client",
     "fastapi>=0.116.1",
+    "httpx>=0.28.1",
     "imageio[ffmpeg,pyav]>=2.37.0",
+    "langchain>=0.3.27",
+    "litellm",
     "logger",
+    "minio-client",
+    "mongo-client",
+    "openai>=1.109.1",
     "opencv-python>=4.12.0.88",
+    "pydantic-settings>=2.11.0",
+    "pymupdf>=1.26.4",
+    "pymupdf4llm>=0.0.27",
+    "python-multipart>=0.0.20",
     "scipy>=1.15.3",
-    "torch>=2.8.0",
     "tqdm>=4.67.1",
+    "uvicorn>=0.37.0",
 ]
 
 [project.scripts]
@@ -27,4 +39,8 @@ build-backend = "uv_build"
 
 [tool.uv.sources]
 base = { workspace = true }
+minio-client = { workspace = true }
+mongo-client = { workspace = true }
 logger = { workspace = true }
+chromadb-client = { workspace = true }
+litellm = { workspace = true }

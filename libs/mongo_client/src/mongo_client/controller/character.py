@@ -9,7 +9,6 @@ class CharacterHandler(BaseService):
 
     # Create a new character
     def create_character(self, character: Character):
-        # character._id = ObjectId(character._id)
         result = self.collection.insert_one(character.__dict__)
         return result
 
@@ -20,20 +19,20 @@ class CharacterHandler(BaseService):
 
     # Get character by id
     def get_character_by_id(self, character_id: str):
-        data = self.collection.find_one({"_id": ObjectId(character_id)})
+        data = self.collection.find_one({"_id": character_id})
         return data
     
     # Update character by id
     def update_character_by_id(self, character_id: str, character: Character):
         update_data = character.__dict__
         return self.collection.update_one(
-            {"_id": ObjectId(character_id)},
+            {"_id": character_id},
             {"$set": update_data}
         )
 
     # Delete character by id
     def delete_character_by_id(self, character_id: str):
-        return self.collection.delete_one({"_id": ObjectId(character_id)})
+        return self.collection.delete_one({"_id": character_id})
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")
