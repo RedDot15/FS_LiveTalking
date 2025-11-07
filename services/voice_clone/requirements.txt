@@ -3,8 +3,8 @@ anyascii>=0.3.0
 bangla>=0.0.5
 bnnumerizer>=0.0.2
 bnunicodenormalizer>=0.1.7
-coqpit>=0.0.16
-coqui-tts[languages]==0.24.1
+coqpit==0.0.16
+TTS==0.21.3
 cutlet>=0.5.0
 cython>=0.29.30
 einops>=0.6.0
