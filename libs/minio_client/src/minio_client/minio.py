@@ -7,6 +7,8 @@ from base import BaseService
 from logger import get_logger
 from datetime import timedelta
 import os
+from minio.error import S3Error
+from minio.error import MinioException as S3Error
 
 logger = get_logger(__name__)
 
@@ -15,6 +17,11 @@ class MinioInputs(BaseModel):
     src_file: str
     des_folder: str
     des_file: str    
+
+# Class này dùng để kiểm tra xem đường dẫn khi Put_object có hợp lệ không
+class FilePathStatus(BaseModel):
+    status: bool
+    full_path: str
 
 class MinioConnection(BaseService):
 
@@ -61,9 +68,16 @@ class MinioConnection(BaseService):
             self.client.stat_object(bucket_name=bucket_name,
                                     object_name=file_name)
             return True
+        except S3Error as e:
+            if e.code == "NoSuchKey":
+                return False
+            else:
+                logger.error(f'Lỗi S3 với file {file_name}', extra={e})
+                return True
+                
         except Exception as e:
-            logger.error('Exists', extra={e})
-            return False
+            logger.error(f'Lỗi khi process file {file_name}', extra={e})
+            return True
         
     def put_object(self, bucket_name: str, src_file: str, des_folder_name: str, des_file_name: str) -> str:
         """
@@ -77,9 +91,10 @@ class MinioConnection(BaseService):
         - des_file_name : tên object (file) muốn lưu trong Minio.
         Return
         ---
-        - Trả về : vị trí lưu file trên Minio
+        - Trả về : vị trí lưu file trên Minio, ví dụ: Reunion/Manh/Audios/file.mp3
         """
         des_path = f'{des_folder_name}/{des_file_name}'
+        full_path = f'{bucket_name}/{des_path}' 
         if not self.check_file_name_exists(bucket_name=bucket_name,
                                         file_name=des_path):
             
@@ -87,7 +102,15 @@ class MinioConnection(BaseService):
                                     file_path=src_file,
                                     object_name=des_path)
                 
-            return f'{bucket_name}/{des_path}'
+            return FilePathStatus (
+                status=True,
+                full_path=full_path,
+            )
+        else: 
+            return FilePathStatus(
+                status=False,
+                full_path="FAIL TO PUT OBJECT"
+            )
         
     def get_object(self, bucket_name: str, folder_name: str, file_name: str, local_file_name: str) -> str:
         """

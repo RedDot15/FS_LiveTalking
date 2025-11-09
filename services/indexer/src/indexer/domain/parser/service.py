@@ -42,6 +42,13 @@ class ParserService(BaseService):
                 return md_text
             except Exception as e:
                 raise e
+        elif temp_file_path.endswith('txt'):
+            try:
+                with open(temp_file_path, 'r', encoding='utf-8') as f:
+                    md_text = f.read()
+                return md_text
+            except Exception as e:
+                raise e
 
     
     async def split_text_into_chunks(self, text) -> list[str]:

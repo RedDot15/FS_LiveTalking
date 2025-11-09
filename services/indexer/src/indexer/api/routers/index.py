@@ -36,11 +36,13 @@ async def index(request: Request,
         service_name=__name__,
     )
     # Khoi tao
+    logger.info("Bắt đầu luồng Indexer")
     try:
         index_application = IndexerApplication(
             request=request, 
         )
     except Exception as e:
+        exception_handler.handle_exception("Lỗi khi khởi tạo Indexer",extra={e})
         raise e
 
     try:
@@ -53,6 +55,7 @@ async def index(request: Request,
             )
         )
     except Exception as e:
+        exception_handler.handle_exception("Lỗi khi process Indexer", extra={e})
         raise e
     
     return exception_handler.handle_success(

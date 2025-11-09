@@ -6,7 +6,9 @@ from logger import get_logger
 from pydantic import dataclasses
 import os
 import shutil
-from minio_client import MinioConnection
+from minio_client import MinioConnection, FilePathStatus
+
+logger = get_logger(__name__)
 
 class CharacterInputs():
     def __init__(
@@ -59,10 +61,12 @@ class CharacterUploadMinioService(BaseService):
             # Upload file knowledge lên MinIO 
             file_type = "knowledges"
             file_name = f"{file_type}/{file_name}"
-            knowledge_url = self.minio_client.put_object(bucket_name="reunion",
+            knowledge_status = self.minio_client.put_object(bucket_name="reunion",
                                                         src_file=temp_file_path,
                                                         des_folder_name=object_name,
                                                         des_file_name=file_name)
+            if knowledge_status.status:
+                knowledge_url = knowledge_status.full_path
             await file.seek(0)
             os.remove(temp_file_path)
             # ================================IMAGES================================
@@ -75,11 +79,13 @@ class CharacterUploadMinioService(BaseService):
             file_type = "images"
             file_name = f"{file_type}/{file_name}"
 
-            avatar_url = self.minio_client.put_object(bucket_name="reunion",
+            avatar_status = self.minio_client.put_object(bucket_name="reunion",
                                                         src_file=temp_file_path,
                                                         des_folder_name=object_name,
                                                         des_file_name=file_name)
 
+            if avatar_status.status:
+                avatar_url=avatar_status.full_path
             await avatar_image.seek(0)
             os.remove(temp_file_path)
             # ================================AUDIOS================================
@@ -92,27 +98,26 @@ class CharacterUploadMinioService(BaseService):
             file_type = "audios"
             file_name = f"{file_type}/{file_name}"
 
-            audio_url = self.minio_client.put_object(bucket_name="reunion",
+            audio_status = self.minio_client.put_object(bucket_name="reunion",
                                                                 src_file=temp_file_path,
                                                                 des_folder_name=object_name,
                                                                 des_file_name=file_name)
-
+            if audio_status.status:
+                audio_url=audio_status.full_path
             await audio_file.seek(0)
             os.remove(temp_file_path)
             os.removedirs(temp_dir)
             
-            return CharacterOutputs(
-                avatar_url=self.get_final_url(avatar_url),
-                knowledge_url=self.get_final_url(knowledge_url),
-                audio_url=self.get_final_url(audio_url),
-            )
+            if avatar_status.status and knowledge_status.status and audio_status.status:
+                return CharacterOutputs(
+                    avatar_url=self.get_final_url(avatar_url),
+                    knowledge_url=self.get_final_url(knowledge_url),
+                    audio_url=self.get_final_url(audio_url),
+                )
+            else:
+                raise Exception("Lỗi khi xử lí upload file lên Minio, File name đã tồn tại hoặc lỗi S3")
         
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            return CharacterOutputs(
-                avatar_url=f"FAIL: {type(e).__name__}",
-                knowledge_url=str(e),
-                audio_url="FAIL",
-            )
+            logger.error("Lỗi khi xử lí upload file lên Minio:", extra={e})
+            raise e
 
