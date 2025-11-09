@@ -5,7 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    
+    "base",
+    "logger",
 ]
 
 [tool.uv.workspace]
@@ -28,16 +29,11 @@ members = [
     "services/wav2lip", 
     "services/character_service",
     "services/identity_service",
-    "libs/authorization", "libs/litellm", "libs/chromadb-temp",
+    "libs/authorization", 
+    "libs/litellm", 
+    "libs/chromadb-temp",
 ]
 
 [tool.uv.sources]
-rag-service = { workspace = true }
-logger = { workspace = true }
 base = { workspace = true }
-livetalking = { workspace = true }
-realistic = { workspace = true }
-text-to-speech = { workspace = true }
-minio-client = { workspace = true }
-mongo-client = { workspace = true }
-indexer = { workspace = true }
+logger = { workspace = true }

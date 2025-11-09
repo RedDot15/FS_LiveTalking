@@ -14,7 +14,7 @@ dependencies = [
     "fastapi>=0.116.1",
     "httpx>=0.28.1",
     "imageio[ffmpeg,pyav]>=2.37.0",
-    "langchain>=0.3.27",
+    "langchain-text-splitters>=1.0.0",
     "litellm",
     "logger",
     "minio-client",
@@ -42,5 +42,5 @@ base = { workspace = true }
 minio-client = { workspace = true }
 mongo-client = { workspace = true }
 logger = { workspace = true }
-chromadb-client = { workspace = true }
 litellm = { workspace = true }
+chromadb-client = { workspace = true }

@@ -3,7 +3,7 @@ from __future__ import annotations
 from base import BaseModel, BaseService
 from fastapi import UploadFile
 from logger import get_logger
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 import pymupdf4llm, pymupdf
 import asyncio
 import os
