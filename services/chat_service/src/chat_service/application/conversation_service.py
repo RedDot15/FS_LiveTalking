@@ -89,8 +89,8 @@ class ConversationService(BaseService):
                 answer = chat_service_output.answer
                 conversation_summary = chat_service_output.conversation_summary
                 
-                print("answer:", answer)
-                print("summary:", conversation_summary)
+                logger.info(f"answer: {answer}")
+                logger.info(f"summary: {conversation_summary}")
 
                 # Record end time
                 end_time = datetime.now()
