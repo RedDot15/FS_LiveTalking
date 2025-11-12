@@ -21,6 +21,11 @@ class CharacterHandler(BaseService):
         data = self.collection.find_one({"_id": character_id})
         return data
     
+    # Get character by id
+    def get_character_by_name(self, character_name: str):
+        data = self.collection.find_one({"name": character_name})
+        return data
+    
     # Update character by id
     def update_character_by_id(self, character_id: str, character: Character):
         update_data = character.__dict__

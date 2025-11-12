@@ -45,7 +45,7 @@ class SadTalkerService(BaseService):
             result = self.genetate_video_service.process(
                 input=GenerateVideoInput(
                     bucket_name=self.settings.bucket_name,
-                    character_name=input.character_name,
+                    character_id=input.character_id,
                     image_url=input.image_url,
                     audio_url=input.audio_url
                 )

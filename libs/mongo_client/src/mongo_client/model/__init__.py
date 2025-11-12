@@ -1,11 +1,13 @@
 from .entity import (
     Character,
     Conversation,
-    QAPair
+    QAPair,
+    Request
 )
 
 __all__ = [
     "Character",
     "Conversation",
-    "QAPair"
+    "QAPair",
+    "Request"
 ]

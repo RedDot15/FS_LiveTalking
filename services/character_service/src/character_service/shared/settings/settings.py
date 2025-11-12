@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 
+from minio_client import MinioSettings
 from mongo_client import MongoSettings
 from pydantic_settings import BaseSettings
 from pydantic_settings import PydanticBaseSettingsSource
@@ -14,6 +15,8 @@ load_dotenv(find_dotenv('.env'), override=True)
 
 class Settings(BaseSettings):
     mongodb: MongoSettings
+    minio: MinioSettings
+    indexer_service_url: str
     
     class Config:
         env_nested_delimiter = '__'

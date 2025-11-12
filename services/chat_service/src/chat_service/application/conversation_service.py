@@ -98,7 +98,7 @@ class ConversationService(BaseService):
                 response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                await request_livetalking_echo(answer, input.sessionid)
+                await request_livetalking_echo(answer, input.sessionid, character['_id'])
 
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])

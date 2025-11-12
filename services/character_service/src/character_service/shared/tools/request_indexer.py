@@ -10,28 +10,39 @@ from ..utils import get_settings
 
 logger = get_logger(__name__)
 
-async def request_livetalking_echo(message: str, character_id: str, request: Request):
-    if not message.strip():
-        logger.warning('Empty question provided to get_context')
-        return []
+async def request_indexer(
+        request: Request,
+        character_name: str,
+        character_id: str, 
+        knowledge_url: str,
+        avatar_url: str, 
+        audio_url: str):
     
-    authorization_header = request.headers.get('Authorization')
-    
-    headers = {}
-    if authorization_header:
-        headers['Authorization'] = authorization_header
-
     try:
         settings = get_settings()
+
+        
+        authorization_header = request.headers.get('Authorization')
+        
+        headers = {}
+        if authorization_header:
+            headers['Authorization'] = authorization_header
+
+        # 1. Define the form fields (non-file data)
+        data = {
+            'id': character_id,
+            'name': character_name,
+            'knowledge_url': knowledge_url,
+            'avatar_url': avatar_url,
+            'audio_url': audio_url
+        }
+        
+
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                url=settings.livetalking_service_url + '/human',
-                json={
-                    'character_id': character_id,
-                    'type': 'echo',
-                    'text': message
-                },
-                headers=headers,
+                url=settings.indexer_service_url + '/indexing',
+                data=data,
+                headers=headers
             )
             
             if response.status_code != 200:
@@ -39,6 +50,8 @@ async def request_livetalking_echo(message: str, character_id: str, request: Req
                     f'API request failed with status {response.status_code}: {response.text} : {settings.livetalking_service_url}',
                 )
                 return []
+            
+            return response.json()
             
     except httpx.RequestError as e:
         logger.exception(f'Network error while fetching context: {e}')

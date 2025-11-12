@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from authorization.deps import CurrentToken
+from character_service.application.character_service import CreationRequestInput
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
@@ -16,7 +18,7 @@ settings = get_settings()
 logger = get_logger(__name__)
 
 @character_router.get('/characters')
-def list_characters(request: Request) -> JSONResponse:
+def list_characters(request: Request, current_token: CurrentToken) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),

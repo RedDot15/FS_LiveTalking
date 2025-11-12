@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from authorization.deps import CurrentToken
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -22,10 +23,10 @@ settings = get_settings()
     '/human',
     response_model=None,
 )
-async def human(request: Request, human_input: HumanApplicationInput) -> JSONResponse:
+async def human(request: Request, human_input: HumanApplicationInput, current_token: CurrentToken) -> JSONResponse:
     # Get request parameters
     # Get session ID
-    sessionid = human_input.sessionid if human_input.sessionid is not None else 0
+    sessionid = current_token.id
 
     # # flush talk if interrupt is set
     # if human_input.interrupt is not None:
@@ -34,7 +35,7 @@ async def human(request: Request, human_input: HumanApplicationInput) -> JSONRes
     # response based on type
     if human_input.type == HumanType.ECHO:
         logger.info('ECHO message received, sending back the same text.')
-        request.app.state.nerfreals[sessionid].put_msg_txt(human_input.text)
+        request.app.state.nerfreals[sessionid].put_msg_txt(human_input.text, human_input.character_id)
         
     elif human_input.type == HumanType.CHAT:
         logger.info('CHAT message received, processing with LLM.')

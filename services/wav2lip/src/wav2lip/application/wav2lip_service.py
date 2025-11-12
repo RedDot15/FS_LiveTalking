@@ -26,7 +26,7 @@ logger = get_logger(__name__)
 
 class Wav2lipApplicationInput(BaseModel):
     
-    character_name: str
+    character_id: str
     video_url: str
     
 class Wav2lipApplicationOutput(BaseModel):
@@ -58,13 +58,13 @@ class Wav2lipApplication(BaseService):
     def process(self, input: Wav2lipApplicationInput) -> Wav2lipApplicationOutput:
         
         video_path = self.download_video_from_minio(
-            character_name=input.character_name,
+            character_id=input.character_id,
             bucket_name=self.settings.bucket_name,
             video_url=input.video_url
         )
         
         base_dir = Path("/home/reunion/app/wav2lip_data")
-        avatar_path = base_dir / "avatars" / input.character_name
+        avatar_path = base_dir / "avatars" / input.character_id
         full_imgs_path = avatar_path / "full_imgs"
         face_imgs_path = avatar_path / "face_imgs"
         coords_path = avatar_path / "coords.pkl"
@@ -128,21 +128,21 @@ class Wav2lipApplication(BaseService):
         
         if self.request.app.state.minio_client.check_file_name_exists(
             bucket_name=self.settings.bucket_name,
-            file_name=f'{input.character_name}/avatars/coords.pkl'
+            file_name=f'{input.character_id}/avatars/coords.pkl'
         ):
             
             logger.info('REMOVING OLD AVATAR DATA FROM MINIO')
             
             self.request.app.state.minio_client.remove_folder(
                 bucket_name=self.settings.bucket_name,
-                folder_name=f'{input.character_name}/avatars'
+                folder_name=f'{input.character_id}/avatars'
             )
         
         try:
         
             avatars_path = self.request.app.state.minio_client.put_folder(
                 bucket_name=self.settings.bucket_name,
-                des_folder_name=input.character_name + '/avatars',
+                des_folder_name=input.character_id + '/avatars',
                 local_folder_path=avatar_path
             )
             
@@ -154,9 +154,9 @@ class Wav2lipApplication(BaseService):
             wav2lip_result_path=avatars_path
         )
         
-    def download_video_from_minio(self, character_name: str, bucket_name: str, video_url: str, suffix: str = ".mp4") -> None:
+    def download_video_from_minio(self, character_id: str, bucket_name: str, video_url: str, suffix: str = ".mp4") -> None:
 
-        video_url = character_name + '/' + video_url
+        video_url = character_id + '/' + video_url
 
         url = self.request.app.state.minio_client.presigned_get_object(
             bucket_name=bucket_name,

@@ -27,12 +27,12 @@ logger = get_logger(__name__)
 class OfferApplicationInput(BaseModel):
     sdp: str
     type: str
-    character_name: str
+    character_id: str
+    session_id: str = None
     
 class OfferApplicationOutput(BaseModel):
     sdp: str
     type: str
-    sessionid: int
 
 class OfferApplication(BaseService):
     
@@ -50,13 +50,13 @@ class OfferApplication(BaseService):
         
         logger.info("Created RTCSessionDescription from offer")
         
-        sessionid = len(self.request.app.state.nerfreals)
+        sessionid = input.session_id
         logger.info(f"Generated new session ID: {sessionid}")
         
         self.request.app.state.nerfreals[sessionid] = None
         
         full_imgs_path, face_imgs_path, coords_path = self._ensure_avatars(
-            character_name=input.character_name
+            character_id=input.character_id
         )
 
         try:
@@ -68,7 +68,7 @@ class OfferApplication(BaseService):
                     coords_path=coords_path
                 ),
                 model=self.request.app.state.model,
-                character_name=input.character_name,
+                character_id=input.character_id,
                 sessionid=sessionid
             )
             
@@ -121,27 +121,26 @@ class OfferApplication(BaseService):
         return OfferApplicationOutput(
             sdp=pc.localDescription.sdp,
             type=pc.localDescription.type,
-            sessionid=sessionid
         )
         
-    def _ensure_avatars(self, character_name: str) -> None:
+    def _ensure_avatars(self, character_id: str) -> None:
         
-        avatar_path = f"./data/avatars/{character_name}"
+        avatar_path = f"./data/avatars/{character_id}"
         
         if not os.path.exists(avatar_path):
             os.makedirs('./data/avatars', exist_ok=True)
             self.request.app.state.minio_client.get_folder(
                 bucket_name=self.settings.bucket_name,
-                des_folder_name=character_name,
+                des_folder_name=character_id,
                 prefix='avatars',
                 local_folder_path='data'
             )
 
-        full_imgs_path = f"./data/{character_name}/avatars/full_imgs"
+        full_imgs_path = f"./data/{character_id}/avatars/full_imgs"
         # Constructs the path for face images.
-        face_imgs_path = f"./data/{character_name}/avatars/face_imgs"
+        face_imgs_path = f"./data/{character_id}/avatars/face_imgs"
         # Constructs the path for coordinates file.
-        coords_path = f"./data/{character_name}/avatars/coords.pkl"
+        coords_path = f"./data/{character_id}/avatars/coords.pkl"
         
         return full_imgs_path, face_imgs_path, coords_path
         

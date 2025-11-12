@@ -4,16 +4,23 @@ import json
 
 import httpx
 from logger import get_logger
+from fastapi import Request
 
 from ..utils import get_settings
 
 logger = get_logger(__name__)
 
-async def get_context(character_id: str, question: str) -> list[str]:
+async def get_context(character_id: str, question: str, request: Request) -> list[str]:
     if not question.strip():
         logger.warning('Empty question provided to get_context')
         return []
     
+    authorization_header = request.headers.get('Authorization')
+    
+    headers = {}
+    if authorization_header:
+        headers['Authorization'] = authorization_header
+
     try:
         settings = get_settings()
         async with httpx.AsyncClient() as client:
@@ -24,6 +31,7 @@ async def get_context(character_id: str, question: str) -> list[str]:
                     'query': question,
                     'topk': 10
                 },
+                headers=headers
             )
             
             if response.status_code != 200:

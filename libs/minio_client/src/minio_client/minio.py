@@ -213,7 +213,7 @@ class MinioConnection(BaseService):
             Vị trí tải folder, mặc định là ".", tức là ở vị trí đang đứng.
         Return
         ---
-        - Folder tải về có dạng {character_name}/{prefix}/{các_folder_bên_trong}.
+        - Folder tải về có dạng {character_id}/{prefix}/{các_folder_bên_trong}.
         """
         for object in self.list_items_in_bucket(bucket_name, f'{des_folder_name}/{prefix}'):
             object_name = object.object_name

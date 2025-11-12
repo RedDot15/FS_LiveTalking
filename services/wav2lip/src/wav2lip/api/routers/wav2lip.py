@@ -10,6 +10,7 @@ from wav2lip.application import Wav2lipApplication
 from wav2lip.shared.utils import get_settings
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from authorization import has_authority
 
 from logger import get_logger
 
@@ -18,7 +19,7 @@ logger = get_logger(__name__)
 
 settings = get_settings()
 
-@wav2lip_router.post('/wav2lip')
+@wav2lip_router.post('/wav2lip', dependencies=[Depends(has_authority(authority="PREPARE_AVATAR_DATA"))])
 async def query(request: Request, wav2lip_input: Wav2lipApplicationInput) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
@@ -42,7 +43,7 @@ async def query(request: Request, wav2lip_input: Wav2lipApplicationInput) -> JSO
         response = wav2lip_service.process(
             input=Wav2lipApplicationInput(
                 video_url=wav2lip_input.video_url,
-                character_name=wav2lip_input.character_name,
+                character_id=wav2lip_input.character_id,
             )
         )
 

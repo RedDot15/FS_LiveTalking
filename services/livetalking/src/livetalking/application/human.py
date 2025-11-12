@@ -5,7 +5,7 @@ from base import BaseModel
 from livetalking.shared.models import HumanType
 
 class HumanApplicationInput(BaseModel):
-    sessionid: int | None = None
+    character_id: str
     type: HumanType
     text: str
     interrupt: bool | None = None
