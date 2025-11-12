@@ -68,6 +68,7 @@ class OfferApplication(BaseService):
                     coords_path=coords_path
                 ),
                 model=self.request.app.state.model,
+                character_name=input.character_name,
                 sessionid=sessionid
             )
             

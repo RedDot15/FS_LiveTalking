@@ -9,8 +9,8 @@ from ..utils import get_settings
 
 logger = get_logger(__name__)
 
-async def get_context(character_id: str, question: str) -> list[str]:
-    if not question.strip():
+async def request_livetalking_echo(message: str, sessionid: int):
+    if not message.strip():
         logger.warning('Empty question provided to get_context')
         return []
     
@@ -18,26 +18,20 @@ async def get_context(character_id: str, question: str) -> list[str]:
         settings = get_settings()
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                url=settings.rag_service_url,
+                url=settings.livetalking_service_url + '/human',
                 json={
-                    'character_id': character_id,
-                    'query': question,
-                    'topk': 10
+                    'sessionid': sessionid,
+                    'type': 'echo',
+                    'text': message
                 },
             )
             
             if response.status_code != 200:
                 logger.warning(
-                    f'API request failed with status {response.status_code}: {response.text} : {settings.rag_service_url}',
+                    f'API request failed with status {response.status_code}: {response.text} : {settings.livetalking_service_url}',
                 )
                 return []
             
-            response_data = response.json()
-            
-            search_output = response_data.get('info', {}).get('results', [])
-            
-            return search_output
-        
     except httpx.RequestError as e:
         logger.exception(f'Network error while fetching context: {e}')
         return []
@@ -47,3 +41,4 @@ async def get_context(character_id: str, question: str) -> list[str]:
     except Exception as e:
         logger.exception(f'Unexpected error in get_context: {e}')
         return []
+    

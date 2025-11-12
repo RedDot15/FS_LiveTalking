@@ -37,7 +37,6 @@ class TTSServiceInput(BaseModel):
     language: str
     file_name_or_path: Optional[str] = "output.wav"
     stream: bool = False
-
     character_name: str
 
 

@@ -31,9 +31,7 @@ async def query(request: Request, rag_input: RagServiceInput, background_tasks: 
 
     try:
         response = await rag_service.process(
-            input=RagServiceInput(
-                query=rag_input.query,
-            )
+            input=rag_input
         )
         
     except Exception as e:

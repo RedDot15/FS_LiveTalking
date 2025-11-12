@@ -16,9 +16,10 @@ logger = get_logger(__name__)
 
 class XTTS(BaseTTS):
     
-    def __init__(self, parent, settings: XTTSSettings):
+    def __init__(self, parent, character_name: str, settings: XTTSSettings):
         super().__init__(parent=parent)
         
+        self.character_name=character_name
         self.settings = settings
         self.speaker = {}
         # self.speaker = self.get_speaker(self.settings.ref_file)
@@ -67,7 +68,7 @@ class XTTS(BaseTTS):
             "text": text,
             "language": language,
             "stream": True,
-            "character_name": "kien",
+            "character_name": self.character_name,
         }
         
         # speaker["stream_chunk_size"] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
