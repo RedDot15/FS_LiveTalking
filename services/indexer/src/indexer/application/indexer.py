@@ -139,6 +139,6 @@ class IndexerApplication(BaseService):
         logger.info(f"Wav2lip video url: {wav2lip_output}")
 
         return IndexerApplicationOutput(
-            json_response="Succeed"
+            json_response="Hoàn thành full luồng indexer"
         )
            
