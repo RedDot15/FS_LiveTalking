@@ -7,4 +7,4 @@ class MinioSettings(BaseModel):
     http_port: int
     access_key: str
     secret_key: str
-    secure: bool = False
+    secure: bool
