@@ -17,6 +17,7 @@ dependencies = [
     "mongo-client",
     "pydantic-settings[yaml]>=2.10.1",
     "uvicorn>=0.35.0",
+    "litellm",
 ]
 
 [project.scripts]
@@ -32,3 +33,4 @@ base = { workspace = true }
 logger = { workspace = true }
 mongo-client = { workspace = true }
 authorization = { workspace = true }
+litellm = { workspace = true }

@@ -11,6 +11,7 @@ from pydantic_settings import YamlConfigSettingsSource
 
 from mongo_client import MongoSettings
 from llm_client import LLMSetting
+from litellm import LiteLLMSetting
 from .answer_aggregator import AnswerAggregatorSettings
 
 load_dotenv(find_dotenv('.env'), override=True)
@@ -21,7 +22,8 @@ class Settings(BaseSettings):
     rag_service_url: str
     llm: LLMSetting
     answer_aggregator_settings: AnswerAggregatorSettings
-    mongodb: MongoSettings
+    mongo: MongoSettings
+    litellm: LiteLLMSetting
     
     class Config:
         env_nested_delimiter = '__'

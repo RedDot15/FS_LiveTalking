@@ -125,8 +125,7 @@ services:
         - OPTIONAL_BUILD=src/chat_service/__init__.py
     ports:
       - 3000:3000
-    depends_on:
-      - mongodb
+    
     networks:
       - multidimension
     command: uv run chat_service
@@ -142,12 +141,19 @@ services:
       - ALGORITHM=${ALGORITHM}
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - RAG_SERVICE_URL=${RAG_SERVICE_URL}
+      - MONGO__USER=${MONGO__USER}
+      - MONGO__PASSWORD=${MONGO__PASSWORD}
+      - MONGO__DB=${MONGO__DB}
+      - MONGO__HOST=${MONGO__HOST}
+      - MONGO__PORT=27017
+      - LITELLM__MODEL=${LITELLM__MODEL}
+      - LITELLM__URL=${LITELLM__URL}
+      - LITELLM__EMBEDDING_MODEL=${LITELLM__EMBEDDING_MODEL}
+      - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
+      - RESET_PASSWORD_SECRET_KEY=${RESET_PASSWORD_SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
       - LIVETALKING_SERVICE_URL=${LIVETALKING_SERVICE_URL}
-      - MONGODB__HOST=${MONGO__HOST}
-      - MONGODB__PORT=27017
-      - MONGODB__USER=${MONGO__USER}
-      - MONGODB__PASSWORD=${MONGO__PASSWORD}
-      - MONGODB__DB=${MONGO__DB}
+      
 
   identity_service:
     build:

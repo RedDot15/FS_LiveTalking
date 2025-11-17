@@ -19,8 +19,8 @@ class ChatServiceInput(BaseModel):
     question: str
     character_id: str
     character_name: str
-    conversation_id: str | None
-    add_summary: bool
+    conversation_id: str | None = None
+    add_summary: bool = False
     
     
 class ChatServiceOutput(BaseModel):
@@ -37,7 +37,7 @@ class ChatServiceApplication(BaseService):
     @property
     def answer_aggregator(self) -> AnswerAggregatorService:
         return AnswerAggregatorService(
-            llm=self.request.app.state.llm,
+            litellm=self.request.app.state.litellm_service,
             settings=self.settings.answer_aggregator_settings
         )
     
@@ -53,7 +53,10 @@ class ChatServiceApplication(BaseService):
             with self.request.app.state.mongodb_client.get_database() as mongodb:
                 try:
                     qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
-                    qa_pairs = qa_pair_handler.get_k_most_recent_qa_pair_by_conversation_id(conversation_id=input.conversation_id, k=3)
+                    qa_pairs = qa_pair_handler.get_k_most_recent_qa_pair_by_conversation_id(
+                        conversation_id=input.conversation_id, 
+                        k=3
+                    )
                 except Exception as e:
                     raise Exception(f"Error accessing MongoDB: {str(e)}")
 

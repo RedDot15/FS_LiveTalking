@@ -4,6 +4,7 @@ from base import BaseModel, BaseService
 from fastapi.encoders import jsonable_encoder
 from llm_client import LLMService, LLMServiceInput, MessageRole
 from logger import get_logger
+from litellm import LiteLLMChatInput, LiteLLMService
 
 from chat_service.shared.models import AnswerAggregatorModel, NoSummaryAnswerAggregatorModel
 from chat_service.shared.settings import AnswerAggregatorSettings
@@ -29,7 +30,7 @@ class AnswerAggregatorOutput(BaseModel):
     
 class AnswerAggregatorService(BaseService):
     
-    llm: LLMService
+    litellm: LiteLLMService
     settings: AnswerAggregatorSettings
     
     async def process(self, inputs: AnswerAggregatorInput) -> AnswerAggregatorOutput:
@@ -45,22 +46,25 @@ class AnswerAggregatorService(BaseService):
 
         logger.info(f'message: {message}')
         
-        if inputs.add_summary:
-            response = await self.llm.aprocess(
-                LLMServiceInput(
-                    message=message,
-                    return_type=AnswerAggregatorModel,
-                    model=self.settings.model,
-                ),
-            )
-        else:
-            response = await self.llm.aprocess(
-                LLMServiceInput(
-                    message=message,
-                    return_type=NoSummaryAnswerAggregatorModel,
-                    model=self.settings.model,
-                ),
-            )
+        async with self.litellm.async_client as client:
+            if inputs.add_summary:
+                response = await self.litellm.chat_async(
+                    client=client,
+                    inputs=LiteLLMChatInput(
+                        message=message,
+                        return_type=AnswerAggregatorModel,
+                        model=self.litellm.model,
+                    ),
+                )
+            else:
+                response = await self.litellm.chat_async(
+                    client=client,
+                    inputs=LiteLLMChatInput(
+                        message=message,
+                        return_type=NoSummaryAnswerAggregatorModel,
+                        model=self.litellm.model,
+                    ),
+                )
         
         # TODO: self._create_empty_output()
         if not response:
