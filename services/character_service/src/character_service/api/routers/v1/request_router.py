@@ -3,7 +3,7 @@ from typing import Annotated
 
 from authorization.deps import CurrentToken, has_authority
 from authorization.model import TokenPayload
-from character_service.application.request_service import ApproveRequestInput, RequestInput, RequestRejectInput
+from character_service.application.request_service import RequestInput, RequestRejectInput
 from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder

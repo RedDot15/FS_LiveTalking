@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from authorization.deps import CurrentToken
-from character_service.application.character_service import CreationRequestInput
 from fastapi import APIRouter
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder

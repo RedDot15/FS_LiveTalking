@@ -23,7 +23,7 @@ INSERT INTO public."permission" (id,name) VALUES
 	 ('4f05e87a-3aa5-4ec8-89ce-5c212a79dd6e'::uuid,'REJECT_REQUEST'),
 	 ('7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid,'INDEXING'),
 	 ('f3621d43-0158-4202-8c0f-86e1010007c3'::uuid,'GEN_VIDEO'),
-	 ('f6dae556-23e9-4d91-a387-30a26036d2b7'::uuid,'PREPARE_AVATAR_DATA'),
+	 ('f6dae556-23e9-4d91-a387-30a26036d2b7'::uuid,'PREPARE_AVATAR_DATA')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.user_role (user_id,role_id) VALUES
@@ -46,5 +46,5 @@ INSERT INTO public.role_permission (role_id,permission_id) VALUES
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'4f05e87a-3aa5-4ec8-89ce-5c212a79dd6e'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'f3621d43-0158-4202-8c0f-86e1010007c3'::uuid),
-	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'f6dae556-23e9-4d91-a387-30a26036d2b7'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'f6dae556-23e9-4d91-a387-30a26036d2b7'::uuid)
 ON CONFLICT (role_id, permission_id) DO NOTHING;

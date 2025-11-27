@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from fastapi import Request
 from fastapi import APIRouter
+from fastapi import Depends
 
 from wav2lip.api.helpers.exception_handler import ExceptionHandler
 from wav2lip.application import Wav2lipApplicationInput

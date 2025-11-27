@@ -14,9 +14,8 @@ from indexer.api.helpers.exception_handler import ExceptionHandler
 from indexer.api.helpers.exception_handler import ResponseMessage
 from logger import get_logger
 
-from indexer.application import CharacterInputs, IndexerApplication, CharacterMongoDBInputs, ParserInput, IndexerApplicationInput
+from indexer.application import IndexerApplication, IndexerApplicationInput
 
-from fastapi import File, UploadFile, Form
 from authorization import has_authority
 
 logger = get_logger(__name__)
