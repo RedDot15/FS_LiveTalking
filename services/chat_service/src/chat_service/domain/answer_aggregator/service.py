@@ -44,11 +44,11 @@ class AnswerAggregatorService(BaseService):
             add_summary=inputs.add_summary
         )
 
-        logger.info(f'message: {message}')
+        logger.info(f'message domain: {message}')
         
-        async with self.litellm.async_client as client:
+        with self.litellm.client as client:
             if inputs.add_summary:
-                response = await self.litellm.chat_async(
+                response = self.litellm.chat(
                     client=client,
                     inputs=LiteLLMChatInput(
                         message=message,
@@ -57,7 +57,7 @@ class AnswerAggregatorService(BaseService):
                     ),
                 )
             else:
-                response = await self.litellm.chat_async(
+                response = self.litellm.chat(
                     client=client,
                     inputs=LiteLLMChatInput(
                         message=message,

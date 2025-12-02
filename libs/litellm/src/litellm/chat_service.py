@@ -14,6 +14,9 @@ from typing import Dict
 from typing import Optional
 
 from base import BaseModel
+from logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class LiteLLMChatInput(BaseModel):
@@ -188,6 +191,8 @@ class LiteLLMChatService:
 
         try:
             response = client.post('/v1/chat/completions', json=payload)
+            if response.is_error:
+                logger.error(f"LiteLLM Error: {response.text}")
             response.raise_for_status()
             response_data = response.json()
 
@@ -242,6 +247,8 @@ class LiteLLMChatService:
 
         try:
             response = await client.post('/v1/chat/completions', json=payload)
+            if response.is_error:
+                logger.error(f"LiteLLM Error: {response.text}")
             response.raise_for_status()
             response_data = response.json()
 

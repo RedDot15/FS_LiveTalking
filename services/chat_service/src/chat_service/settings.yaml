@@ -1,8 +1,6 @@
-llm:
-  model_name: 'gpt-4o-mini'
 answer_aggregator_settings:
-  model: "gpt-4o-mini"
-  context_window: 100000
+  model: "gpt-4o-mini" # Không dùng đến
+  context_window: 5
 mongo:
   host: "mongodb"
 litellm:

@@ -14,7 +14,6 @@ from chat_service.shared.utils import get_settings
 from chat_service.api.routers import conversation_router, qa_pairs_router, chat_router
 from chat_service.api.helpers import LoggingMiddleware
 
-from llm_client import LLMService
 from mongo_client import MongoDBHandler
 from litellm import LiteLLMService
 
@@ -26,7 +25,6 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.settings = settings
-    app.state.llm = LLMService(settings=app.state.settings.llm)
     app.state.mongodb_client = MongoDBHandler(
         db=app.state.settings.mongo.db,
         username=app.state.settings.mongo.user,

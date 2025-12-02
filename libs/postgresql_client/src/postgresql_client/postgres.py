@@ -17,6 +17,7 @@ from .controller import (
     PermissionController
 )
 from .settings import PostgresSettings
+from .model import Base
 
 SQL_SCRIPT_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),  # Get current directory of postgres.py
@@ -64,6 +65,9 @@ class PostgreSQL(UserController, RoleController, PermissionController, BaseServi
             f"postgresql+psycopg2://{self.postgres_settings.user}:{self.postgres_settings.password}@{self.postgres_settings.host}:{self.postgres_settings.port}/{self.postgres_settings.db}"
         )
 
+        # Create tables
+        Base.metadata.create_all(engine)
+
         # Populate initial data
         self._run_sql_script(engine) 
 
@@ -71,11 +75,13 @@ class PostgreSQL(UserController, RoleController, PermissionController, BaseServi
 
     @contextmanager
     def get_session(self):
+        session = None
         try:
             session: Session = self.sessionmaker()
             yield session
         finally:
-            session.close()
+            if session:
+                session.close()
 
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used in MongoDBHandler.")

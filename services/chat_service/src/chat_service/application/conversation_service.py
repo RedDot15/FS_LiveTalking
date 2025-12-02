@@ -39,7 +39,15 @@ class DeleteConversationInput(BaseModel):
 
 class DeleteConversationOutput(BaseModel):
     conversation_id: str
-    
+
+class ChatInConversationInput(BaseModel):
+    conversation_id: str
+    question: str
+    user_id: str = "default"
+
+class ChatInConversationOutput(BaseModel):
+    answer: str
+
 class ConversationService(BaseService):
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -58,14 +66,62 @@ class ConversationService(BaseService):
 
         return ConversationOutput(conversations=conversations)
     
-    async def create_new_conversation(self, input: CreateConversationInput) -> CreateConversationOutput:
+    async def _process_chat_interaction(
+        self, 
+        character: Character, 
+        conversation_id: str, 
+        question: str, 
+        add_summary: bool
+    ) -> str:
         try:
             chat_service = ChatServiceApplication(
                 request=self.request, settings=self.settings
             )
         except Exception as e:
             raise e
+
+        # Record start time
+        start_time = datetime.now()
+
+        # Get response from llm
+        chat_service_output: ChatServiceOutput = await chat_service.process(ChatServiceInput(
+            question=question, 
+            character_id=character['_id'], 
+            character_name=character['name'],
+            conversation_id=conversation_id,
+            add_summary=add_summary))
+        answer = chat_service_output.answer
+        conversation_summary = chat_service_output.conversation_summary
         
+        logger.info(f"answer: {answer}")
+        logger.info(f"summary: {conversation_summary}")
+
+        # Record end time
+        end_time = datetime.now()
+        # Calculate response duration in seconds (as a float or string)
+        response_duration = (end_time - start_time).microseconds
+
+        # Request LiveTalking to echo
+        await request_livetalking_echo(answer, character['_id'], self.request)
+
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                # Insert into DB new qa_pair
+                qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
+                qa_pair_handler.create_qa_pair(QAPair(
+                    _id=str(uuid.uuid4()), 
+                    question=question, 
+                    answer=answer, 
+                    response_time=str(response_duration), 
+                    created_at=datetime.now(), 
+                    updated_at=datetime.now(), 
+                    conversation_id=conversation_id))
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+        
+        return answer
+
+    async def create_new_conversation(self, input: CreateConversationInput) -> CreateConversationOutput:
         # "Generate" participants_hash
         participants_hash = f"{input.user_id}_{input.character_id}"
 
@@ -75,52 +131,25 @@ class ConversationService(BaseService):
                 character_handler = CharacterHandler(collection=mongodb["characters"])
                 character: Character = character_handler.get_character_by_id(character_id=input.character_id)
 
-                # Record start time
-                start_time = datetime.now()
-
-                # Get response from llm
-                chat_service_output: ChatServiceOutput = await chat_service.process(ChatServiceInput(
-                    question=input.question, 
-                    character_id=input.character_id, 
-                    character_name=character['name'],
-                    conversation_id=None,
-                    add_summary=True))
-                answer = chat_service_output.answer
-                conversation_summary = chat_service_output.conversation_summary
-                
-                logger.info(f"answer: {answer}")
-                logger.info(f"summary: {conversation_summary}")
-
-                # Record end time
-                end_time = datetime.now()
-                # Calculate response duration in seconds (as a float or string)
-                response_duration = (end_time - start_time).microseconds
-
-                # Request LiveTalking to echo
-                await request_livetalking_echo(answer, character['_id'], self.request)
-
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation: Conversation = conversation_handler.create_conversation(conversation=Conversation(
                     _id=str(uuid.uuid4()), 
-                    name=conversation_summary or input.question[:50],
+                    name=input.question[:50],
                     participants_hash=participants_hash, 
                     character_id=input.character_id, 
                     created_at=datetime.now()))
-
-
-                # Insert into DB new qa_pair
-                qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
-                qa_pair_handler.create_qa_pair(QAPair(
-                    _id=str(uuid.uuid4()), 
-                    question=input.question, 
-                    answer=answer, 
-                    response_time=str(response_duration), 
-                    created_at=datetime.now(), 
-                    updated_at=datetime.now(), 
-                    conversation_id=conversation.inserted_id))
+                
+                conversation_id = conversation.inserted_id
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
+
+        answer = await self._process_chat_interaction(
+            character=character,
+            conversation_id=conversation_id,
+            question=input.question,
+            add_summary=False
+        )
 
         return CreateConversationOutput(answer=answer)
     
@@ -141,3 +170,32 @@ class ConversationService(BaseService):
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
         return CreateConversationOutput(answer=input.conversation_id)
+
+
+    async def chat_in_conversation(self, input: ChatInConversationInput) -> ChatInConversationOutput:
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                # Get conversation
+                conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
+
+                # Validate conversation owner
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
+                    raise Exception(f"Unauthorize user: {input.user_id}")
+                
+                character_id = conversation['character_id']
+
+                # Get character
+                character_handler = CharacterHandler(collection=mongodb["characters"])
+                character: Character = character_handler.get_character_by_id(character_id=character_id)
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+
+        answer = await self._process_chat_interaction(
+            character=character,
+            conversation_id=input.conversation_id,
+            question=input.question,
+            add_summary=True
+        )
+
+        return ChatInConversationOutput(answer=answer)
