@@ -72,11 +72,11 @@ class MinioConnection(BaseService):
             if e.code == "NoSuchKey":
                 return False
             else:
-                logger.error(f'Lỗi S3 với file {file_name}', extra={e})
+                logger.error(f'Lỗi S3 với file {file_name}', extra={'error': str(e)})
                 return True
                 
         except Exception as e:
-            logger.error(f'Lỗi khi process file {file_name}', extra={e})
+            logger.error(f'Lỗi khi process file {file_name}', extra={'error': str(e)})
             return True
         
     def put_object(self, bucket_name: str, src_file: str, des_folder_name: str, des_file_name: str) -> str:
@@ -152,7 +152,7 @@ class MinioConnection(BaseService):
             for obj in objects_to_delete:
                 self.client.remove_object(bucket_name, obj.object_name)
         except Exception as e:
-            logger.error(extra={e})
+            logger.error(extra={'error': str(e)})
             
     def get_bucket_version(self, bucket_name: str):
         """Lấy ra bucket version. trả về off nếu không bật tính năng này"""

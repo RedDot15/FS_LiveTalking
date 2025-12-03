@@ -8,20 +8,27 @@ from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi import File, Form, UploadFile
 from logger import get_logger
 from character_service.api.helpers.exception_handler import ExceptionHandler
 from character_service.application.request_service import RequestServiceApplication
 
 from character_service.shared.utils import get_settings
 
-character_router = APIRouter()
+request_router = APIRouter()
 
 settings = get_settings()
 logger = get_logger(__name__)
 
 
-@character_router.post('/requests')
-async def add_creation_request(request: Request, body: RequestInput, current_token: CurrentToken) -> JSONResponse:
+@request_router.post('/requests')
+async def add_creation_request(
+    request: Request, 
+    current_token: CurrentToken,
+    character_name: str = Form(...),
+    character_avatar_image: UploadFile = File(...),
+    character_knowledge_file: UploadFile = File(...),
+    character_audio_file: UploadFile = File(...)) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -41,10 +48,16 @@ async def add_creation_request(request: Request, body: RequestInput, current_tok
         )
 
     try:
-        response = await request_service.add_creation_request(input=body, current_user_id=current_token.id)
+        body = RequestInput(
+            character_name = character_name,
+            character_avatar_image = character_avatar_image,
+            character_knowledge_file = character_knowledge_file,
+            character_audio_file = character_audio_file
+        )
+        response = await request_service.add_creation_request(inputs=body, current_user_id=current_token.id)
         
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e))
+        return exception_handler.handle_exception(e=str(e), extra={})
 
     return exception_handler.handle_success(
         jsonable_encoder(
@@ -52,7 +65,7 @@ async def add_creation_request(request: Request, body: RequestInput, current_tok
         )
     )
 
-@character_router.patch('/requests/{request_id}/approve')
+@request_router.patch('/requests/{request_id}/approve')
 async def approve_request(request: Request, request_id: str, permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="APPROVE_REQUEST"))]) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
@@ -84,7 +97,7 @@ async def approve_request(request: Request, request_id: str, permitted_token: An
         )
     )
 
-@character_router.patch('/requests/{request_id}/reject')
+@request_router.patch('/requests/{request_id}/reject')
 async def reject_request(request: Request, request_id: str, body: RequestRejectInput, permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="REJECT_REQUEST"))]) -> JSONResponse:
 
     exception_handler = ExceptionHandler(

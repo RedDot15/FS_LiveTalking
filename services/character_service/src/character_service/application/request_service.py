@@ -13,21 +13,24 @@ from character_service.shared.tools import request_indexer
 from fastapi import File, Form, UploadFile
 from pydantic import ConfigDict
 from pydantic import Field
+from logger import get_logger
 
 from mongo_client.controller import CharacterHandler
 from mongo_client.controller.request import RequestHandler
 from mongo_client.model.entity import Request
 
 from character_service.domain.upload_minio import CharacterUploadMinioService, CharacterInputs
-from character_service.domain.download_minio.service import CharacterDownloadInputs
+
+logger = get_logger(__name__)
 
 class RequestInput(BaseModel):
-    character_name: str = Form(...),
-    character_avatar_image: UploadFile = File(...),
-    character_knowledge_file: UploadFile = File(...),
-    character_audio_file: UploadFile = File(...),
+    character_name: str = Form(...)
+    character_avatar_image: UploadFile = File(...)
+    character_knowledge_file: UploadFile = File(...)
+    character_audio_file: UploadFile = File(...)
 
 class RequestOutput(BaseModel):
+    character_id: str
     character_name: str
 
 class RequestRejectInput(BaseModel):
@@ -68,6 +71,7 @@ class RequestServiceApplication(BaseService):
                     )
                 )
 
+                request_handler = RequestHandler(collection=mongodb["requests"])
                 request_handler.create_request(Request(
                     _id=str(uuid4()), 
                     character_id=character_id,
@@ -81,7 +85,7 @@ class RequestServiceApplication(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
-        return RequestOutput(character_name=inputs.character_name)
+        return RequestOutput(character_name=inputs.character_name, character_id=character_id)
     
     async def approve_request(self, request_id: str, current_user_id: str):
         with self.request.app.state.mongodb_client.get_database() as mongodb:
@@ -105,7 +109,7 @@ class RequestServiceApplication(BaseService):
                 request_handler.update_request_by_id(request_id = request_id, request = Request(
                     status="APPROVED", 
                     approved_by=current_user_id,
-                    approved_at=datetime.now()))
+                    evaluated_at=datetime.now()))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
@@ -129,10 +133,13 @@ class RequestServiceApplication(BaseService):
                 request_handler = RequestHandler(collection=mongodb["requests"])
                 request_handler.update_request_by_id(request_id = inputs.request_id, request = Request(
                     status="REJECTED", 
+                    evaluated_at=datetime.now(),
                     rejected_by=current_user_id,
                     reject_reason=inputs.reject_reason))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
         return
-        
+
+    def process(self, inputs: Any) -> Any:
+        pass

@@ -18,7 +18,7 @@ class CharacterInputs():
         avatar_image: UploadFile = File(...),
         audio_file: UploadFile = File(...),
     ):
-        self.name = name
+        self.id = id
         self.knowledge_file = knowledge_file
         self.avatar_image = avatar_image
         self.audio_file = audio_file
@@ -116,6 +116,6 @@ class CharacterUploadMinioService(BaseService):
                 raise Exception("Lỗi khi xử lí upload file lên Minio, File name đã tồn tại hoặc lỗi S3")
         
         except Exception as e:
-            logger.error("Lỗi khi xử lí upload file lên Minio:", extra={e})
+            logger.error("Lỗi khi xử lí upload file lên Minio:", extra={'error': str(e)})
             raise e
 
