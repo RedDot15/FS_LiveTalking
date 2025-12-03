@@ -29,7 +29,6 @@ class CreateConversationInput(BaseModel):
     question: str
     user_id: str = "default"
     character_id: str
-    sessionid: int
 
 class CreateConversationOutput(BaseModel):
     answer: str
@@ -98,7 +97,7 @@ class ConversationService(BaseService):
                 response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                await request_livetalking_echo(answer, input.sessionid, character['_id'])
+                await request_livetalking_echo(answer, character['_id'], self.request)
 
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
