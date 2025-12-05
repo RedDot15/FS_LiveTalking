@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from fastapi import Request
 from fastapi import APIRouter
-from fastapi import Depends
 
 from wav2lip.api.helpers.exception_handler import ExceptionHandler
 from wav2lip.application import Wav2lipApplicationInput
@@ -11,7 +10,6 @@ from wav2lip.application import Wav2lipApplication
 from wav2lip.shared.utils import get_settings
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from authorization import has_authority
 
 from logger import get_logger
 
@@ -20,7 +18,7 @@ logger = get_logger(__name__)
 
 settings = get_settings()
 
-@wav2lip_router.post('/wav2lip', dependencies=[Depends(has_authority(authority="PREPARE_AVATAR_DATA"))])
+@wav2lip_router.post('/wav2lip')
 async def query(request: Request, wav2lip_input: Wav2lipApplicationInput) -> JSONResponse:
 
     exception_handler = ExceptionHandler(

@@ -9,7 +9,6 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "asgi-correlation-id>=4.3.4",
-    "authorization",
     "base",
     "fastapi>=0.116.2",
     "logger",
@@ -36,4 +35,3 @@ build-backend = "uv_build"
 base = { workspace = true }
 logger = { workspace = true }
 minio-client = { workspace = true }
-authorization = { workspace = true }

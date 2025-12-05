@@ -9,7 +9,6 @@ from fastapi.responses import JSONResponse
 from application import SadTalkerServiceInput
 from application import SadTalkerService
 from shared.logger import get_logger
-from infra.authorization import has_authority
 
 from shared.utils import get_settings
 
@@ -18,7 +17,7 @@ logger = get_logger(__name__)
 
 sadtalker_router = APIRouter(prefix='/v1')
 
-@sadtalker_router.post('/sadtalker', dependencies=[Depends(has_authority(authority="GEN_VIDEO"))])
+@sadtalker_router.post('/sadtalker')
 def sadtalker(request: Request, sadtalker_input: SadTalkerServiceInput) -> JSONResponse:
     
     exception_handler = ExceptionHandler(

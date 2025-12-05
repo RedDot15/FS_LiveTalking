@@ -116,8 +116,7 @@ class IndexerApplication(BaseService):
                 character_id = character_id,
                 image_url = inputs.avatar_url,
                 audio_url = inputs.audio_url,
-            ),
-            request=self.request
+            )
         )
         logger.info(f"Sadtalker video url: {video_url}")
         logger.info("========Upload Wav2lip==============")
@@ -126,8 +125,7 @@ class IndexerApplication(BaseService):
             inputs = Wav2lipApplicationInput(
                 character_id = character_id,
                 video_url = video_url,
-            ),
-            request=self.request
+            )
         )
         logger.info(f"Wav2lip video url: {wav2lip_output}")
 
