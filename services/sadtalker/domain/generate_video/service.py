@@ -5,6 +5,7 @@ import shutil
 from time import  strftime
 import requests
 import tempfile
+from pydub import AudioSegment
 
 from shared.settings import SadTalkerSettings
 from shared.tools import init_path
@@ -222,5 +223,40 @@ class GenerateVideoService(BaseService):
 
         image_local_path = download_to_temp(presigned_image_url, image_url_minio)
         audio_local_path = download_to_temp(presigned_audio_url, audio_url_minio)
+
+        # Optionally replace audio with silence, or add silence padding
+        try:
+            replace_with_silence = bool(self.settings.audio_replace_with_silence)
+        except Exception:
+            replace_with_silence = False
+
+        if replace_with_silence:
+            try:
+                # Load original audio to detect duration, then export silent audio of same length
+                original = AudioSegment.from_file(audio_local_path)
+                duration_ms = len(original)
+                silent = AudioSegment.silent(duration=duration_ms)
+                silent.export(audio_local_path, format=os.path.splitext(audio_local_path)[1].lstrip('.') or 'wav')
+                logger.info('Replaced audio with silent audio', extra={'path': audio_local_path, 'duration_ms': duration_ms})
+            except Exception as e:
+                logger.warning('Failed to replace audio with silence, continuing with original audio', extra={'error': str(e)})
+        else:
+            # Add optional silence padding at start and end of audio
+            try:
+                start_ms = int(self.settings.audio_padding_start_ms)
+                end_ms = int(self.settings.audio_padding_end_ms)
+            except Exception:
+                start_ms = 0
+                end_ms = 0
+
+            if start_ms > 0 or end_ms > 0:
+                try:
+                    audio = AudioSegment.from_file(audio_local_path)
+                    silence_start = AudioSegment.silent(duration=start_ms)
+                    silence_end = AudioSegment.silent(duration=end_ms)
+                    padded = silence_start + audio + silence_end
+                    padded.export(audio_local_path, format=os.path.splitext(audio_local_path)[1].lstrip('.') or 'wav')
+                except Exception as e:
+                    logger.warning('Failed to apply audio padding, continuing with original audio', extra={'error': str(e)})
 
         return [image_local_path, audio_local_path]

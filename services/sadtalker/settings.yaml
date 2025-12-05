@@ -13,7 +13,7 @@ sadtalker:
   input_yaw: null
   input_pitch: null
   input_roll: null
-  enhancer: null
+  enhancer: 'gfpgan'
   preprocess: 'full'
   net_recon: 'resnet50'
   init_path: null
@@ -27,7 +27,7 @@ sadtalker:
   z_far: 15.0
   device: 'cuda'
   face3dvis: false
-  still: true
+  still: false
   background_enhancer: null
   verbose: false
   idlemode: false
