@@ -34,3 +34,8 @@ class SadTalkerSettings(BaseModel):
     background_enhancer: Optional[str] = None
     verbose: bool = False
     idlemode: bool = False
+    # padding (milliseconds) to add to audio downloaded from Minio
+    audio_padding_start_ms: int = 0
+    audio_padding_end_ms: int = 0
+    # If true, replace any downloaded audio with silent audio of same duration
+    audio_replace_with_silence: bool = True

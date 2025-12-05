@@ -34,8 +34,33 @@ class FaceDetectionService(BaseService):
         while 1:
             predictions = []
             try:
-                for i in tqdm(range(0, len(input.images), input.batch_size)):
-                    predictions.extend(detector.get_detections_for_batch(np.array(input.images[i:i + input.batch_size])))
+                # Ensure all images have the same shape (height, width, channels)
+                normalized_images = []
+                target_shape = None
+                for img in input.images:
+                    if img is None:
+                        normalized_images.append(None)
+                        continue
+                    # Convert grayscale to BGR
+                    if len(img.shape) == 2:
+                        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+                    # Ensure 3 channels
+                    if img.shape[2] == 4:
+                        img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                    if target_shape is None:
+                        target_shape = (img.shape[0], img.shape[1])
+                    # Resize to target shape if different
+                    if (img.shape[0], img.shape[1]) != target_shape:
+                        img = cv2.resize(img, (target_shape[1], target_shape[0]))
+                    normalized_images.append(img)
+
+                for i in tqdm(range(0, len(normalized_images), input.batch_size)):
+                    batch = [x for x in normalized_images[i:i + input.batch_size] if x is not None]
+                    if len(batch) == 0:
+                        # extend with None for frames where image was None
+                        predictions.extend([None] * min(input.batch_size, len(normalized_images[i:i + input.batch_size])))
+                        continue
+                    predictions.extend(detector.get_detections_for_batch(np.array(batch)))
             except RuntimeError:
                 if input.batch_size == 1: 
                     raise RuntimeError('Image too big to run face detection on GPU. Please use the --resize_factor argument')
