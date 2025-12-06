@@ -89,7 +89,7 @@ async def approve_request(request: Request, request_id: str, permitted_token: An
         await request_service.approve_request(request_id=request_id, current_user_id=permitted_token.id)
         
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e))
+        return exception_handler.handle_exception(e=str(e), extra={})
 
     return exception_handler.handle_success(
         jsonable_encoder(
@@ -122,7 +122,7 @@ async def reject_request(request: Request, request_id: str, body: RequestRejectI
         response = await request_service.reject_request(inputs=body, current_user_id=permitted_token.id)
         
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e))
+        return exception_handler.handle_exception(e=str(e), extra={})
 
     return exception_handler.handle_success(
         jsonable_encoder(

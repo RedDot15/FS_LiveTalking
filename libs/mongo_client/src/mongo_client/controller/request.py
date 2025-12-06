@@ -28,10 +28,9 @@ class RequestHandler(BaseService):
     
     # Update request by id
     def update_request_by_id(self, request_id: str, request: Request):
-        update_data = request.__dict__
         return self.collection.update_one(
             {"_id": request_id},
-            {"$set": update_data}
+            {"$set": request}
         )
 
     # Delete request by id

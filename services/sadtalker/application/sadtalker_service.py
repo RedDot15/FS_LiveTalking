@@ -16,7 +16,7 @@ from shared.logger import get_logger
 logger = get_logger(__name__)
 
 class SadTalkerServiceInput(BaseModel):
-    character_name: str 
+    character_id: str 
     image_url: str
     audio_url: str
 

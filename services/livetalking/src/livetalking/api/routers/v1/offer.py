@@ -78,7 +78,7 @@ async def offer(request: Request, offer_input: OfferApplicationInput, current_to
         return exception_handler.handle_exception(
             e=str(e), 
             extra={
-                'character_name': offer_input.character_name
+                'character_id': offer_input.character_id
             }
         )
 

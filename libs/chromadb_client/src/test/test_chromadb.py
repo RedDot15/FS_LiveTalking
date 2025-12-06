@@ -4,8 +4,7 @@ from chromadb_client import ChromaDBSetting
 
 chroma_settings = ChromaDBSetting(
     host='localhost',
-    port=8000,
-    model_name='bkai-foundation-models/vietnamese-bi-encoder'
+    port=8008
 )
 
 chromadb = ChromaDB(
@@ -33,17 +32,17 @@ documents = [
 metadatas = [{'source': "Space"}, {'source': "Space"}, {'source': "Space"}, {'source': "History"}, {'source': "History"}, {'source': "History"}, {'source': "Animals"}, {'source': "Animals"}, {'source': "Animals"}, {'source': "Movies"}, {'source': "Movies"}, {'source': "Movies"}, {'source': "Superheroes"}, {'source': "Superheroes"}, {'source': "Superheroes"}]
 ids = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 
-collection_status = False
-while collection_status != True:
-    try:
-        document_collection = chromadb.add_document(character_id='test001', documents=documents, metadatas=metadatas, ids=ids)
-        collection_status = True
-    except Exception as e:
-        pass
+# collection_status = False
+# while collection_status != True:
+#     try:
+#         document_collection = chromadb.add_document(character_id='test001', documents=documents, metadatas=metadatas, ids=ids)
+#         collection_status = True
+#     except Exception as e:
+#         pass
     
 # document_collection.add(documents=documents, metadatas=metadatas, ids=ids)
 
-results = chromadb.process(input=ChromaDBInput(character_id='test001', query="Give me some facts about space", topk=3))
+results = chromadb.process(input=ChromaDBInput(character_id='4959e2ad-1afa-4f9b-98d8-1a23e7c0f1f0', query="Đóng góp và di sản?", topk=10))
 result_documents = results.results
 
 for doc in result_documents:

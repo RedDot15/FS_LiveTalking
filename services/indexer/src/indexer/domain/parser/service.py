@@ -27,7 +27,6 @@ class ParserService(BaseService):
         if knowledge_file_local_path.endswith('pdf'):
             try:
                 md_text = pymupdf4llm.to_markdown(knowledge_file_local_path)
-                await knowledge_file.seek(0)    
                 os.remove(knowledge_file_local_path)
                 return md_text
             except Exception as e:

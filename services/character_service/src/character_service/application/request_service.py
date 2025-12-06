@@ -30,12 +30,13 @@ class RequestInput(BaseModel):
     character_audio_file: UploadFile = File(...)
 
 class RequestOutput(BaseModel):
+    request_id: str
     character_id: str
     character_name: str
 
 class RequestRejectInput(BaseModel):
-    request_id: str
-    reject_reason: str
+    request_id: str = None
+    reject_reason: str = "Không đạt tiêu chuẩn"
 
 class RequestServiceApplication(BaseService):
     
@@ -71,9 +72,11 @@ class RequestServiceApplication(BaseService):
                     )
                 )
 
+                request_id = str(uuid4())
+
                 request_handler = RequestHandler(collection=mongodb["requests"])
                 request_handler.create_request(Request(
-                    _id=str(uuid4()), 
+                    _id=request_id, 
                     character_id=character_id,
                     character_name=inputs.character_name, 
                     knowledge_url=character_outputs.knowledge_url,
@@ -85,7 +88,7 @@ class RequestServiceApplication(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
-        return RequestOutput(character_name=inputs.character_name, character_id=character_id)
+        return RequestOutput(request_id=request_id, character_name=inputs.character_name, character_id=character_id)
     
     async def approve_request(self, request_id: str, current_user_id: str):
         with self.request.app.state.mongodb_client.get_database() as mongodb:
@@ -94,6 +97,8 @@ class RequestServiceApplication(BaseService):
                 request = request_handler.get_request_by_id(request_id=request_id)
                 if not request:
                     raise Exception(f"Request not found: {request_id}")
+                if request['status'] != "PENDING":
+                    raise Exception(f"Request status is not PENDING: {request_id}")
 
                 # Request indexer
                 await request_indexer(
@@ -105,11 +110,10 @@ class RequestServiceApplication(BaseService):
                     audio_url = request['audio_url'],
                 )
 
-                request_handler = RequestHandler(collection=mongodb["requests"])
-                request_handler.update_request_by_id(request_id = request_id, request = Request(
-                    status="APPROVED", 
-                    approved_by=current_user_id,
-                    evaluated_at=datetime.now()))
+                request['status'] = "APPROVED"
+                request['approved_by'] = current_user_id
+                request['evaluated_at'] = datetime.now()
+                request_handler.update_request_by_id(request_id = request_id, request = request)
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
@@ -122,6 +126,8 @@ class RequestServiceApplication(BaseService):
                 request = request_handler.get_request_by_id(request_id=inputs.request_id)
                 if not request:
                     raise Exception(f"Request not found: {inputs.request_id}")
+                if request['status'] != "PENDING":
+                    raise Exception(f"Request status is not PENDING: {inputs.request_id}")
 
                 # Delete image, knowledge, voice from minio
                 await self.delete_minio_init.process(
@@ -130,12 +136,11 @@ class RequestServiceApplication(BaseService):
                     )
                 )
 
-                request_handler = RequestHandler(collection=mongodb["requests"])
-                request_handler.update_request_by_id(request_id = inputs.request_id, request = Request(
-                    status="REJECTED", 
-                    evaluated_at=datetime.now(),
-                    rejected_by=current_user_id,
-                    reject_reason=inputs.reject_reason))
+                request['status'] = "REJECTED"
+                request['rejected_by'] = current_user_id
+                request['evaluated_at'] = datetime.now()
+                request['reject_reason'] = inputs.reject_reason
+                request_handler.update_request_by_id(request_id = inputs.request_id, request = request)
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         

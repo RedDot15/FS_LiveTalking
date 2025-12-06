@@ -27,14 +27,14 @@ class QAPair:
 @dataclass
 class Request:
     _id: str
-    character_id: str = None
-    character_name: str = None
-    knowledge_url: str = None
-    avatar_url: str = None
-    audio_url: str = None
-    created_by: datetime = None
-    created_at: datetime = None
-    status: str = None
+    character_id: str
+    character_name: str
+    knowledge_url: str
+    avatar_url: str
+    audio_url: str
+    created_by: datetime
+    created_at: datetime
+    status: str
     evaluated_at: str = None
     approved_by: str = None
     rejected_by: str = None

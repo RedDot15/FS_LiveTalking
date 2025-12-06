@@ -10,7 +10,9 @@ import shutil
 from minio_client import MinioConnection
 import tempfile
 
-class CharacterDownloadInputs():
+logger = get_logger(__name__)
+
+class CharacterDownloadInputs(BaseModel):
     character_id: str
     knowledge_url: str
 
@@ -22,7 +24,7 @@ class CharacterDownloadMinioService(BaseService):
 
     async def process(self, character_download_inputs: CharacterDownloadInputs):
         try:
-            return get_knowledge_file(
+            return self.get_knowledge_file(
                 bucket_name = "reunion", 
                 character_id = character_download_inputs.character_id, 
                 knowledge_url = character_download_inputs.knowledge_url)

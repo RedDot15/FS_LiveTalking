@@ -25,7 +25,6 @@ from wav2lip.domain.save_coords import SaveCoordsService
 logger = get_logger(__name__)
 
 class Wav2lipApplicationInput(BaseModel):
-    
     character_id: str
     video_url: str
     

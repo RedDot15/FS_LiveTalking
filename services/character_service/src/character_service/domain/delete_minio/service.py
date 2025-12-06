@@ -4,7 +4,7 @@ from base import BaseModel, BaseService
 from logger import get_logger
 from minio_client import MinioConnection
 
-class CharacterDeleteInputs():
+class CharacterDeleteInputs(BaseModel):
     id: str
 
 class CharacterDeleteMinioService(BaseService):

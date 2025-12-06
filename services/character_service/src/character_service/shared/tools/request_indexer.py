@@ -41,15 +41,12 @@ async def request_indexer(
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 url=settings.indexer_service_url + '/indexing',
-                data=data,
+                json=data,
                 headers=headers
             )
             
             if response.status_code != 200:
-                logger.warning(
-                    f'API request failed with status {response.status_code}: {response.text} : {settings.livetalking_service_url}',
-                )
-                return []
+                raise Exception(f'API request failed with status {response.status_code}: {response.text}')
             
             return response.json()
             

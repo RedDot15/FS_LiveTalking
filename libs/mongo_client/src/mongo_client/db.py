@@ -37,7 +37,7 @@ class MongoDBHandler:
         if self._db is None:
             return
 
-        self._db.characters.create_index([("name", ASCENDING)], unique=True)
+        self._db.characters.create_index([("name", ASCENDING)])
         self._db.conversations.create_index([("participants_hash", ASCENDING), ("created_at", DESCENDING)])
         self._db.qa_pairs.create_index([("conversation_id", ASCENDING), ("created_at", ASCENDING)])
         self._db.requests.create_index([("created_at", DESCENDING), ("character_name", ASCENDING)])
