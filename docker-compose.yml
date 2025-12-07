@@ -159,6 +159,8 @@ services:
         - OPTIONAL_BUILD=src/identity_service/__init__.py
     ports:
       - "8762:8762"
+    depends_on:
+      - postgres
     networks:
       - multidimension
     command: uv run identity_service
@@ -200,6 +202,12 @@ services:
         - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
     ports:
       - 8010:8010
+    depends_on:
+      - chat_service
+      - litellm
+      - chromadb
+      - rag_service
+      - voice_clone
     networks:
       - multidimension
     command: uv run livetalking
@@ -378,6 +386,15 @@ services:
         - OPTIONAL_BUILD=src/indexer/__init__.py
     ports:
       - "3036:3036"
+    depends_on:
+      - minio
+      - chromadb
+      - mongodb
+      - character_service
+      - sadtalker
+      - wav2lip
+      - mongo-gui
+      - litellm
     volumes:
       - type: bind
         source: ./services/indexer
@@ -388,13 +405,6 @@ services:
     networks:
       - multidimension
     command: uv run indexer
-    depends_on:
-      - minio
-      - mongodb
-      - chromadb
-      - sadtalker
-      - wav2lip
-      - litellm
     environment:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
