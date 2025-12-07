@@ -90,7 +90,7 @@ class RequestServiceApplication(BaseService):
         
         return RequestOutput(request_id=request_id, character_name=inputs.character_name, character_id=character_id)
     
-    async def approve_request(self, request_id: str, current_user_id: str):
+    async def approve_request(self, request_id: str, current_user_id: str) -> None:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 request_handler = RequestHandler(collection=mongodb["requests"])
