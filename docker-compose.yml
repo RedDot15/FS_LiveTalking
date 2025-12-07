@@ -368,23 +368,6 @@ services:
       - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
 
-  frontend:
-    build:
-      context: .
-      dockerfile: dockers/Dockerfile.frontend
-    volumes:
-      - type: bind
-        source: ./web
-        target: /usr/share/nginx/html
-      - type: bind
-        source: ./nginx.conf
-        target: /etc/nginx/nginx.conf
-    networks:
-      - multidimension
-    container_name: frontend
-    ports:
-      - "8080:80"
-
   indexer:
     build:
       context: .
