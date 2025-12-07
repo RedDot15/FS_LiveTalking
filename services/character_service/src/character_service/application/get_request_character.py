@@ -8,7 +8,11 @@ from typing import Any
 from pydantic import Field
 from pydantic import ConfigDict
 
+from logger import get_logger
+
 from mongo_client.controller.request import RequestHandler
+
+logger = get_logger(__name__)
 
 class GetRequestCharacterInput(BaseModel):
     pass 
@@ -24,11 +28,16 @@ class GetRequestCharacterApplication(BaseService):
     
     def process(self) -> GetRequestCharacterOutput:
         
-        with self.request.app.state.mongodb_client.get_database() as db:
-            request_handler = RequestHandler(
-                collection=db['requests']
-            )
-            
-            results = request_handler.get_requests()
-            
+        try:
+        
+            with self.request.app.state.mongodb_client.get_database() as db:
+                request_handler = RequestHandler(
+                    collection=db['requests']
+                )
+                
+                results = request_handler.get_requests()
+        except Exception as e:
+            logger.exception('Error while get request characters', extra={'error': str(e)})
+            raise e
+                
         return GetRequestCharacterOutput(characters=results)

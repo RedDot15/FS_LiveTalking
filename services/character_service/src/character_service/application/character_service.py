@@ -1,5 +1,4 @@
 from __future__ import annotations
-from uuid import uuid4
 
 from base import BaseModel
 from base import BaseService
