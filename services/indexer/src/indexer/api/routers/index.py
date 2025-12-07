@@ -14,21 +14,18 @@ from indexer.api.helpers.exception_handler import ExceptionHandler
 from indexer.api.helpers.exception_handler import ResponseMessage
 from logger import get_logger
 
-from indexer.application import CharacterInputs, IndexerApplication, CharacterMongoDBInputs, ParserInput
+from indexer.application import IndexerApplication, IndexerApplicationInput
 
-from fastapi import File, UploadFile, Form
+from authorization import has_authority
 
 logger = get_logger(__name__)
 index_router = APIRouter(prefix="/v1")
 
-@index_router.post('/indexing')
+@index_router.post('/indexing', dependencies=[Depends(has_authority(authority="INDEXING"))])
 async def index(request: Request, 
                 # character_inputs: CharacterInputs, 
                 background_tasks: BackgroundTasks,
-                name: str = Form(...),
-                knowledge_file: UploadFile = File(...),
-                avatar_image: UploadFile = File(...),
-                audio_file: UploadFile = File(...),
+                body: IndexerApplicationInput,
                 ) -> JSONResponse:
     
     exception_handler = ExceptionHandler(
@@ -47,12 +44,7 @@ async def index(request: Request,
 
     try:
         response = await index_application.process(
-            inputs=CharacterInputs(
-                name=name,
-                knowledge_file=knowledge_file,
-                avatar_image=avatar_image,
-                audio_file=audio_file,
-            )
+            inputs=body
         )
     except Exception as e:
         exception_handler.handle_exception("Lỗi khi process Indexer", extra={e})

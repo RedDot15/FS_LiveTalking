@@ -11,6 +11,7 @@ from logger import get_logger
 from logger import setup_logging
 
 from mongo_client import MongoDBHandler
+from minio_client import MinioConnection
 
 from character_service.shared.utils import get_settings
 from character_service.api.routers import character_management_router
@@ -31,6 +32,7 @@ async def lifespan(app: FastAPI):
         host=app.state.settings.mongodb.host,
         port=app.state.settings.mongodb.port,
     )
+    app.state.minio_client = MinioConnection(setting = app.state.settings.minio)
     
     yield
 

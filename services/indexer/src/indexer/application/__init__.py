@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .indexer import CharacterInputs, IndexerApplication, CharacterMongoDBInputs, ParserInput
+from .indexer import  IndexerApplication, CharacterMongoDBInputs, ParserInput, IndexerApplicationInput
 
 __all__ = [
     "IndexerApplication",
-    "CharacterInputs",
     "CharacterMongoDBInputs",
-    "ParserInput"    
+    "ParserInput",
+    "IndexerApplicationInput"    
 ]

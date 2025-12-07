@@ -10,7 +10,7 @@ import json
 from indexer.shared.utils import get_settings
 
 class Wav2lipApplicationInput(BaseModel):
-    character_name: str
+    character_id: str
     video_url: str
     
 class Wav2lipApplicationOutput(BaseModel):
@@ -20,6 +20,7 @@ class UploadWav2lipService(BaseService):
 
     async def process(self, inputs: Wav2lipApplicationInput) -> str:
         url = get_settings().wav2lip_service_url 
+
         try:
             async with httpx.AsyncClient(timeout=300) as client:
                 response = await client.post(url, json=inputs.model_dump())

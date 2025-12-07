@@ -23,7 +23,7 @@ from infra.minio_client import MinioConnection
 logger = get_logger(__name__)
 
 class GenerateVideoInput(BaseModel):
-    character_name: str
+    character_id: str
     image_url: str
     audio_url: str
 
@@ -64,7 +64,7 @@ class GenerateVideoService(BaseService):
 
         image_path, audio_path = self.get_url_minio(
             bucket_name=self.bucket_name,
-            character_name=input.character_name,
+            character_id=input.character_id,
             image_url=input.image_url,
             audio_url=input.audio_url
         )
@@ -172,7 +172,7 @@ class GenerateVideoService(BaseService):
         save_path = self.minio_client.put_object(
             bucket_name=self.bucket_name,
             src_file=video_path,
-            des_folder_name=f'{input.character_name}/videos', 
+            des_folder_name=f'{input.character_id}/videos', 
             des_file_name=video_filename
         )
         
@@ -185,15 +185,15 @@ class GenerateVideoService(BaseService):
             
         return GenerateVideoOutput(save_path=save_path)
 
-    def get_url_minio(self, bucket_name: str, character_name: str, image_url: str, audio_url: str) -> list[str]:
+    def get_url_minio(self, bucket_name: str, character_id: str, image_url: str, audio_url: str) -> list[str]:
         
         logger.info(
             'STARTING TO GENERATE PRESIGNED URLS FROM MINIO',
             extra={'bucket_name': bucket_name, 'image_url': image_url, 'audio_url': audio_url}
         )
         
-        image_url_minio = character_name + '/' + image_url
-        audio_url_minio = character_name + '/' + audio_url
+        image_url_minio = character_id + '/' + image_url
+        audio_url_minio = character_id + '/' + audio_url
 
         presigned_image_url = self.minio_client.presigned_get_object(
             bucket_name=bucket_name,

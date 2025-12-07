@@ -10,6 +10,7 @@ requires-python = ">=3.10"
 dependencies = [
     "aiortc>=1.10.1",
     "asgi-correlation-id>=4.3.4",
+    "authorization",
     "base",
     "fastapi>=0.116.1",
     "humanplayer",
@@ -38,3 +39,4 @@ llm-client = { workspace = true }
 base = { workspace = true }
 logger = { workspace = true }
 minio-client = { workspace = true }
+authorization = { workspace = true }

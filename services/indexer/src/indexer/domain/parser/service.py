@@ -12,7 +12,7 @@ from litellm import LiteLLMEmbeddingInput, LiteLLMService
 
 
 class ParserInput(BaseModel):
-    knowledge_file: UploadFile
+    knowledge_file_local_path: str
     
 class ParserOutput(BaseModel):
     chunks: list[str]
@@ -22,32 +22,24 @@ class ParserService(BaseService):
     litellm: LiteLLMService
 
     async def extract_text_from_pdf(self, inputs: ParserInput):
-        knowledge_file = inputs.knowledge_file
-        temp_dir = "temp_files"
-        os.makedirs(temp_dir, exist_ok=True)
+        knowledge_file_local_path = inputs.knowledge_file_local_path
 
-        # Đường dẫn file tạm
-        knowledge_file_name = knowledge_file.filename
-        temp_file_path = os.path.join(temp_dir, knowledge_file_name)
-
-        # Lưu file người dùng upload vào thư mục tạm
-        with open(temp_file_path, "wb") as buffer:
-            shutil.copyfileobj(knowledge_file.file, buffer)
-        if temp_file_path.endswith('pdf'):
+        if knowledge_file_local_path.endswith('pdf'):
             try:
-                md_text = pymupdf4llm.to_markdown(temp_file_path)
-                await knowledge_file.seek(0)    
-                os.remove(temp_file_path)
-                os.removedirs(temp_dir)
+                md_text = pymupdf4llm.to_markdown(knowledge_file_local_path)
+                os.remove(knowledge_file_local_path)
                 return md_text
             except Exception as e:
+                os.remove(knowledge_file_local_path)
                 raise e
-        elif temp_file_path.endswith('txt'):
+        elif knowledge_file_local_path.endswith('txt'):
             try:
-                with open(temp_file_path, 'r', encoding='utf-8') as f:
+                with open(knowledge_file_local_path, 'r', encoding='utf-8') as f:
                     md_text = f.read()
+                os.remove(knowledge_file_path)
                 return md_text
             except Exception as e:
+                os.remove(knowledge_file_path)
                 raise e
 
     

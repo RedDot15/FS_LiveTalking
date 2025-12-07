@@ -11,3 +11,6 @@ lipreal:
   model: 'wav2lip'
   customopt: []
   customvideo_config: ''
+
+minio:
+  secure: false

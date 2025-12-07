@@ -24,3 +24,19 @@ class QAPair:
     updated_at: datetime = None
     conversation_id: str = None
 
+@dataclass
+class Request:
+    _id: str
+    character_id: str
+    character_name: str
+    knowledge_url: str
+    avatar_url: str
+    audio_url: str
+    created_by: datetime
+    created_at: datetime
+    status: str
+    evaluated_at: str = None
+    approved_by: str = None
+    rejected_by: str = None
+    reject_reason: str = None
+

@@ -4,26 +4,34 @@ import json
 
 import httpx
 from logger import get_logger
+from fastapi import Request
 
 from ..utils import get_settings
 
 logger = get_logger(__name__)
 
-async def request_livetalking_echo(message: str, sessionid: int):
+async def request_livetalking_echo(message: str, character_id: str, request: Request):
     if not message.strip():
         logger.warning('Empty question provided to get_context')
         return []
     
+    authorization_header = request.headers.get('Authorization')
+    
+    headers = {}
+    if authorization_header:
+        headers['Authorization'] = authorization_header
+
     try:
         settings = get_settings()
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 url=settings.livetalking_service_url + '/human',
                 json={
-                    'sessionid': sessionid,
+                    'character_id': character_id,
                     'type': 'echo',
                     'text': message
                 },
+                headers=headers,
             )
             
             if response.status_code != 200:

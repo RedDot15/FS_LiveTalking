@@ -37,7 +37,7 @@ class TTSServiceInput(BaseModel):
     language: str
     file_name_or_path: Optional[str] = "output.wav"
     stream: bool = False
-    character_name: str
+    character_id: str
 
 
 class TTSServiceOutput(BaseModel):
@@ -116,12 +116,12 @@ class TTSService(BaseService):
         try:
             audio_folder = self.request.app.state.minio_client.get_folder(
                 bucket_name=self.settings.bucket_name,
-                des_folder_name=input.character_name,
+                des_folder_name=input.character_id,
                 prefix=self.settings.prefix,
                 local_folder_path=self.settings.local_folder_path
             )
             
-            audio_folder = audio_folder + '/' + input.character_name + '/' + self.settings.prefix
+            audio_folder = audio_folder + '/' + input.character_id + '/' + self.settings.prefix
             logger.info(f"Audio folder retrieved from MinIO: {audio_folder}")
             
         except Exception as e:

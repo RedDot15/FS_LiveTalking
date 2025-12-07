@@ -27,7 +27,6 @@ class CreateQAPairInput(BaseModel):
     conversation_id: str
     question: str
     user_id: str = "default"
-    sessionid: int
 
 class CreateQAPairOutput(BaseModel):
     answer: str
@@ -36,7 +35,6 @@ class UpdateQAPairInput(BaseModel):
     qa_pair_id: str = "default"
     question: str
     user_id: str = "default"
-    sessionid: int
 
 class UpdateQAPairOutput(BaseModel):
     answer: str
@@ -98,7 +96,7 @@ class QAPairService(BaseService):
                 response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                await request_livetalking_echo(answer, input.sessionid)
+                await request_livetalking_echo(answer, character['_id'], self.request)
 
                 # Insert into DB new qa_pair
                 qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
@@ -158,7 +156,7 @@ class QAPairService(BaseService):
                 response_duration = (end_time - start_time).microseconds
 
                 # Request LiveTalking to echo
-                await request_livetalking_echo(answer, input.sessionid)
+                await request_livetalking_echo(answer, character['_id'], self.request)
 
                 # Insert into DB new qa_pair
                 qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])

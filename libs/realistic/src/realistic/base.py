@@ -34,7 +34,7 @@ logger = get_logger(__name__)
 
 # Base class for real-time processing, handling TTS, audio/video recording, and custom animation cycles.
 class BaseReal:
-    def __init__(self, sessionid: str):
+    def __init__(self, sessionid: str, character_id: str):
         
         self.fps = 20
         ## Sets the options for the BaseReal instance.
@@ -59,7 +59,8 @@ class BaseReal:
         # Initializes video width and height.
         self.width = self.height = 0
 
-        
+        self.character_id = character_id
+
         self.curr_state=0
         self.custom_img_cycle = {}
         self.custom_audio_cycle = {}
@@ -67,7 +68,9 @@ class BaseReal:
         self.custom_index = {}
         self.custom_opt = {}
 
-    def put_msg_txt(self, msg, eventpoint = None):
+    def put_msg_txt(self, msg, character_id, eventpoint = None):
+        if self.character_id != character_id:
+            return
         self.tts.put_msg_txt(msg, eventpoint)
 
     # Processes a byte stream representing an audio file and feeds it to the ASR in chunks.

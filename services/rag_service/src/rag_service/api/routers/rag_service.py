@@ -6,12 +6,13 @@ from fastapi.responses import JSONResponse
 from logger import get_logger
 from rag_service.api.helpers.exception_handler import ExceptionHandler
 from rag_service.application import RagServiceApplication, RagServiceInput
+from authorization import CurrentToken
 
 rag_router = APIRouter(prefix='/v1')
 logger = get_logger(__name__)
 
 @rag_router.post('/rag')
-async def query(request: Request, rag_input: RagServiceInput, background_tasks: BackgroundTasks) -> JSONResponse:
+async def query(request: Request, rag_input: RagServiceInput, background_tasks: BackgroundTasks, current_token: CurrentToken) -> JSONResponse:
     
     exception_handler = ExceptionHandler(
         logger=logger.bind(),

@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from fastapi import BackgroundTasks
 from application import SadTalkerServiceInput
 from application import SadTalkerService
 from shared.logger import get_logger
@@ -18,7 +19,7 @@ logger = get_logger(__name__)
 sadtalker_router = APIRouter(prefix='/v1')
 
 @sadtalker_router.post('/sadtalker')
-def sadtalker(request: Request, sadtalker_input: SadTalkerServiceInput) -> JSONResponse:
+def sadtalker(request: Request, background_tasks: BackgroundTasks, body: SadTalkerServiceInput) -> JSONResponse:
     
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -40,17 +41,17 @@ def sadtalker(request: Request, sadtalker_input: SadTalkerServiceInput) -> JSONR
     try:
         response = sadtalker_service.process(
             input=SadTalkerServiceInput(
-                character_name=sadtalker_input.character_name,
-                image_url=sadtalker_input.image_url,
-                audio_url=sadtalker_input.audio_url
+                character_id=body.character_id,
+                image_url=body.image_url,
+                audio_url=body.audio_url
             )
         )
     except Exception as e:
         return exception_handler.handle_exception(
             e=str(e), 
             extra={
-                'image_url': sadtalker_input.image_url,
-                "audio_url": sadtalker_input.audio_url
+                'image_url': body.image_url,
+                "audio_url": body.audio_url
             }
         )
 

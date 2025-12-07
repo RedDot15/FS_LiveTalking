@@ -538,7 +538,8 @@ class TTSWrapper:
 
     def get_speaker_wav(self, speaker_name_or_path):
         """ Gets the speaker_wav(s) for a given speaker name. """
-        if speaker_name_or_path.endswith('.wav'):
+        supported_exts = ('.wav', '.mp3', '.flac')
+        if speaker_name_or_path.lower().endswith(supported_exts):
             # it's a file name
             if os.path.isabs(speaker_name_or_path):
                 # absolute path; nothing to do
@@ -546,6 +547,9 @@ class TTSWrapper:
             else:
                 # make it a full path
                 speaker_wav = os.path.join(self.speaker_folder, speaker_name_or_path)
+            
+            if not os.path.exists(speaker_wav):
+                raise ValueError(f"Speaker file {speaker_wav} not found.")
         else:
             # it's a speaker name
             full_path = os.path.join(self.speaker_folder, speaker_name_or_path) 

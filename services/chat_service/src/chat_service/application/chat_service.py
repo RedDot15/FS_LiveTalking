@@ -42,7 +42,7 @@ class ChatServiceApplication(BaseService):
         )
     
     async def process(self, input: ChatServiceInput) -> ChatServiceOutput:
-        context = await get_context(character_id=input.character_id, question=input.question)
+        context = await get_context(character_id=input.character_id, question=input.question, request=self.request)
 
         logger.info(f'Total context is: {len(context)}')
         logger.info(f'Context: {context}')

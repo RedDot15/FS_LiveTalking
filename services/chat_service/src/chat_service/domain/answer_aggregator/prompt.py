@@ -20,7 +20,6 @@ Your task is to answer the raw_question faithfully in {language}, using only the
 - Use only the information explicitly and clearly stated in the context.
 
 - **You must include all information from the provided context that relates to the raw_question**, without omission or summarization of important details.
-- **If all the provided `context` is not relevant to the `raw_question`, you must respond with the exact phrase: "Tôi không có thông tin để trả lời câu hỏi trên"**.
 - If the context only partially answers the raw_question, answer only with the information you have and do not add any more.
 
 
@@ -86,7 +85,6 @@ Your task is to answer the raw_question faithfully in {language}, using only the
 - Use only the information explicitly and clearly stated in the context.
 
 - **You must include all information from the provided context that relates to the raw_question**, without omission or summarization of important details.
-- **If all the provided `context` is not relevant to the `raw_question`, you must respond with the exact phrase: "Tôi không có thông tin để trả lời câu hỏi trên"**.
 - If the context only partially answers the raw_question, answer only with the information you have and do not add any more.
 
 

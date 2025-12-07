@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "asgi-correlation-id>=4.3.4",
+    "authorization",
     "base",
     "chromadb-client",
     "fastapi>=0.116.1",
@@ -28,4 +29,5 @@ build-backend = "uv_build"
 logger = { workspace = true }
 base = { workspace = true }
 chromadb-client = { workspace = true }
+authorization = { workspace = true }
 

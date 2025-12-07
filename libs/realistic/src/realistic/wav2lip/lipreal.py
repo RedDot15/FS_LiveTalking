@@ -41,8 +41,8 @@ logger = get_logger(__name__)
 
 class LipReal(BaseReal):
     
-    def __init__(self, avatar: tuple[list, list, Any], model: Any, character_name: str, sessionid: str, settings: LipRealSettings) -> None:
-        super().__init__(sessionid)
+    def __init__(self, avatar: tuple[list, list, Any], model: Any, character_id: str, sessionid: str, settings: LipRealSettings) -> None:
+        super().__init__(sessionid, character_id)
         
         self.settings = settings
         
@@ -63,10 +63,9 @@ class LipReal(BaseReal):
         self.frame_list_cycle, self.face_list_cycle, self.coord_list_cycle = avatar
         
         self.asr = LipASR(self)
-        self.tts = XTTS(self, character_name=character_name, settings=settings.xtts)
+        self.tts = XTTS(self, character_id=character_id, settings=settings.xtts)
         
         self.asr.warm_up()        
-
         
         self.render_event = mp.Event()
         

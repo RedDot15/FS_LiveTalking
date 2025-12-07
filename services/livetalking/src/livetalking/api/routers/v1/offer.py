@@ -8,6 +8,7 @@ from fastapi import APIRouter
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from authorization.deps import CurrentToken
 
 # from chat_service.application import ChatServiceInput
 # from chat_service.application import ChatServiceApplication
@@ -35,7 +36,7 @@ settings = get_settings()
     '/offer',
     response_model=None,
 )
-async def offer(request: Request, offer_input: OfferApplicationInput) -> JSONResponse:
+async def offer(request: Request, offer_input: OfferApplicationInput, current_token: CurrentToken) -> JSONResponse:
     
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -68,7 +69,8 @@ async def offer(request: Request, offer_input: OfferApplicationInput) -> JSONRes
             input=OfferApplicationInput(
                 sdp=offer_input.sdp,
                 type=offer_input.type,
-                character_name=offer_input.character_name
+                character_id=offer_input.character_id,
+                session_id=current_token.id
             )
         )
         
@@ -76,7 +78,7 @@ async def offer(request: Request, offer_input: OfferApplicationInput) -> JSONRes
         return exception_handler.handle_exception(
             e=str(e), 
             extra={
-                'character_name': offer_input.character_name
+                'character_id': offer_input.character_id
             }
         )
 

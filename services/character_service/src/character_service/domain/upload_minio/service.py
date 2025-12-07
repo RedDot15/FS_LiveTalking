@@ -13,12 +13,12 @@ logger = get_logger(__name__)
 class CharacterInputs():
     def __init__(
         self,
-        name: str = Form(...),
+        id: str = Form(...),
         knowledge_file: UploadFile = File(...),
         avatar_image: UploadFile = File(...),
         audio_file: UploadFile = File(...),
     ):
-        self.name = name
+        self.id = id
         self.knowledge_file = knowledge_file
         self.avatar_image = avatar_image
         self.audio_file = audio_file
@@ -37,20 +37,18 @@ class CharacterUploadMinioService(BaseService):
 
     def get_final_url(self, full_path: str) -> str:
         parts = full_path.split('/')
-        
         last_two_parts = parts[-2:]
-        
         return "/".join(last_two_parts)
 
     async def process(self, character_inputs: CharacterInputs):
         try:
             self.minio_client.make_bucket("reunion")
-            file: UploadFile = character_inputs.knowledge_file
             temp_dir = "temp_files"
             os.makedirs(temp_dir, exist_ok=True)
-            object_name = character_inputs.name
+            character_id = character_inputs.id
             # ================================KNOWLEDGE================================
             # Đường dẫn file tạm
+            file: UploadFile = character_inputs.knowledge_file
             file_name = file.filename
             temp_file_path = os.path.join(temp_dir, file_name)
 
@@ -63,7 +61,7 @@ class CharacterUploadMinioService(BaseService):
             file_name = f"{file_type}/{file_name}"
             knowledge_status = self.minio_client.put_object(bucket_name="reunion",
                                                         src_file=temp_file_path,
-                                                        des_folder_name=object_name,
+                                                        des_folder_name=character_id,
                                                         des_file_name=file_name)
             if knowledge_status.status:
                 knowledge_url = knowledge_status.full_path
@@ -81,7 +79,7 @@ class CharacterUploadMinioService(BaseService):
 
             avatar_status = self.minio_client.put_object(bucket_name="reunion",
                                                         src_file=temp_file_path,
-                                                        des_folder_name=object_name,
+                                                        des_folder_name=character_id,
                                                         des_file_name=file_name)
 
             if avatar_status.status:
@@ -100,7 +98,7 @@ class CharacterUploadMinioService(BaseService):
 
             audio_status = self.minio_client.put_object(bucket_name="reunion",
                                                                 src_file=temp_file_path,
-                                                                des_folder_name=object_name,
+                                                                des_folder_name=character_id,
                                                                 des_file_name=file_name)
             if audio_status.status:
                 audio_url=audio_status.full_path
@@ -118,6 +116,6 @@ class CharacterUploadMinioService(BaseService):
                 raise Exception("Lỗi khi xử lí upload file lên Minio, File name đã tồn tại hoặc lỗi S3")
         
         except Exception as e:
-            logger.error("Lỗi khi xử lí upload file lên Minio:", extra={e})
+            logger.error("Lỗi khi xử lí upload file lên Minio:", extra={'error': str(e)})
             raise e
 

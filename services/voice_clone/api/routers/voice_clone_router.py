@@ -29,7 +29,7 @@ async def tts_stream(request: Request, tts_service_input: TTSServiceInput):
         async for chunk in tts_service.process(
             input=TTSServiceInput(
                 text=tts_service_input.text,
-                character_name=tts_service_input.character_name,
+                character_id=tts_service_input.character_id,
                 language=tts_service_input.language,
                 stream=True
             )
