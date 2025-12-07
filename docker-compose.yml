@@ -14,7 +14,7 @@ services:
   chromadb:
     image: ghcr.io/chroma-core/chroma:latest
     volumes:
-      - chromadb:/chroma/.chroma/index
+      - ./chromadb_data:/data
     ports:
       - ${CHROMADB__PORT}:8000
     networks:
