@@ -1,15 +1,9 @@
 from __future__ import annotations
-from typing import Annotated
 
-from authorization.deps import CurrentToken, has_authority
-from authorization.model import TokenPayload
-from character_service.application.request_service import RequestInput, RequestRejectInput
-from fastapi import APIRouter, Depends
+from authorization.deps import CurrentToken
+from fastapi import APIRouter
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from fastapi import File, Form, UploadFile
-from logger import get_logger
 from character_service.api.helpers.exception_handler import ExceptionHandler
 from character_service.application.get_request_character import GetRequestCharacterApplication
 
