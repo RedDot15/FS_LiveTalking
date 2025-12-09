@@ -23,7 +23,7 @@ async def request_livetalking_echo(message: str, character_id: str, request: Req
 
     try:
         settings = get_settings()
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30) as client:
             response = await client.post(
                 url=settings.livetalking_service_url + '/human',
                 json={

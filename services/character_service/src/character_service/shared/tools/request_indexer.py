@@ -38,7 +38,7 @@ async def request_indexer(
         }
         
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=600) as client:
             response = await client.post(
                 url=settings.indexer_service_url + '/indexing',
                 json=data,
