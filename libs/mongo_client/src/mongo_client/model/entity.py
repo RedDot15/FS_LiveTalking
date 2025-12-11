@@ -5,6 +5,7 @@ from datetime import datetime
 class Character:
     _id: str
     name: str
+    created_by: str
 
 @dataclass
 class Conversation:

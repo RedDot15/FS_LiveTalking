@@ -108,6 +108,7 @@ class RequestServiceApplication(BaseService):
                     knowledge_url = request['knowledge_url'],
                     avatar_url = request['avatar_url'],
                     audio_url = request['audio_url'],
+                    created_by = request['created_by']
                 )
 
                 request['status'] = "APPROVED"
@@ -141,6 +142,35 @@ class RequestServiceApplication(BaseService):
                 request['evaluated_at'] = datetime.now()
                 request['reject_reason'] = inputs.reject_reason
                 request_handler.update_request_by_id(request_id = inputs.request_id, request = request)
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+        
+        return
+
+    def process(self, inputs: Any) -> Any:
+        pass
+
+    async def delete_request(self, request_id: str, current_user_id: str):
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                request_handler = RequestHandler(collection=mongodb["requests"])
+                request = request_handler.get_request_by_id(request_id=request_id)
+                if not request:
+                    raise Exception(f"Request not found: {request_id}")
+                if request['status'] != "PENDING":
+                    raise Exception(f"Request status is not PENDING: {request_id}")
+                # Validate conversation owner
+                if request['created_by'] != current_user_id:
+                    raise Exception(f"Unauthorized user: {current_user_id}")
+
+                # Delete image, knowledge, voice from minio
+                await self.delete_minio_init.process(
+                    character_delete_inputs = CharacterDeleteInputs(
+                        id = request['character_id']
+                    )
+                )
+
+                request_handler.delete_request_by_id(request_id = request_id)
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         

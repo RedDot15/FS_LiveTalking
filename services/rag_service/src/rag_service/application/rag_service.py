@@ -15,7 +15,6 @@ class RagServiceInput(BaseModel):
     topk: int
     query: str 
     
-    
 class RagServiceOutput(BaseModel):
     results: list[str] | None
     
@@ -37,3 +36,11 @@ class RagServiceApplication(BaseService):
         logger.info(f'rag results: {results}')
 
         return RagServiceOutput(results=results.results)
+
+    async def delete_character_data(self, character_id: str) -> str:
+        
+        self.request.app.state.chromadb.delete_document(character_id=character_id)
+        
+        logger.info(f'Deleted character data of character: {character_id}')
+
+        return character_id

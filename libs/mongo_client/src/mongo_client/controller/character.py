@@ -22,17 +22,17 @@ class CharacterHandler(BaseService):
         return data
     
     # Get character by id
-    def get_character_by_name(self, character_name: str):
-        data = self.collection.find_one({"name": character_name})
-        return data
+    # def get_character_by_name(self, character_name: str):
+    #     data = self.collection.find_one({"name": character_name})
+    #     return data
     
     # Update character by id
-    def update_character_by_id(self, character_id: str, character: Character):
-        update_data = character.__dict__
-        return self.collection.update_one(
-            {"_id": character_id},
-            {"$set": update_data}
-        )
+    # def update_character_by_id(self, character_id: str, character: Character):
+    #     update_data = character.__dict__
+    #     return self.collection.update_one(
+    #         {"_id": character_id},
+    #         {"$set": update_data}
+    #     )
 
     # Delete character by id
     def delete_character_by_id(self, character_id: str):

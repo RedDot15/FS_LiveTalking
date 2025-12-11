@@ -32,9 +32,17 @@ class CreateConversationInput(BaseModel):
 
 class CreateConversationOutput(BaseModel):
     answer: str
-    
+
+class UpdateConversationInput(BaseModel):
+    conversation_id: str = "default"
+    new_conversation_name: str
+    user_id: str = "default"
+
+class UpdateConversationOutput(BaseModel):
+    new_conversation_name: str
+
 class DeleteConversationInput(BaseModel):
-    conversation_id: str
+    conversation_id: str = "default"
     user_id: str = "default"
 
 class DeleteConversationOutput(BaseModel):
@@ -124,7 +132,7 @@ class ConversationService(BaseService):
 
         return CreateConversationOutput(answer=answer)
     
-    async def delete_conversation(self, input: DeleteConversationInput) -> DeleteConversationOutput:
+    async def update_conversation(self, input: UpdateConversationInput) -> UpdateConversationOutput:
 
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
@@ -136,8 +144,31 @@ class ConversationService(BaseService):
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
 
+                conversation_handler.update_conversation_by_id(
+                    conversation_id=input.conversation_id, 
+                    updated_conversation_name=input.new_conversation_name)
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+
+        return UpdateConversationOutput(new_conversation_name=input.new_conversation_name)
+
+    async def delete_conversation(self, input: DeleteConversationInput) -> DeleteConversationOutput:
+
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                # Get character
+                conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
+
+                # Validate conversation owner
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
+                    raise Exception(f"Unauthorize user: {input.user_id}")
+~
+                qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
+                qa_pair_handler.delete_qa_pairs_by_conversation_id(conversation_id=input.conversation_id)
+
                 conversation_handler.delete_conversation_by_id(conversation_id=input.conversation_id)
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateConversationOutput(answer=input.conversation_id)
+        return DeleteConversationOutput(conversation_id=input.conversation_id)

@@ -22,9 +22,9 @@ class RequestHandler(BaseService):
         return data
     
     # Get request by id
-    def get_request_by_character_name(self, character_name: str):
-        data = self.collection.find_one({"character_name": character_name})
-        return data
+    # def get_request_by_character_name(self, character_name: str):
+    #     data = self.collection.find_one({"character_name": character_name})
+    #     return data
     
     # Update request by id
     def update_request_by_id(self, request_id: str, request: Request):

@@ -47,3 +47,35 @@ def list_characters(request: Request, current_token: CurrentToken) -> JSONRespon
             response,
         )
     )
+
+@character_router.delete('/characters/{character_id}')
+async def delete_character(request: Request, current_token: CurrentToken, character_id: str) -> JSONResponse:
+
+    exception_handler = ExceptionHandler(
+        logger=logger.bind(),
+        service_name=__name__,
+    )
+    
+    try:
+        character_service = CharacterServiceApplication(
+            settings=settings,
+            request=request
+        )
+    
+    except Exception as e:
+        return exception_handler.handle_exception(
+            e=f'Error during application initialization: {str(e)}',
+            extra={},
+        )
+
+    try:
+        response = await character_service.delete_character(character_id=character_id, user_id=current_token.id, scope=current_token.scope)
+        
+    except Exception as e:
+        return exception_handler.handle_exception(e=str(e))
+
+    return exception_handler.handle_success(
+        jsonable_encoder(
+            response,
+        )
+    )

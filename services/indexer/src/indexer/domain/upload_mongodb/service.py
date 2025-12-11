@@ -12,6 +12,7 @@ from mongo_client.controller import CharacterHandler
 class CharacterMongoDBInputs(BaseModel):
     character_id: str
     name: str
+    created_by: str
 
 class CharacterMongoDBOutputs(BaseModel):
     result: str
@@ -22,6 +23,7 @@ class CharacterUploadMongoDBService(BaseService):
         new_character = Character(
             name = inputs.name,
             _id = inputs.character_id,
+            created_by = inputs.created_by
         )
         try:
             with self.db_handler.get_database() as db:

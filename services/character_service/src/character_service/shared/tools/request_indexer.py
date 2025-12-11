@@ -16,7 +16,8 @@ async def request_indexer(
         character_id: str, 
         knowledge_url: str,
         avatar_url: str, 
-        audio_url: str):
+        audio_url: str,
+        created_by: str):
     
     try:
         settings = get_settings()
@@ -34,7 +35,8 @@ async def request_indexer(
             'name': character_name,
             'knowledge_url': knowledge_url,
             'avatar_url': avatar_url,
-            'audio_url': audio_url
+            'audio_url': audio_url,
+            'created_by': created_by
         }
         
 

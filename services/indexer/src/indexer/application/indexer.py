@@ -22,6 +22,7 @@ class IndexerApplicationInput(BaseModel):
     knowledge_url: str
     avatar_url: str
     audio_url: str
+    created_by: str
 
 class IndexerApplicationOutput(BaseModel):
     json_response: str
@@ -81,6 +82,7 @@ class IndexerApplication(BaseService):
             inputs = CharacterMongoDBInputs(
                 name = inputs.name,
                 character_id=character_id
+                created_by=inputs.created_by
             )
         )
         

@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from chat_service.api.helpers.exception_handler import ExceptionHandler
-from chat_service.application import ConversationService, ConversationInput, CreateConversationInput, DeleteConversationInput
+from chat_service.application import (
+    ConversationService, 
+    ConversationInput, 
+    CreateConversationInput, 
+    UpdateConversationInput,
+    DeleteConversationInput
+)
 from chat_service.shared.utils import get_settings
 from fastapi import APIRouter, BackgroundTasks, Request
 from fastapi.encoders import jsonable_encoder
@@ -79,8 +85,9 @@ async def create_new_conversation(request: Request, current_token: CurrentToken,
         )
     )
 
-@conversation_router.delete('/conversations/{conversation_id}')
-async def delete_conversation(request: Request, current_token: CurrentToken, body: DeleteConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
+
+@conversation_router.put('/conversations/{conversation_id}')
+async def update_conversation(request: Request, current_token: CurrentToken, conversation_id: str, body: UpdateConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -98,6 +105,40 @@ async def delete_conversation(request: Request, current_token: CurrentToken, bod
         )
 
     try:
+        body.conversation_id = conversation_id
+        body.user_id = current_token.id
+        response = await conversation_service.update_conversation(
+            input=body
+        )
+    except Exception as e:
+        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': body.character_id})
+
+    return exception_handler.handle_success(
+        jsonable_encoder(
+            response,
+        )
+    )
+
+@conversation_router.delete('/conversations/{conversation_id}')
+async def delete_conversation(request: Request, current_token: CurrentToken, conversation_id: str, body: DeleteConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
+
+    exception_handler = ExceptionHandler(
+        logger=logger.bind(),
+        service_name=__name__,
+    )
+
+    try:
+        conversation_service = ConversationService(
+            request=request, settings=settings
+        )
+    except Exception as e:
+        return exception_handler.handle_exception(
+            e=f'Error during application initialization: {str(e)}',
+            extra={},
+        )
+
+    try:
+        body.conversation_id = conversation_id
         body.user_id = current_token.id
         response = await conversation_service.delete_conversation(
             input=body
