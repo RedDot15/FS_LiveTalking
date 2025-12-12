@@ -4,7 +4,7 @@ from chromadb_client import ChromaDBSetting
 
 chroma_settings = ChromaDBSetting(
     host='localhost',
-    port=8008
+    port=8000
 )
 
 chromadb = ChromaDB(
@@ -42,7 +42,7 @@ ids = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"
     
 # document_collection.add(documents=documents, metadatas=metadatas, ids=ids)
 
-results = chromadb.process(input=ChromaDBInput(character_id='4959e2ad-1afa-4f9b-98d8-1a23e7c0f1f0', query="Đóng góp và di sản?", topk=10))
+results = chromadb.process(input=ChromaDBInput(character_id='b35ee57e-202f-4822-8c32-1ad982b83702', query="Đóng góp và di sản?", topk=10))
 result_documents = results.results
 
 for doc in result_documents:
