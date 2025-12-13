@@ -1,3 +1,4 @@
+from sqlalchemy.sql.elements import Null
 from __future__ import annotations
 
 from datetime import datetime
@@ -29,6 +30,7 @@ class CreateConversationInput(BaseModel):
     question: str
     user_id: str = "default"
     character_id: str
+    conversation_id: str = ""
 
 class CreateConversationOutput(BaseModel):
     answer: str
@@ -131,16 +133,32 @@ class ConversationService(BaseService):
                 character_handler = CharacterHandler(collection=mongodb["characters"])
                 character: Character = character_handler.get_character_by_id(character_id=input.character_id)
 
-                # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
-                conversation: Conversation = conversation_handler.create_conversation(conversation=Conversation(
-                    _id=str(uuid.uuid4()), 
-                    name=input.question[:50],
-                    participants_hash=participants_hash, 
-                    character_id=input.character_id, 
-                    created_at=datetime.now()))
-                
-                conversation_id = conversation.inserted_id
+
+                if input.conversation_id != "":
+                    add_summary = False
+                    # Insert into DB new conversation 
+                    conversation: Conversation = conversation_handler.create_conversation(conversation=Conversation(
+                        _id=str(uuid.uuid4()), 
+                        name=input.question[:50],
+                        participants_hash=participants_hash, 
+                        character_id=input.character_id, 
+                        created_at=datetime.now()))
+                    conversation_id = conversation.inserted_id
+                else:
+                    add_summary = False
+                    conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
+
+                    # Validate conversation owner
+                    if conversation['participants_hash'].split('_')[0] != input.user_id:
+                        raise Exception(f"Unauthorize user: {input.user_id}")
+                    
+                    character_id = conversation['character_id']
+
+                    # Get character
+                    character_handler = CharacterHandler(collection=mongodb["characters"])
+                    character: Character = character_handler.get_character_by_id(character_id=character_id)
+
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
@@ -148,7 +166,7 @@ class ConversationService(BaseService):
             character=character,
             conversation_id=conversation_id,
             question=input.question,
-            add_summary=False
+            add_summary=add_summary
         )
 
         return CreateConversationOutput(answer=answer)
@@ -169,33 +187,5 @@ class ConversationService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateConversationOutput(answer=input.conversation_id)
+        return DeleteConversationOutput(answer=input.conversation_id)
 
-
-    async def chat_in_conversation(self, input: ChatInConversationInput) -> ChatInConversationOutput:
-        with self.request.app.state.mongodb_client.get_database() as mongodb:
-            try:
-                # Get conversation
-                conversation_handler = ConversationHandler(collection=mongodb["conversations"])
-                conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
-
-                # Validate conversation owner
-                if conversation['participants_hash'].split('_')[0] != input.user_id:
-                    raise Exception(f"Unauthorize user: {input.user_id}")
-                
-                character_id = conversation['character_id']
-
-                # Get character
-                character_handler = CharacterHandler(collection=mongodb["characters"])
-                character: Character = character_handler.get_character_by_id(character_id=character_id)
-            except Exception as e:
-                raise Exception(f"Error accessing MongoDB: {str(e)}")
-
-        answer = await self._process_chat_interaction(
-            character=character,
-            conversation_id=input.conversation_id,
-            question=input.question,
-            add_summary=True
-        )
-
-        return ChatInConversationOutput(answer=answer)
