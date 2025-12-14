@@ -19,11 +19,11 @@ class BaseTTS:
         self.parent = parent
         
         # Set audio parameters
-        self.fps = 20
+        self.fps = 50  # 50 fps for 20ms audio frames (optimal for Opus)
         
         self.sample_rate = 16000
         
-        self.chunk = self.sample_rate // self.fps # 320 samples per chunk (20ms * 16000 / 1000)
+        self.chunk = self.sample_rate // self.fps # 320 samples per chunk (20ms @ 16kHz - optimal for Opus)
         
         self.input_stream = BytesIO()
 

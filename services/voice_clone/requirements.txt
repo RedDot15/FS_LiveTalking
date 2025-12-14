@@ -58,3 +58,5 @@ asgi_correlation_id
 structlog
 pydantic_settings
 minio
+
+resampy

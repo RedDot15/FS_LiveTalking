@@ -7,7 +7,8 @@ from typing import Optional, AsyncGenerator
 import os
 import glob
 import time
-
+import numpy as np
+import resampy
 from typing import Any
 
 from pydantic import ConfigDict
@@ -145,8 +146,9 @@ class TTSService(BaseService):
 
         logger.info(f"Processing TTS stream: text_length={len(input.text)}, language='{language}', speaker='{speaker_name}'")
 
-        # Get WAV header first
-        yield self.request.app.state.tts_wrapper.get_wav_header()
+        # Get WAV header with 16kHz for WebRTC compatibility
+        # WebRTC expects 16kHz audio, but XTTS outputs 24kHz
+        yield self.request.app.state.tts_wrapper.get_wav_header(channels=1, sample_rate=16000, width=2)
         
         # Process streaming TTS
         chunks = self.request.app.state.tts_wrapper.process_tts_to_file(

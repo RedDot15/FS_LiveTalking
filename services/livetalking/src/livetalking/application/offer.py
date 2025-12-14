@@ -99,12 +99,23 @@ class OfferApplication(BaseService):
         video_sender = pc.addTrack(player.video)
         
         logger.info("Added audio and video tracks")
-        # Set video codec preferences
         
-        capabilities = RTCRtpSender.getCapabilities("video")
-        preferences = list(filter(lambda x: x.name in ["H264", "VP8", "rtx"], capabilities.codecs))
-        transceiver = pc.getTransceivers()[1]
-        transceiver.setCodecPreferences(preferences)
+        # Set audio codec preferences for better VPN performance
+        # Prefer Opus codec which is optimized for VoIP and handles packet loss well
+        audio_capabilities = RTCRtpSender.getCapabilities("audio")
+        audio_preferences = list(filter(lambda x: x.name == "opus", audio_capabilities.codecs))
+        if audio_preferences:
+            audio_transceiver = pc.getTransceivers()[0]
+            audio_transceiver.setCodecPreferences(audio_preferences)
+            logger.info("Set audio codec to Opus for VPN optimization")
+        else:
+            logger.warning("Opus codec not available, using default audio codec")
+        
+        # Set video codec preferences
+        video_capabilities = RTCRtpSender.getCapabilities("video")
+        video_preferences = list(filter(lambda x: x.name in ["H264", "VP8", "rtx"], video_capabilities.codecs))
+        video_transceiver = pc.getTransceivers()[1]
+        video_transceiver.setCodecPreferences(video_preferences)
         logger.info("Set video codec preferences")
         
         # Complete WebRTC setup

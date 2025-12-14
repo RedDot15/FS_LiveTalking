@@ -73,11 +73,12 @@ class XTTS(BaseTTS):
         
         # speaker["stream_chunk_size"] = stream_chunk_size  # you can reduce it to get faster response, but degrade quality
         try:
-            # Send a GET request to the server's '/tts_stream' endpoint
+            # Send a POST request with timeout for VPN stability
             res = requests.post(
                 server_url, 
                 json=payload, 
                 stream=True,
+                timeout=(10, 60),  # (connect, read) timeout for VPN
             )
 
             # Log the time it took to make the POST request
@@ -92,7 +93,9 @@ class XTTS(BaseTTS):
             first = True
         
             # Iterate over the content of the streaming response in chunks
-            for chunk in res.iter_content(chunk_size=9600): #24K*20ms*2
+            # Increased chunk size for VPN: 60ms chunks reduce packet overhead
+            # 24000 Hz * 0.06 sec * 2 bytes = 2880 bytes per chunk
+            for chunk in res.iter_content(chunk_size=2880):
                 # Check if it's the first chunk received
                 if first:
                     end = time.perf_counter()

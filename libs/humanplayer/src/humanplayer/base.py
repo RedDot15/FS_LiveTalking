@@ -28,8 +28,10 @@ class PlayerStreamTrack(MediaStreamTrack):
         self.kind = kind 
         # Stores a reference to the parent player object.
         self._player = player
-        # Creates an asynchronous queue to hold media frames. 
-        self._queue = asyncio.Queue() 
+        # Creates an asynchronous queue with larger buffer for VPN streaming
+        # Larger queue helps absorb network jitter and packet reordering
+        max_queue_size = 50 if kind == 'audio' else 30  # Audio needs more buffering for smoothness
+        self._queue = asyncio.Queue(maxsize=max_queue_size) 
         # A list to record timestamps of recent packets (currently commented out/unused).
         self.timelist = [] 
         # Counter for the number of frames processed.
@@ -113,29 +115,20 @@ class PlayerStreamTrack(MediaStreamTrack):
         else: 
             # Checks if a timestamp has been initialized.
             if hasattr(self, "_timestamp"):
-                # Commented out:
-                    #self._timestamp = (time.time()-self._start) * SAMPLE_RATE
-
                 # Increments the timestamp by the audio packet duration.
                 self._timestamp += int(self.AUDIO_PTIME * self.SAMPLE_RATE)
                 # Increments the frame count.
                 self.current_frame_count += 1
-                # Calculates the time to wait until the next audio frame.
-                wait = self._start + self.current_frame_count * self.AUDIO_PTIME - time.time()
-
-                # Commented out:
-                    # wait = self.timelist[0] + len(self.timelist)*AUDIO_PTIME - time.time()
                 
-                # If a wait time is needed:
-                if wait > 0:
-                    # Asynchronously waits for the calculated duration.
-                    await asyncio.sleep(wait)
-
-                # Commented out:
-                    # if len(self.timelist)>=200:
-                    #     self.timelist.pop(0)
-                    #     self.timelist.pop(0)
-                    # self.timelist.append(time.time())
+                # REMOVED: Strict timing wait causes audio choppy over VPN
+                # Let WebRTC jitter buffer handle the timing instead
+                # This is especially important for high-latency VPN connections
+                # The jitter buffer will smooth out timing variations
+                
+                # Commented out original strict timing:
+                # wait = self._start + self.current_frame_count * self.AUDIO_PTIME - time.time()
+                # if wait > 0:
+                #     await asyncio.sleep(wait)
 
             # If this is the first timestamp:
             else:
