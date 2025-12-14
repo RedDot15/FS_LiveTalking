@@ -6,10 +6,11 @@ volumes:
   sadtalker_data:
   voice_clone_data:
 
+
 networks:
   multidimension:
     driver: bridge
-    
+
 services:
   chromadb:
     image: ghcr.io/chroma-core/chroma:latest
@@ -202,12 +203,11 @@ services:
         - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
     ports:
       - 8010:8010
-    depends_on:
-      - chat_service
-      - litellm
-      - chromadb
-      - rag_service
-      - voice_clone
+    # depends_on:
+    #   - chat_service
+    #   - chromadb
+    #   - rag_service
+    #   - voice_clone
     networks:
       - multidimension
     command: uv run livetalking
@@ -225,7 +225,7 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
     environment:
       - LLM__OPENAI_KEY=${LLM__OPENAI_KEY}
       - LLM__MODEL_NAME=${LLM__MODEL_NAME}
@@ -270,17 +270,17 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
 
   wav2lip:
     build:
       context: .
       dockerfile: dockers/Dockerfile
       args:
-          - PYTHON_VERSION=python3.11
-          - PACKAGE=wav2lip
-          - OPTIONAL_BUILD=src/wav2lip/__init__.py
-          - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
+        - PYTHON_VERSION=python3.11
+        - PACKAGE=wav2lip
+        - OPTIONAL_BUILD=src/wav2lip/__init__.py
+        - APT_PACKAGE=git gcc libpq-dev libgl1 libglib2.0-0
     ports:
       - "8020:8020"
     networks:
@@ -309,8 +309,8 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
-    
+              capabilities: [ gpu ]
+
   voice_clone:
     build:
       context: .
@@ -328,8 +328,8 @@ services:
     environment:
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
-      - MINIO__HOST=${MINIO__HOST}
-      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
+      - MINIO__HOST=minio
+      - MINIO__HTTP_PORT=9000
     depends_on:
       - minio
     deploy:
@@ -338,7 +338,7 @@ services:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
 
   character_service:
     build:
@@ -368,8 +368,8 @@ services:
       - MONGODB__USER=${MONGO__USER}
       - MONGODB__PASSWORD=${MONGO__PASSWORD}
       - MONGODB__DB=${MONGO__DB}
-      - MINIO__HOST=${MINIO__HOST}
-      - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
+      - MINIO__HOST=minio
+      - MINIO__HTTP_PORT=9000
       - MINIO__ACCESS_KEY=${MINIO__ACCESS_KEY}
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
       - INDEXER_SERVICE_URL=${INDEXER_SERVICE_URL}

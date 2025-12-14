@@ -151,21 +151,25 @@ class LipReal(BaseReal):
             self.record_video_data(image)
 
             # Processes each audio frame in the batch.
-            for audio_frame in audio_frames:
+            for idx, audio_frame in enumerate(audio_frames):
                 # Unpacks the audio data and metadata.
                 frame, type, eventpoint = audio_frame
                 # Scales and converts the audio frame to 16-bit integer PCM.
                 frame = (frame * 32767).astype(np.int16)
-                # Creates a PyAV audio frame.
-                new_frame = AudioFrame(format='s16', layout='mono', samples=frame.shape[0])
+                
+                # Log audio frame details for debugging
+                if idx == 0:  # Only log first frame to avoid spam
+                    logger.debug(f'Audio frame: samples={len(frame)}, duration_ms={len(frame)/16:.1f}ms, dtype={frame.dtype}')
+                
+                # Creates a PyAV audio frame at 16kHz mono
+                new_frame = AudioFrame(format='s16', layout='mono', samples=len(frame))
                 # Fills the audio frame with byte data.
                 new_frame.planes[0].update(frame.tobytes())
-                # Sets the sample rate.
+                # Sets the sample rate to 16kHz
                 new_frame.sample_rate = 16000
 
-                # Commented out:
-                    # if audio_track._queue.qsize()>10:
-                    #     time.sleep(0.1)
+                # Removed flow control - let WebRTC handle buffering/backpressure
+                # The aggressive flow control was causing audio drops and quality issues
 
                 # Puts the new audio frame into the audio track's queue using a thread-safe call.
                 asyncio.run_coroutine_threadsafe(audio_track._queue.put((new_frame,eventpoint)), loop)
@@ -220,8 +224,9 @@ class LipReal(BaseReal):
             #     time.sleep(0.04*video_track._queue.qsize()*0.8)
 
             # Implements a delay if the video output queue is getting too full.
-            if video_track._queue.qsize() >= 5:
-                logger.debug('sleep qsize=%d', video_track._queue.qsize())
+            # Reduced threshold from 5 to 3 for better sync with audio over VPN
+            if video_track._queue.qsize() >= 3:
+                logger.debug('Video queue backpressure: size=%d', video_track._queue.qsize())
                 time.sleep(0.04*video_track._queue.qsize()*0.8)
 
             # Commented out:    
