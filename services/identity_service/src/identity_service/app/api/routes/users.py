@@ -134,15 +134,15 @@ def update_password_me(
 
     return Message(message="Password updated successfully")
 
-@router.delete("/me", response_model=Message)
-def delete_user_me(request: Request, current_token: CurrentToken) -> Any:
-    """
-    Delete own user.
-    """
-    with request.app.state.postgres.get_session() as session:
-        request.app.state.postgres.delete_user(session, current_token.id)
+# @router.delete("/me", response_model=Message)
+# def delete_user_me(request: Request, current_token: CurrentToken) -> Any:
+#     """
+#     Delete own user.
+#     """
+#     with request.app.state.postgres.get_session() as session:
+#         request.app.state.postgres.delete_user(session, current_token.id)
 
-    return Message(message="User deleted successfully")
+#     return Message(message="User deleted successfully")
 
 @router.post(
     "", 
@@ -232,6 +232,12 @@ def update_user(
     """
     Update a user.
     """
+    if user_id == permitted_token.id:
+        raise HTTPException(
+                status_code=403,
+                detail="Cannot perform self-update with this api.",
+            )
+
     with request.app.state.postgres.get_session() as session:
         db_user = request.app.state.postgres.get_user_by_id(session, user_id)
         if not db_user:
@@ -239,6 +245,12 @@ def update_user(
                 status_code=404,
                 detail="The user with this id does not exist in the system",
             )
+        for user_role in db_user.user_roles:
+            if user_role.role.name == "ADMIN":
+                raise HTTPException(
+                    status_code=403,
+                    detail="Cannot perform update with an user whose role is ADMIN",
+                )
         if user_in.email:
             existing_user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
             if existing_user and existing_user.id != permitted_token.id:
@@ -264,12 +276,33 @@ def update_user(
 
         return UserPublic.model_validate(db_user)
 
-@router.delete("/{user_id}", dependencies=[Depends(has_authority(authority="DELETE_USER"))])
-def delete_user(request: Request, user_id: uuid.UUID) -> Message:
+@router.delete("/{user_id}")
+async def delete_user(request: Request, user_id: uuid.UUID, permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="DELETE_USER"))]) -> Message:
     """
     Delete a user.
     """
+    # Cannot self delete
+    if user_id == permitted_token.id:
+        raise HTTPException(
+                status_code=403,
+                detail="Cannot perform self-update with this api.",
+            )
     with request.app.state.postgres.get_session() as session:
+        # Cannot delete user have role ADMIN
+        db_user = request.app.state.postgres.get_user_by_id(session, user_id)
+        for user_role in db_user.user_roles:
+            if user_role.role.name == "ADMIN":
+                raise HTTPException(
+                    status_code=403,
+                    detail="Cannot perform update with an user whose role is ADMIN",
+                )
+
+        # Delete user
         request.app.state.postgres.delete_user(session, user_id)
+    
+    await request_character_service_delete_character(user_id=user_id, request=request)
+
+    await request_character_service_delete_request(user_id=user_id, request=request)
 
     return Message(message="User deleted successfully")
+

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import uuid
 
-from sqlalchemy import ForeignKey, Column, String
+from sqlalchemy import ForeignKey, Column, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, DeclarativeBase
 
@@ -13,12 +13,13 @@ class Base(DeclarativeBase):
 class UserModel(Base):
     __tablename__ = "user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = Column(String, unique=True, nullable=False)
+    username = Column(String, unique=True, nullable=False, postgresql_where=(is_deleted.is_(False)))
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
     avatar_url = Column(String)
-    email = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False, postgresql_where=(is_deleted.is_(False)))
     phone_number = Column(String)
+    is_deleted = Column(Boolean, default=False, nullable=False)
     user_roles = relationship(
         "UserRoleModel", back_populates="user", cascade="all, delete-orphan"
     )
@@ -32,7 +33,7 @@ class RoleModel(Base):
         "RolePermissionModel", back_populates="role", cascade="all, delete-orphan"
     )
     user_roles = relationship(
-        "UserRoleModel", back_populates="role", cascade="all, delete-orphan"
+        "UserRoleModel", back_populates="role"
     )
 
 

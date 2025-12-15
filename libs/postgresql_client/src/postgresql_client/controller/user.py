@@ -29,6 +29,9 @@ class UserController(ABC):
                 .joinedload(RoleModel.role_permissions)
                 .joinedload(RolePermissionModel.permission)
             )
+
+            statement = statement.filter(UserModel.is_deleted.is_(False))
+
             if filter:
                 statement = statement.filter_by(**filter)
             if order_by:
@@ -58,6 +61,7 @@ class UserController(ABC):
                     .joinedload(RolePermissionModel.permission)
                 )
                 .filter(UserModel.id == id)
+                .filter(UserModel.is_deleted.is_(False))
                 .one_or_none()
             )
             if not user:
@@ -76,6 +80,7 @@ class UserController(ABC):
             user = (
                 session.query(UserModel)
                 .filter(UserModel.username == username)
+                .filter(UserModel.is_deleted.is_(False))
                 .one_or_none()
             )
             if not user:
@@ -94,6 +99,7 @@ class UserController(ABC):
             user = (
                 session.query(UserModel)
                 .filter(UserModel.email == email)
+                .filter(UserModel.is_deleted.is_(False))
                 .one_or_none()
             )
             if not user:
@@ -132,7 +138,7 @@ class UserController(ABC):
         self, session: Session, db_obj: UserModel, role_ids: list[str] | None = None
     ) -> UserModel:
         try:
-            if not db_obj:
+            if not db_obj or db_obj.is_deleted:
                 logger.info(f"No User found with id: {db_obj.id}")
                 return None
 
@@ -159,8 +165,10 @@ class UserController(ABC):
         try:
             db_obj = session.get(UserModel, id)
             if db_obj:
-                session.delete(db_obj)
+                db_obj.is_deleted = True
+                session.add(db_obj) 
                 session.commit()
+                session.refresh(db_obj) 
                 return db_obj
             else:
                 logger.info(f"No User found with id: {id}")

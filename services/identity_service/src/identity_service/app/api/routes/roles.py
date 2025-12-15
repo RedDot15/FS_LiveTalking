@@ -116,6 +116,12 @@ def update_role(
                 status_code=404,
                 detail="The role with this id does not exist in the system",
             )
+        if db_role.name == "ADMIN":
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot update role: ADMIN",
+            )
+
         existing_role = request.app.state.postgres.get_role_by_name(session=session, name=role_in.name)
         if existing_role and existing_role.id != role_id:
             raise HTTPException(
@@ -141,7 +147,12 @@ def delete_role(request: Request, role_id: uuid.UUID) -> Message:
     """
     Delete a role.
     """
-    with request.app.state.postgres.get_session() as session:
-        request.app.state.postgres.delete_role(session, role_id)
+    try:
+        with request.app.state.postgres.get_session() as session:
+            request.app.state.postgres.delete_role(session, role_id)
 
-    return Message(message="Role deleted successfully")
+        return Message(message="Role deleted successfully")
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, detail=str(e)
+        )

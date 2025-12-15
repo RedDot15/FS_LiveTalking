@@ -139,12 +139,19 @@ class RoleController(ABC):
         try:
             role_obj = session.get(RoleModel, id)
             if role_obj:
+                if role_obj.name == "ADMIN":
+                    raise Exception("Cannot delete Role: ADMIN.")
+
                 session.delete(role_obj)
                 session.commit()
                 return RoleModel(name=role_obj.name)
             else:
                 logger.info(f"No Role found with id: {id}")
                 return None
+        except IntegrityError as ie:
+            session.rollback()
+            logger.exception("Cannot delete Role: It is currently assigned to users.")
+            raise Exception("Cannot delete Role: It is currently assigned to users.")
         except Exception as e:
             session.rollback()
             logger.exception(f"Error deleting role: {e}", id=id)
