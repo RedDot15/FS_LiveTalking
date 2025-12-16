@@ -48,6 +48,38 @@ def list_characters(request: Request, current_token: CurrentToken) -> JSONRespon
         )
     )
 
+@character_router.get('/users/me/characters')
+def list_my_characters(request: Request, current_token: CurrentToken) -> JSONResponse:
+
+    exception_handler = ExceptionHandler(
+        logger=logger.bind(),
+        service_name=__name__,
+    )
+    
+    try:
+        character_service = CharacterServiceApplication(
+            settings=settings,
+            request=request
+        )
+    
+    except Exception as e:
+        return exception_handler.handle_exception(
+            e=f'Error during application initialization: {str(e)}',
+            extra={},
+        )
+
+    try:
+        response = character_service.get_by_created_by(created_by=current_token.id)
+        
+    except Exception as e:
+        return exception_handler.handle_exception(e=str(e))
+
+    return exception_handler.handle_success(
+        jsonable_encoder(
+            response,
+        )
+    )
+
 @character_router.delete('/characters/{character_id}')
 async def delete_character(request: Request, current_token: CurrentToken, character_id: str) -> JSONResponse:
 

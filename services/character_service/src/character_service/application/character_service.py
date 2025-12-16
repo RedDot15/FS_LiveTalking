@@ -38,6 +38,16 @@ class CharacterServiceApplication(BaseService):
             
         return CharacterServiceOutput(characters=characters)
 
+    def get_by_created(self, created_by: str) -> CharacterServiceOutput:
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                char_handler = CharacterHandler(collection=mongodb["characters"])
+                characters = char_handler.get_character_by_created(created_by=created_by)
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+            
+        return CharacterServiceOutput(characters=characters)
+
     async def delete_character(self, character_id: str, user_id: str, scope: str) -> DeleteCharacterOutput:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:

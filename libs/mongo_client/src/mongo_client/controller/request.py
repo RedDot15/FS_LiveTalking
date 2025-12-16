@@ -17,6 +17,14 @@ class RequestHandler(BaseService):
         data = self.collection.find(query).sort("created_at", -1)
         return list(data)
 
+    def get_requests_by_created_by(self, created_by: str):
+        query = {
+            "created_by": created_by,
+            "is_deleted": {"$ne": True}
+        }
+        data = self.collection.find(query).sort("created_at", -1)
+        return list(data)        
+
     # Get request by id
     def get_request_by_id(self, request_id: str):
         query = {

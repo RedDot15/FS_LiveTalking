@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 
 delete_datas_router = APIRouter()
 
-@delete_datas_router.delete('/mongo_datas')
+@delete_datas_router.delete('/users/me/mongo_datas')
 def delete_datas_by_user_id(
     request: Request,
     current_token: CurrentToken

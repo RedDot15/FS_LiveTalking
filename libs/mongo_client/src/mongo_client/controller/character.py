@@ -17,6 +17,12 @@ class CharacterHandler(BaseService):
         data = self.collection.find(query).sort("name", 1)
         return list(data)
 
+    # Get all characters with (name order: asc) by created_by
+    def get_character_by_created(self, created_by: str):
+        query = {"created_by": created_by, "is_deleted": {"$ne": True}}
+        data = self.collection.find(query).sort("name", 1)
+        return list(data)
+
     # Get character by id
     def get_character_by_id(self, character_id: str):
         query = {
