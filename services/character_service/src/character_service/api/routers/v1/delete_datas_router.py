@@ -1,7 +1,9 @@
 from __future__ import annotations
+from typing import Annotated
 
-from authorization.deps import CurrentToken
-from fastapi import APIRouter
+from authorization.deps import TokenPayload
+from authorization.deps import has_authority
+from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from character_service.api.helpers.exception_handler import ExceptionHandler
@@ -15,10 +17,11 @@ logger = get_logger(__name__)
 
 delete_datas_router = APIRouter()
 
-@delete_datas_router.delete('/users/me/mongo_datas')
+@delete_datas_router.delete('/users/{user_id}/mongo_datas')
 def delete_datas_by_user_id(
     request: Request,
-    current_token: CurrentToken
+    user_id: str,
+    permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="DELETE_USER"))]
     ):
     
     exception_handler = ExceptionHandler(
@@ -39,7 +42,7 @@ def delete_datas_by_user_id(
         )
         
     try:
-        response = delete_datas_service.process(user_id=current_token.user_id)
+        response = delete_datas_service.process(user_id=user_id)
         
     except Exception as e:
         return exception_handler.handle_exception(e=str(e))
