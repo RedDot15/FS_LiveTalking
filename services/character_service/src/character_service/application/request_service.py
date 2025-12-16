@@ -8,7 +8,6 @@ from base import BaseService
 from typing import Annotated
 from typing import Any
 
-from character_service.domain.delete_minio.service import CharacterDeleteInputs, CharacterDeleteMinioService
 from character_service.shared.tools import request_indexer
 from fastapi import File, Form, UploadFile
 from pydantic import ConfigDict
@@ -48,12 +47,6 @@ class RequestServiceApplication(BaseService):
     @property
     def upload_minio_init(self) -> CharacterUploadMinioService:
         return CharacterUploadMinioService(
-            minio_client = self.request.app.state.minio_client
-        )
-    
-    @property
-    def delete_minio_init(self) -> CharacterDeleteMinioService:
-        return CharacterDeleteMinioService(
             minio_client = self.request.app.state.minio_client
         )
         
@@ -130,13 +123,6 @@ class RequestServiceApplication(BaseService):
                 if request['status'] != "PENDING":
                     raise Exception(f"Request status is not PENDING: {inputs.request_id}")
 
-                # Delete image, knowledge, voice from minio
-                await self.delete_minio_init.process(
-                    character_delete_inputs = CharacterDeleteInputs(
-                        id = request['character_id']
-                    )
-                )
-
                 request['status'] = "REJECTED"
                 request['rejected_by'] = current_user_id
                 request['evaluated_at'] = datetime.now()
@@ -162,13 +148,6 @@ class RequestServiceApplication(BaseService):
                 # Validate conversation owner
                 if request['created_by'] != current_user_id:
                     raise Exception(f"Unauthorized user: {current_user_id}")
-
-                # Delete image, knowledge, voice from minio
-                await self.delete_minio_init.process(
-                    character_delete_inputs = CharacterDeleteInputs(
-                        id = request['character_id']
-                    )
-                )
 
                 request_handler.delete_request_by_id(request_id = request_id)
             except Exception as e:

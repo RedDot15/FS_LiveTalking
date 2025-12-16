@@ -13,12 +13,17 @@ class CharacterHandler(BaseService):
 
     # Get all characters with (name order: asc)
     def get_character(self):
-        data = self.collection.find().sort("name", 1)
+        query = {"is_deleted": {"$ne": True}}
+        data = self.collection.find(query).sort("name", 1)
         return list(data)
 
     # Get character by id
     def get_character_by_id(self, character_id: str):
-        data = self.collection.find_one({"_id": character_id})
+        query = {
+            "_id": character_id, 
+            "is_deleted": {"$ne": True}
+        }
+        data = self.collection.find_one(query)
         return data
     
     # Get character by id
@@ -36,7 +41,16 @@ class CharacterHandler(BaseService):
 
     # Delete character by id
     def delete_character_by_id(self, character_id: str):
-        return self.collection.delete_one({"_id": character_id})
+        return self.collection.update_one(
+            {"_id": character_id},
+            {"$set": {"is_deleted": True}}
+        )
+    
+    def delete_characters_by_created_by(self, created_by: str):
+        return self.collection.update_many(
+            {"created_by": created_by},
+            {"$set": {"is_deleted": True}}
+        )
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")

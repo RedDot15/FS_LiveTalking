@@ -6,6 +6,7 @@ class Character:
     _id: str
     name: str
     created_by: str
+    is_deleted: bool = False
 
 @dataclass
 class Conversation:
@@ -14,6 +15,7 @@ class Conversation:
     participants_hash: str
     character_id: str
     created_at: datetime
+    is_deleted: bool = False
 
 @dataclass
 class QAPair:
@@ -40,4 +42,5 @@ class Request:
     approved_by: str = None
     rejected_by: str = None
     reject_reason: str = None
+    is_deleted: bool = False
 

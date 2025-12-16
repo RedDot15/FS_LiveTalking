@@ -11,12 +11,6 @@ from pydantic import Field
 
 from mongo_client.controller import CharacterHandler
 
-from character_service.domain.delete_minio.service import CharacterDeleteInputs, CharacterDeleteMinioService
-
-from character_service.domain.upload_minio import CharacterUploadMinioService
-
-from character_service.shared.tools import request_rag_service_delete_character_data
-
 class CharacterServiceOutput(BaseModel):
     characters: list[dict]
 
@@ -33,18 +27,6 @@ class CharacterServiceApplication(BaseService):
 
     request: Annotated[Any, Field(exclude=True)]
     settings: Annotated[Any, Field(exclude=True)]
-
-    @property
-    def upload_minio_init(self) -> CharacterUploadMinioService:
-        return CharacterUploadMinioService(
-            minio_client = self.request.app.state.minio_client
-        )
-        
-    @property
-    def delete_minio_init(self) -> CharacterDeleteMinioService:
-        return CharacterDeleteMinioService(
-            minio_client = self.request.app.state.minio_client
-        )
 
     def process(self) -> CharacterServiceOutput:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
@@ -68,17 +50,6 @@ class CharacterServiceApplication(BaseService):
                     raise Exception("You are not the owner of this character")
 
                 char_handler.delete_character_by_id(character_id=character_id)
-                
-                # Delete character's data from minio
-                await self.delete_minio_init.process(
-                    character_delete_inputs = CharacterDeleteInputs(
-                        id = character_id
-                    )
-                )
-
-                # Delete character's data from rag service
-                await request_rag_service_delete_character_data(character_id=character_id)
-
 
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")

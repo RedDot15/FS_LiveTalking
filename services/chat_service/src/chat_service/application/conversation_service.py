@@ -140,6 +140,8 @@ class ConversationService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
@@ -160,12 +162,11 @@ class ConversationService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
-~
-                qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
-                qa_pair_handler.delete_qa_pairs_by_conversation_id(conversation_id=input.conversation_id)
 
                 conversation_handler.delete_conversation_by_id(conversation_id=input.conversation_id)
             except Exception as e:

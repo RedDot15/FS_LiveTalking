@@ -37,10 +37,10 @@ class RagServiceApplication(BaseService):
 
         return RagServiceOutput(results=results.results)
 
-    async def delete_character_data(self, character_id: str) -> str:
+    # async def delete_character_data(self, character_id: str) -> str:
         
-        self.request.app.state.chromadb.delete_document(character_id=character_id)
+    #     self.request.app.state.chromadb.delete_document(character_id=character_id)
         
-        logger.info(f'Deleted character data of character: {character_id}')
+    #     logger.info(f'Deleted character data of character: {character_id}')
 
-        return character_id
+    #     return character_id

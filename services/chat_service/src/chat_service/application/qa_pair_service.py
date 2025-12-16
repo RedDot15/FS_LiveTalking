@@ -70,6 +70,8 @@ class QAPairService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
@@ -77,6 +79,9 @@ class QAPairService(BaseService):
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
                 character = character_handler.get_character_by_id(character_id=conversation['character_id'])
+
+                if not character:
+                    raise Exception(f"Character not found: {conversation['character_id']}")
 
                 # Record start time
                 start_time = datetime.now()
@@ -130,6 +135,8 @@ class QAPairService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation = conversation_handler.get_conversation_by_id(conversation_id=qa_pair['conversation_id'])
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {qa_pair['conversation_id']}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
@@ -137,6 +144,9 @@ class QAPairService(BaseService):
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
                 character = character_handler.get_character_by_id(character_id=conversation['character_id'])
+
+                if not character:
+                    raise Exception(f"Character not found: {conversation['character_id']}")
 
                 # Record start time
                 start_time = datetime.now()
@@ -169,4 +179,4 @@ class QAPairService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateQAPairOutput(answer=answer)
+        return UpdateQAPairOutput(answer=answer)

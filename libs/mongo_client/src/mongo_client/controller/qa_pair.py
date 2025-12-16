@@ -43,8 +43,8 @@ class QAPairHandler(BaseService):
     # def delete_qa_pair_by_id(self, qa_pair_id: str):
     #     return self.collection.delete_one({"_id": qa_pair_id})
 
-    def delete_qa_pairs_by_conversation_id(self, conversation_id: str):
-        return self.collection.delete_many({"conversation_id": conversation_id})
+    # def delete_qa_pairs_by_conversation_id(self, conversation_id: str):
+    #     return self.collection.delete_many({"conversation_id": conversation_id})
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")
