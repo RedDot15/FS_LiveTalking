@@ -82,11 +82,10 @@ class RatingServiceApplication(BaseService):
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 rating_handler = RatingHandler(collection=mongodb["ratings"])
-
                 rating = rating_handler.get_rating_by_id(rating_id = input.rating_id)
+
                 if not rating:
                     raise Exception(f"Rating not found.")
-                
                 if rating.commented_by.id != current_user_id or rating.commented_by.username != current_username:
                     raise Exception("Unauthorized user")
 
@@ -109,6 +108,8 @@ class RatingServiceApplication(BaseService):
                 rating_handler = RatingHandler(collection=mongodb["ratings"])
                 rating = rating_handler.get_rating_by_id(rating_id=rating_id)
 
+                if not rating:
+                    raise Exception("Rating not found")
                 # Validate rating owner
                 if rating.commented_by.id != current_user_id or rating.commented_by.username != current_username:
                     raise Exception(f"Unauthorize user: {current_user_id}")

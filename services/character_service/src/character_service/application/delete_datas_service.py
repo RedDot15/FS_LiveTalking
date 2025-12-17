@@ -12,6 +12,7 @@ from logger import get_logger
 
 from mongo_client.controller.request import RequestHandler
 from mongo_client.controller.character import CharacterHandler
+from mongo_client.controller.rating import RatingHandler
 
 logger = get_logger(__name__)
     
@@ -37,6 +38,10 @@ class DeleteDatasService(BaseService):
                 character_handler.delete_characters_by_created_by(created_by=user_id)
 
                 # TODO: Delete ratings by user_id
+                rating_handler = RatingHandler(
+                    collection=db['ratings']
+                )
+                rating_handler.delete_ratings_by_created_by(created_by=user_id)
         except Exception as e:
             logger.exception('Error while get request characters', extra={'error': str(e)})
             raise e

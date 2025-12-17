@@ -44,3 +44,12 @@ class Request:
     reject_reason: str = None
     is_deleted: bool = False
 
+class Rating:
+    _id: str
+    character_id: str
+    commented_by: dict
+    rating: float
+    comment: str
+    created_at: datetime
+    updated_at: datetime
+    is_deleted: bool = False
