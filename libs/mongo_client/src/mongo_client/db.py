@@ -40,7 +40,10 @@ class MongoDBHandler:
         self._db.characters.create_index([("name", ASCENDING)])
         self._db.conversations.create_index([("participants_hash", ASCENDING), ("created_at", DESCENDING)])
         self._db.qa_pairs.create_index([("conversation_id", ASCENDING), ("created_at", ASCENDING)])
-        self._db.requests.create_index([("created_at", DESCENDING), ("character_name", ASCENDING)])
+        self._db.requests.create_index([("created_at", DESCENDING)])
+        self._db.requests.create_index([("character_name", ASCENDING)])
+        self._db.ratings.create_index([("character_id", DESCENDING), ("created_at", DESCENDING)])
+        self._db.ratings.create_index([("character_id", DESCENDING), ("commented_by", DESCENDING)])
 
     @contextmanager
     def get_database(self) -> Generator[Database, None, None]:

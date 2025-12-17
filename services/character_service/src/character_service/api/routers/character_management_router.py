@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from character_service.api.routers.v1 import request_router
 from fastapi import APIRouter
 
 from .v1 import character_router

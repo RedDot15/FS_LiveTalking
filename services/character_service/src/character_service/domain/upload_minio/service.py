@@ -22,10 +22,6 @@ class CharacterInputs():
         self.knowledge_file = knowledge_file
         self.avatar_image = avatar_image
         self.audio_file = audio_file
-# class CharacterInputs(BaseModel):
-#     name: str = Form(...)
-#     knowledge_file: UploadFile = File(...)
-#     avatar_image: UploadFile = File(...)
 
 class CharacterOutputs(BaseModel):
     avatar_url: str
