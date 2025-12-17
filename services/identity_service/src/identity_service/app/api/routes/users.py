@@ -26,6 +26,7 @@ from identity_service.app.utils import (
     generate_new_account_email, 
     send_email
 )
+from identity_service.app.tools import request_delete_datas
 
 router = APIRouter(prefix="/users", tags=["users"])
 
