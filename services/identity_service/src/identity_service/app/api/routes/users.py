@@ -299,10 +299,8 @@ async def delete_user(request: Request, user_id: uuid.UUID, permitted_token: Ann
 
         # Delete user
         request.app.state.postgres.delete_user(session, user_id)
-    
-    await request_character_service_delete_character(user_id=user_id, request=request)
 
-    await request_character_service_delete_request(user_id=user_id, request=request)
+    await request_delete_datas(user_id=user_id, request=request)
 
     return Message(message="User deleted successfully")
 

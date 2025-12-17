@@ -36,6 +36,7 @@ class DeleteDatasService(BaseService):
                 )
                 character_handler.delete_characters_by_created_by(created_by=user_id)
 
+                # TODO: Delete ratings by user_id
         except Exception as e:
             logger.exception('Error while get request characters', extra={'error': str(e)})
             raise e

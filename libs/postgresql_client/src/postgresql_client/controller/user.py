@@ -165,6 +165,7 @@ class UserController(ABC):
         try:
             db_obj = session.get(UserModel, id)
             if db_obj:
+                db_obj.user_roles.clear()
                 db_obj.is_deleted = True
                 session.add(db_obj) 
                 session.commit()

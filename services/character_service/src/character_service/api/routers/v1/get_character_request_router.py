@@ -47,7 +47,7 @@ def get_character_request(
     )
 
 @get_character_request_router.get('/users/me/requests')
-def get_character_request(
+def get_my_character_request(
     request: Request,
     current_token: CurrentToken,
     ):
