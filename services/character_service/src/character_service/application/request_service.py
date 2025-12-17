@@ -19,6 +19,7 @@ from mongo_client.controller.request import RequestHandler
 from mongo_client.model.entity import Request
 
 from character_service.domain.upload_minio import CharacterUploadMinioService, CharacterInputs
+from character_service.shared.tools.email_utils import send_email, generate_request_approved_email
 
 logger = get_logger(__name__)
 
@@ -50,7 +51,7 @@ class RequestServiceApplication(BaseService):
             minio_client = self.request.app.state.minio_client
         )
         
-    async def add_creation_request(self, inputs: RequestInput, current_user_id: str) -> RequestOutput:
+    async def add_creation_request(self, inputs: RequestInput, current_user_id: str, current_email: str) -> RequestOutput:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 character_id = str(uuid4())
@@ -73,6 +74,7 @@ class RequestServiceApplication(BaseService):
                     character_id=character_id,
                     character_name=inputs.character_name, 
                     knowledge_url=character_outputs.knowledge_url,
+                    created_by_email=current_email,
                     avatar_url=character_outputs.avatar_url,
                     audio_url=character_outputs.audio_url,
                     created_at=datetime.now(), 
@@ -108,6 +110,17 @@ class RequestServiceApplication(BaseService):
                 request['approved_by'] = current_user_id
                 request['evaluated_at'] = datetime.now()
                 request_handler.update_request_by_id(request_id = request_id, request = request)
+
+                if self.settings.emails_enabled and request['created_by_email']:
+                    email_data = generate_request_approved_email(
+                        email_to=request['created_by_email'],
+                        request=request
+                    )
+                    send_email(
+                        email_to=request['created_by_email'],
+                        subject=email_data.subject,
+                        html_content=email_data.html_content,
+                    )
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         

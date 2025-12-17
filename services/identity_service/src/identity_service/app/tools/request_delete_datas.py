@@ -22,8 +22,7 @@ async def request_delete_datas(user_id: str, request: Request) -> list[str]:
         settings = get_settings()
         async with httpx.AsyncClient(timeout=30) as client:
             response = await client.delete(
-                # TODO: Fill the url here
-                url=f"character_service/v1/users/{user_id}/mongo_datas",
+                url=f"http://character_service:3006/v1/users/{user_id}/mongo_datas",
                 headers=headers
             )
             

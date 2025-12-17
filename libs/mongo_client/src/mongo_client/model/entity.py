@@ -36,6 +36,7 @@ class Request:
     avatar_url: str
     audio_url: str
     created_by: str
+    created_by_email: str
     created_at: datetime
     status: str
     evaluated_at: datetime = None

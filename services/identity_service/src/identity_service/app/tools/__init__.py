@@ -1,1 +1,1 @@
-from request_delete_datas import request_delete_datas
+from .request_delete_datas import request_delete_datas

@@ -54,7 +54,7 @@ async def add_creation_request(
             character_knowledge_file = character_knowledge_file,
             character_audio_file = character_audio_file
         )
-        response = await request_service.add_creation_request(inputs=body, current_user_id=current_token.id)
+        response = await request_service.add_creation_request(inputs=body, current_user_id=current_token.id, current_email=current_token.email)
         
     except Exception as e:
         return exception_handler.handle_exception(e=str(e), extra={})

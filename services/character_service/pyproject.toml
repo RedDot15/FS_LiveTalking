@@ -18,6 +18,8 @@ dependencies = [
     "pydantic-settings[yaml]>=2.10.1",
     "python-dotenv>=1.1.1",
     "uvicorn>=0.35.0",
+    "emails<1.0,>=0.6",
+    "jinja2<4.0.0,>=3.1.4",
 ]
 
 [project.scripts]
