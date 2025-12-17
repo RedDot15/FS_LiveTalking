@@ -34,6 +34,7 @@ async def get_qa_pairs_by_conversation_id(request: Request, current_token: Curre
         )
 
     try:
+        body.user_id = current_token.id
         response = await qa_pair_service.process(
             input=body
         )

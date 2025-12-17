@@ -37,7 +37,7 @@ class DeleteDatasService(BaseService):
                 )
                 character_handler.delete_characters_by_created_by(created_by=user_id)
 
-                # TODO: Delete ratings by user_id
+                # Delete ratings by user_id
                 rating_handler = RatingHandler(
                     collection=db['ratings']
                 )

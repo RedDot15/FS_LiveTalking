@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from identity_service.app.core.config import settings
-from identity_service.app.core.security import create_access_token, get_password_hash, verify_password, verify_token
+from identity_service.app.core.security import create_access_token, get_password_hash, verify_password, verify_token, logout_token
 from identity_service.app.models import Message, NewPassword, Token
 from identity_service.app.utils import (
     generate_password_reset_token,
@@ -53,7 +53,7 @@ def logout(token: Token):
     Logout access token
     """
     print("Logout token:", token)  
-    verify_token(token=token.access_token)
+    logout_token(token=token.access_token)
 
 @router.post("/password-recovery/{email}")
 def recover_password(request: Request, email: str) -> Message:
