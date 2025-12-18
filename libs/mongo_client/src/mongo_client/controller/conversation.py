@@ -17,7 +17,7 @@ class ConversationHandler(BaseService):
             "participants_hash": participants_hash,
             "is_deleted": {"$ne": True}
         }
-        data = self.collection.find(query).sort("created_at", 1)
+        data = self.collection.find(query).sort("created_at", -1)
         return list(data)
 
     # Get conversation by id

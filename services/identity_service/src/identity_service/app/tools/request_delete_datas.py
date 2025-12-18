@@ -6,7 +6,6 @@ import httpx
 from logger import get_logger
 from fastapi import Request
 
-from ..utils import get_settings
 
 logger = get_logger(__name__)
 
@@ -19,7 +18,6 @@ async def request_delete_datas(user_id: str, request: Request) -> list[str]:
         headers['Authorization'] = authorization_header
 
     try:
-        settings = get_settings()
         async with httpx.AsyncClient(timeout=30) as client:
             response = await client.delete(
                 url=f"http://character_service:3006/v1/users/{user_id}/mongo_datas",
@@ -28,7 +26,7 @@ async def request_delete_datas(user_id: str, request: Request) -> list[str]:
             
             if response.status_code != 200:
                 logger.warning(
-                    f'API request failed with status {response.status_code}: {response.text} : {settings.rag_service_url}',
+                    f'API request failed with status {response.status_code}: {response.text}',
                 )
                 return []
             

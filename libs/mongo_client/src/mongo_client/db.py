@@ -37,13 +37,20 @@ class MongoDBHandler:
         if self._db is None:
             return
 
+        # Character
         self._db.characters.create_index([("name", ASCENDING)])
+        self._db.characters.create_index([("created_by", ASCENDING), ("name", ASCENDING)])
+        # Conversation
         self._db.conversations.create_index([("participants_hash", ASCENDING), ("created_at", DESCENDING)])
+        # QA Pair
         self._db.qa_pairs.create_index([("conversation_id", ASCENDING), ("created_at", ASCENDING)])
+        # Request
         self._db.requests.create_index([("created_at", DESCENDING)])
-        self._db.requests.create_index([("character_name", ASCENDING)])
+        # self._db.requests.create_index([("character_name", ASCENDING)])
+        self._db.requests.create_index([("created_by", ASCENDING), ("created_at", DESCENDING)])
+        # Rating
         self._db.ratings.create_index([("character_id", DESCENDING), ("created_at", DESCENDING)])
-        self._db.ratings.create_index([("character_id", DESCENDING), ("commented_by", DESCENDING)])
+        self._db.ratings.create_index([("commented_by.id", DESCENDING), ("character_id", DESCENDING)])
 
     @contextmanager
     def get_database(self) -> Generator[Database, None, None]:

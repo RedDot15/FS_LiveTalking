@@ -32,8 +32,8 @@ class RatingHandler(BaseService):
     
     def get_rating_by_character_id_and_user_id(self, character_id: str, user_id: str):
         query = {
-            "character_id": character_id, 
             "commented_by.id": user_id, 
+            "character_id": character_id, 
             "is_deleted": {"$ne": True}
         }
         data = self.collection.find_one(query)

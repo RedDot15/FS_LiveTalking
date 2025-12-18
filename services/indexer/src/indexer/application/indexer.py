@@ -81,7 +81,7 @@ class IndexerApplication(BaseService):
         mongo_result = await self.upload_to_mongodb(
             inputs = CharacterMongoDBInputs(
                 name = inputs.name,
-                character_id=character_id
+                character_id=character_id,
                 created_by=inputs.created_by
             )
         )

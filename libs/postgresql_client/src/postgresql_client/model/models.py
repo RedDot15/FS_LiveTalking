@@ -1,7 +1,7 @@
 from __future__ import annotations
 import uuid
 
-from sqlalchemy import ForeignKey, Column, String, Boolean
+from sqlalchemy import ForeignKey, Column, String, Boolean, Index
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship, DeclarativeBase
 
@@ -13,15 +13,31 @@ class Base(DeclarativeBase):
 class UserModel(Base):
     __tablename__ = "user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = Column(String, unique=True, nullable=False, postgresql_where=(is_deleted.is_(False)))
+    username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
     avatar_url = Column(String)
-    email = Column(String, unique=True, nullable=False, postgresql_where=(is_deleted.is_(False)))
+    email = Column(String, unique=True, nullable=False)
     phone_number = Column(String)
     is_deleted = Column(Boolean, default=False, nullable=False)
     user_roles = relationship(
         "UserRoleModel", back_populates="user", cascade="all, delete-orphan"
+    )
+    __table_args__ = (
+        # Unique constraint for username where is_deleted is False
+        Index(
+            "uq_user_username",
+            "username",
+            unique=True,
+            postgresql_where=(is_deleted == False)
+        ),
+        # Unique constraint for email where is_deleted is False
+        Index(
+            "uq_user_email",
+            "email",
+            unique=True,
+            postgresql_where=(is_deleted == False)
+        ),
     )
 
 
