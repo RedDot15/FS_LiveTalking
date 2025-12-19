@@ -123,7 +123,7 @@ def update_role(
             )
 
         existing_role = request.app.state.postgres.get_role_by_name(session=session, name=role_in.name)
-        if existing_role and existing_role.id != role_id:
+        if existing_role and str(existing_role.id) != str(role_id):
             raise HTTPException(
                 status_code=409, detail="Role with this name already exists"
             )

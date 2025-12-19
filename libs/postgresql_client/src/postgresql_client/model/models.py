@@ -13,11 +13,11 @@ class Base(DeclarativeBase):
 class UserModel(Base):
     __tablename__ = "user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = Column(String, unique=True, nullable=False)
+    username = Column(String, nullable=False)
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
     avatar_url = Column(String)
-    email = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False)
     phone_number = Column(String)
     is_deleted = Column(Boolean, default=False, nullable=False)
     user_roles = relationship(

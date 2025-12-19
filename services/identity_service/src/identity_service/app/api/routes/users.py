@@ -93,7 +93,7 @@ def update_user_me(
     with request.app.state.postgres.get_session() as session:
         if user_in.email:
             existing_user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
-            if existing_user and existing_user.id != current_token.id:
+            if existing_user and str(existing_user.id) != str(current_token.id):
                 raise HTTPException(
                     status_code=409, detail="User with this email already exists"
                 )
@@ -254,7 +254,7 @@ def update_user(
                 )
         if user_in.email:
             existing_user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
-            if existing_user and existing_user.id != user_id:
+            if existing_user and str(existing_user.id) != str(user_id):
                 raise HTTPException(
                     status_code=409, detail="User with this email already exists"
                 )
