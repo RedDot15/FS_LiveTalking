@@ -91,13 +91,6 @@ def update_user_me(
     Update own user.
     """
     with request.app.state.postgres.get_session() as session:
-        if user_in.email:
-            existing_user = request.app.state.postgres.get_user_by_email(session=session, email=user_in.email)
-            if existing_user and existing_user.id != current_token.id:
-                raise HTTPException(
-                    status_code=409, detail="User with this email already exists"
-                )
-
         db_obj = request.app.state.postgres.get_user_by_id(session, current_token.id)
 
         user_data = user_in.model_dump(exclude_none=True)
