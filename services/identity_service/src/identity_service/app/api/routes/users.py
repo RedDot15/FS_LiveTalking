@@ -175,7 +175,6 @@ def create_user(*, request: Request, user_in: UserCreate) -> Any:
         db_obj.username=user_in.username
         db_obj.password=get_password_hash(user_in.password)
         db_obj.name=user_in.name
-        db_obj.avatar_url=user_in.avatar_url
         db_obj.email=user_in.email
         db_obj.phone_number=user_in.phone_number
     

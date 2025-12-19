@@ -16,7 +16,6 @@ class UserModel(Base):
     username = Column(String, nullable=False)
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
-    avatar_url = Column(String)
     email = Column(String, nullable=False)
     phone_number = Column(String)
     is_deleted = Column(Boolean, default=False, nullable=False)

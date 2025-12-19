@@ -8,7 +8,6 @@ class UserCreate(SQLModel):
     username: str
     password: str = Field(min_length=8, max_length=40)
     name: str
-    avatar_url: str
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     phone_number: str
     role_ids: list[str] = []
@@ -16,7 +15,6 @@ class UserCreate(SQLModel):
 class UserUpdate(SQLModel):
     password: str
     name: str
-    avatar_url: str
     email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
     phone_number: str
     role_ids: list[str] = []
@@ -35,13 +33,11 @@ class UserRegister(SQLModel):
     username: str
     password: str = Field(min_length=8, max_length=40)
     name: str
-    avatar_url: str
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     phone_number: str
 
 class UserUpdateMe(SQLModel):
     name: str
-    avatar_url: str
     email: EmailStr | None = Field(unique=True, index=True, max_length=255)
     phone_number: str
 
@@ -73,7 +69,6 @@ class UserPublic(SQLModel):
     id: uuid.UUID
     username: str
     name: str
-    avatar_url: str
     email: EmailStr = Field(unique=True, index=True, max_length=255)
     phone_number: str
     roles: list[RolePublic] = []
@@ -84,7 +79,7 @@ class UserPublic(SQLModel):
             RolePublic.model_validate(user_role.role)
             for user_role in user_db.user_roles
         ]
-        return cls(id=user_db.id, username=user_db.username, name=user_db.name, avatar_url=user_db.avatar_url, email=user_db.email, phone_number=user_db.phone_number, roles=roles)
+        return cls(id=user_db.id, username=user_db.username, name=user_db.name, email=user_db.email, phone_number=user_db.phone_number, roles=roles)
 
 class UsersPublic(SQLModel):
     data: list[UserPublic]
