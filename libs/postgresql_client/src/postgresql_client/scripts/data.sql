@@ -1,6 +1,6 @@
-INSERT INTO public."user" (id,username,"password",name,avatar_url,email,phone_number) VALUES
-	 ('0a852eab-dff7-4e0b-bc99-4edd7d13aa4d'::uuid,'admin','$2a$12$pj2bBHJdYqvKTLoIkChv7eGGiQm/VbvrcJ9NpQ3vRfgPKpvzrxzei','hiimadmin','example_url','admin@gmail.com','982359246'),
-	 ('94811f40-fada-4d84-a1e3-cf1c5131f1a6'::uuid,'minh','$2b$12$zn.0mRrLOTbU6QYsFvJeP.25SHjgdbpebp/rzHRv7CjI31QLrYCYK','minh','minh_image','minhtb03@gmail.com','823475698')
+INSERT INTO public."user" (id,username,"password",name,avatar_url,email,phone_number,is_deleted) VALUES
+	 ('0a852eab-dff7-4e0b-bc99-4edd7d13aa4d'::uuid,'admin','$2a$12$pj2bBHJdYqvKTLoIkChv7eGGiQm/VbvrcJ9NpQ3vRfgPKpvzrxzei','hiimadmin','example_url','admin@gmail.com','982359246',false),
+	 ('94811f40-fada-4d84-a1e3-cf1c5131f1a6'::uuid,'minh','$2b$12$zn.0mRrLOTbU6QYsFvJeP.25SHjgdbpebp/rzHRv7CjI31QLrYCYK','minh','minh_image','minhtb03@gmail.com','823475698',false)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public."role" (id,name) VALUES
