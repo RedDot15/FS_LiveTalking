@@ -63,6 +63,7 @@ class IndexerApplication(BaseService):
             inputs=CharacterMongoDBInputs(
                 name=inputs.name,
                 character_id=inputs.character_id,
+                created_by=inputs.created_by
             )
         )
         return result.result

@@ -35,7 +35,7 @@ class ConversationHandler(BaseService):
             "name": updated_conversation_name,
         }
         return self.collection.update_one(
-            {"_id": conversation_id},
+            {"_id": conversation_id, "is_deleted": {"$ne": True}},
             {"$set": update_data}
         )
     

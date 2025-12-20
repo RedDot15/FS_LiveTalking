@@ -113,7 +113,6 @@ class RequestServiceApplication(BaseService):
 
                 if self.settings.emails_enabled and request['created_by_email']:
                     email_data = generate_request_approved_email(
-                        email_to=request['created_by_email'],
                         request=request
                     )
                     send_email(

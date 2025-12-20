@@ -47,18 +47,18 @@ async def request_indexer(
                 headers=headers
             )
             
-            if response.status_code != 200:
+            if str(response.status_code) != "200":
                 raise Exception(f'API request failed with status {response.status_code}: {response.text}')
             
             return response.json()
             
     except httpx.RequestError as e:
         logger.exception(f'Network error while fetching context: {e}')
-        return []
+        raise Exception(f'Network error while fetching context: {e}')
     except json.JSONDecodeError as e:
         logger.exception(f'Failed to decode JSON response: {e}')
-        return []
+        raise Exception(f'Failed to decode JSON response: {e}')
     except Exception as e:
         logger.exception(f'Unexpected error in get_context: {e}')
-        return []
+        raise Exception(f'Unexpected error in get_context: {e}')
     
