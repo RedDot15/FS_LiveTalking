@@ -32,7 +32,7 @@ class CreateConversationInput(BaseModel):
 
 class CreateConversationOutput(BaseModel):
     answer: str
-    summary: str
+    summary: str | None = None
 
 class UpdateConversationInput(BaseModel):
     conversation_id: str = "default"
