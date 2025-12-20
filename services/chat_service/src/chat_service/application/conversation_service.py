@@ -32,6 +32,7 @@ class CreateConversationInput(BaseModel):
 
 class CreateConversationOutput(BaseModel):
     answer: str
+    summary: str
 
 class UpdateConversationInput(BaseModel):
     conversation_id: str = "default"
@@ -130,7 +131,7 @@ class ConversationService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateConversationOutput(answer=answer)
+        return CreateConversationOutput(answer=answer, summary=conversation_summary)
     
     async def update_conversation(self, input: UpdateConversationInput) -> UpdateConversationOutput:
 

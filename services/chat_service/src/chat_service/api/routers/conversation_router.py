@@ -21,7 +21,7 @@ logger = get_logger(__name__)
 settings = get_settings()
 
 @conversation_router.get('/conversations')
-async def get_conversations_by_character_id(request: Request, current_token: CurrentToken, body: ConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
+async def get_conversations_by_character_id(request: Request, current_token: CurrentToken, character_id: str, background_tasks: BackgroundTasks) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -40,12 +40,15 @@ async def get_conversations_by_character_id(request: Request, current_token: Cur
         )
 
     try:
-        body.user_id = current_token.id
+        body = ConversationInput(
+            character_id=character_id,
+            user_id=current_token.id
+        )
         response = await conversation_service.process(
             input=body
         )
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': body.character_id})
+        return exception_handler.handle_exception(e=str(e), extra={'user_id': current_token.id, 'character_id': character_id})
 
     return exception_handler.handle_success(
         jsonable_encoder(
