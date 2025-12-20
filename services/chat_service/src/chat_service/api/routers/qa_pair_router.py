@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 settings = get_settings()
 
 @qa_pairs_router.get('/qa_pairs')
-async def get_qa_pairs_by_conversation_id(request: Request, current_token: CurrentToken, body: QAPairInput, background_tasks: BackgroundTasks) -> JSONResponse:
+async def get_qa_pairs_by_conversation_id(request: Request, current_token: CurrentToken, conversation_id: str, background_tasks: BackgroundTasks) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -34,6 +34,8 @@ async def get_qa_pairs_by_conversation_id(request: Request, current_token: Curre
         )
 
     try:
+        body = QAPairInput()
+        body.conversation_id = conversation_id
         body.user_id = current_token.id
         response = await qa_pair_service.process(
             input=body

@@ -18,7 +18,7 @@ load_dotenv()
 DB_USER = os.getenv("POSTGRES__USER", "")
 DB_PASS = os.getenv("POSTGRES__PASSWORD", "")
 DB_NAME = os.getenv("POSTGRES__DB", "")
-DB_HOST = os.getenv("POSTGRES__HOST", "")
+DB_HOST = "localhost"
 DB_PORT = os.getenv("POSTGRES__PORT", "")
 
 # Interpret the config file for Python logging.

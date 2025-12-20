@@ -69,6 +69,7 @@ def generate_request_approved_email(
             "created_by": request['created_by'],
             "approved_at": datetime.now(),
             "approved_by": request['approved_by'],
+            "project_name": project_name,
         },
     )
     return EmailData(html_content=html_content, subject=subject)

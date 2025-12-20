@@ -123,7 +123,7 @@ async def update_conversation(request: Request, current_token: CurrentToken, con
     )
 
 @conversation_router.delete('/conversations/{conversation_id}')
-async def delete_conversation(request: Request, current_token: CurrentToken, conversation_id: str, body: DeleteConversationInput, background_tasks: BackgroundTasks) -> JSONResponse:
+async def delete_conversation(request: Request, current_token: CurrentToken, conversation_id: str, background_tasks: BackgroundTasks) -> JSONResponse:
 
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
@@ -141,6 +141,7 @@ async def delete_conversation(request: Request, current_token: CurrentToken, con
         )
 
     try:
+        body = DeleteConversationInput()
         body.conversation_id = conversation_id
         body.user_id = current_token.id
         response = await conversation_service.delete_conversation(
