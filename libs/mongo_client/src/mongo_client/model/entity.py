@@ -37,11 +37,12 @@ class Request:
     audio_url: str
     created_by: str
     created_by_email: str
+    created_by_username: str
     created_at: datetime
     status: str
     evaluated_at: datetime = None
-    approved_by: str = None
-    rejected_by: str = None
+    evaluated_by: str = None
+    evaluated_by_username: str = None
     reject_reason: str = None
     is_deleted: bool = False
 

@@ -19,7 +19,7 @@ from mongo_client.controller.request import RequestHandler
 from mongo_client.model.entity import Request
 
 from character_service.domain.upload_minio import CharacterUploadMinioService, CharacterInputs
-from character_service.shared.tools.email_utils import send_email, generate_request_approved_email
+from character_service.shared.tools.email_utils import send_email, generate_request_approved_email, generate_request_rejected_email
 
 logger = get_logger(__name__)
 
@@ -51,7 +51,7 @@ class RequestServiceApplication(BaseService):
             minio_client = self.request.app.state.minio_client
         )
         
-    async def add_creation_request(self, inputs: RequestInput, current_user_id: str, current_email: str) -> RequestOutput:
+    async def add_creation_request(self, inputs: RequestInput, current_user_id: str, current_email: str, current_username: str) -> RequestOutput:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 character_id = str(uuid4())
@@ -79,13 +79,14 @@ class RequestServiceApplication(BaseService):
                     audio_url=character_outputs.audio_url,
                     created_at=datetime.now(), 
                     created_by=current_user_id, 
+                    created_by_username=current_username,
                     status="PENDING"))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
         return RequestOutput(request_id=request_id, character_name=inputs.character_name, character_id=character_id)
     
-    async def approve_request(self, request_id: str, current_user_id: str) -> None:
+    async def approve_request(self, request_id: str, current_user_id: str, current_username: str) -> None:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 request_handler = RequestHandler(collection=mongodb["requests"])
@@ -107,7 +108,8 @@ class RequestServiceApplication(BaseService):
                 )
 
                 request['status'] = "APPROVED"
-                request['approved_by'] = current_user_id
+                request['evaluated_by'] = current_user_id
+                request['evaluated_by_username'] = current_username
                 request['evaluated_at'] = datetime.now()
                 request_handler.update_request_by_id(request_id = request_id, request = request)
 
@@ -125,7 +127,7 @@ class RequestServiceApplication(BaseService):
         
         return
         
-    async def reject_request(self, inputs: RequestRejectInput, current_user_id: str):
+    async def reject_request(self, inputs: RequestRejectInput, current_user_id: str, current_username: str):
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 request_handler = RequestHandler(collection=mongodb["requests"])
@@ -136,10 +138,21 @@ class RequestServiceApplication(BaseService):
                     raise Exception(f"Request status is not PENDING: {inputs.request_id}")
 
                 request['status'] = "REJECTED"
-                request['rejected_by'] = current_user_id
+                request['evaluated_by'] = current_user_id
+                request['evaluated_by_username'] = current_username
                 request['evaluated_at'] = datetime.now()
                 request['reject_reason'] = inputs.reject_reason
                 request_handler.update_request_by_id(request_id = inputs.request_id, request = request)
+
+                if self.settings.emails_enabled and request['created_by_email']:
+                    email_data = generate_request_rejected_email(
+                        request=request
+                    )
+                    send_email(
+                        email_to=request['created_by_email'],
+                        subject=email_data.subject,
+                        html_content=email_data.html_content,
+                    )
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         

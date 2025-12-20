@@ -66,10 +66,27 @@ def generate_request_approved_email(
             "character_id": request['character_id'],
             "character_url": f"{settings.FRONTEND_HOST}/character/{request['character_id']}",
             "created_at": request['created_at'],
-            "created_by": request['created_by'],
+            "created_by": request['created_by_username'],
             "approved_at": datetime.now(),
-            "approved_by": request['approved_by'],
+            "approved_by": request['evaluated_by_username'],
             "project_name": project_name,
         },
     )
     return EmailData(html_content=html_content, subject=subject)
+
+def generate_request_rejected_email(
+    request: Request
+) -> EmailData:
+    project_name = settings.PROJECT_NAME
+    subject = f"{project_name} - Request rejected"
+    html_content = render_email_template(
+        template_name="request_rejected.html",
+        context={
+            "created_by": request['created_by_username'],
+            "rejected_at": datetime.now(),
+            "rejected_by": request['evaluated_by_username'],
+            "reject_reason": request['reject_reason'],
+            "project_name": project_name,
+        },
+    )
+    return EmailData(html_content=html_content, subject=subject)    
