@@ -43,6 +43,12 @@ def register_user(request: Request, user_in: UserRegister) -> Any:
                 status_code=400,
                 detail="The user with this email already exists in the system.",
             )
+        user = request.app.state.postgres.get_user_by_username(session=session, username=user_in.username)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this username already exists in the system.",
+            )
 
         db_obj = UserModel()
 
