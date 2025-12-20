@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     RESET_PASSWORD_SECRET_KEY: str
     ALGORITHM: str
     # 60 minutes
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 6000
     FRONTEND_HOST: str
 
     BACKEND_CORS_ORIGINS: Annotated[
@@ -64,7 +64,7 @@ class Settings(BaseSettings):
             self.EMAILS_FROM_NAME = self.PROJECT_NAME
         return self
 
-    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
+    EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 1
 
     @computed_field  # type: ignore[prop-decorator]
     @property
