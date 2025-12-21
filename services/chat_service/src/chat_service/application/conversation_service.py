@@ -33,10 +33,11 @@ class CreateConversationInput(BaseModel):
 class CreateConversationOutput(BaseModel):
     answer: str
     summary: str | None = None
+    conversation_id: str
 
 class UpdateConversationInput(BaseModel):
     conversation_id: str = "default"
-    new_conversation_name: str
+    new_conversation_name: str | None = None
     user_id: str = "default"
 
 class UpdateConversationOutput(BaseModel):
@@ -110,8 +111,11 @@ class ConversationService(BaseService):
 
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                
+                conversation_id = str(uuid.uuid4())
+                
                 conversation: Conversation = conversation_handler.create_conversation(conversation=Conversation(
-                    _id=str(uuid.uuid4()), 
+                    _id=conversation_id, 
                     name=conversation_summary or input.question[:50],
                     participants_hash=participants_hash, 
                     character_id=input.character_id, 
@@ -131,7 +135,7 @@ class ConversationService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateConversationOutput(answer=answer, summary=conversation_summary)
+        return CreateConversationOutput(answer=answer, summary=conversation_summary, conversation_id=conversation_id)
     
     async def update_conversation(self, input: UpdateConversationInput) -> UpdateConversationOutput:
 
