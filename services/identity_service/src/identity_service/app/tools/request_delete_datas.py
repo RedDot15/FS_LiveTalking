@@ -18,7 +18,7 @@ async def request_delete_datas(user_id: str, request: Request) -> list[str]:
         headers['Authorization'] = authorization_header
 
     try:
-        async with httpx.AsyncClient(timeout=30) as client:
+        async with httpx.AsyncClient(timeout=6000) as client:
             response = await client.delete(
                 url=f"http://character_service:3006/v1/users/{user_id}/mongo_datas",
                 headers=headers

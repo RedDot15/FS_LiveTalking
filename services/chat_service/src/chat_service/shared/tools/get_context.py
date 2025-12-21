@@ -23,7 +23,7 @@ async def get_context(character_id: str, question: str, request: Request) -> lis
 
     try:
         settings = get_settings()
-        async with httpx.AsyncClient(timeout=30) as client:
+        async with httpx.AsyncClient(timeout=6000) as client:
             response = await client.post(
                 url=settings.rag_service_url,
                 json={

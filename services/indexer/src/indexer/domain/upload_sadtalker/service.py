@@ -32,7 +32,7 @@ class UploadSadtalkerService(BaseService):
         }
 
         try:
-            async with httpx.AsyncClient(timeout=300) as client:
+            async with httpx.AsyncClient(timeout=6000) as client:
                 response = await client.post(url, json=data)
 
                 response.raise_for_status()    
