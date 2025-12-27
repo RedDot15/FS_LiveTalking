@@ -22,8 +22,7 @@ INSERT INTO public."permission" (id,name) VALUES
 	 ('602d241c-99d5-4815-839a-ad9192c3cd87'::uuid,'APPROVE_REQUEST'),
 	 ('4f05e87a-3aa5-4ec8-89ce-5c212a79dd6e'::uuid,'REJECT_REQUEST'),
 	 ('7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid,'INDEXING'),
-	 ('c8a830b6-e8bd-4657-99fc-cc33089bf407'::uuid,'DELETE_CHARACTER'),
-	 ('8ecc97b5-9774-43fe-98b5-23723ee00e32'::uuid,'GET_ALL_REQUESTS')
+	 ('c8a830b6-e8bd-4657-99fc-cc33089bf407'::uuid,'DELETE_CHARACTER')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.user_role (user_id,role_id) VALUES
@@ -45,6 +44,5 @@ INSERT INTO public.role_permission (role_id,permission_id) VALUES
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'602d241c-99d5-4815-839a-ad9192c3cd87'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'4f05e87a-3aa5-4ec8-89ce-5c212a79dd6e'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid),
-	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'c8a830b6-e8bd-4657-99fc-cc33089bf407'::uuid),
-	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'8ecc97b5-9774-43fe-98b5-23723ee00e32'::uuid)
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'c8a830b6-e8bd-4657-99fc-cc33089bf407'::uuid)
 ON CONFLICT (role_id, permission_id) DO NOTHING;

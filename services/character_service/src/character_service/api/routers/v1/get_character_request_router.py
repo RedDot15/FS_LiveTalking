@@ -18,8 +18,7 @@ get_character_request_router = APIRouter()
 
 @get_character_request_router.get('/requests')
 def get_character_request(
-    request: Request,
-    permitted_token: Annotated[TokenPayload, Depends(has_authority(authority="GET_ALL_REQUESTS"))]
+    request: Request
     ):
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
