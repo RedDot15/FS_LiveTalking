@@ -64,7 +64,7 @@ def generate_request_approved_email(
         context={
             "character_name": request['character_name'],
             "character_id": request['character_id'],
-            "character_url": f"{settings.FRONTEND_HOST}/character/{request['character_id']}",
+            "character_url": f"{settings.FRONTEND_HOST}/livetalking?character={request['character_id']}",
             "created_at": request['created_at'],
             "created_by": request['created_by_username'],
             "approved_at": datetime.now(),
