@@ -58,8 +58,9 @@ class RatingServiceApplication(BaseService):
                 if rating:
                     raise Exception(f"Rating already exists.")
                 
-                rating = rating_handler.create_rating(Rating(
-                    _id = uuid4(),
+                rating_id = str(uuid4())
+                rating_handler.create_rating(Rating(
+                    _id = rating_id,
                     character_id = input.character_id,
                     commented_by = {
                         "id": current_user_id,
@@ -70,6 +71,8 @@ class RatingServiceApplication(BaseService):
                     created_at = datetime.now(),
                     updated_at = datetime.now()
                 ))
+                # Fetch the created rating to return
+                rating = rating_handler.get_rating_by_id(rating_id=rating_id)
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
             

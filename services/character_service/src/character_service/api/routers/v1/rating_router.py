@@ -79,7 +79,10 @@ def create_rating(request: Request, body: AddRatingInput, current_token: Current
             current_username=current_token.username)
         
     except Exception as e:
-        return exception_handler.handle_exception(e=str(e))
+        return exception_handler.handle_exception(
+            e=str(e),
+            extra={}
+        )
 
     return exception_handler.handle_success(
         jsonable_encoder(

@@ -46,6 +46,7 @@ class Request:
     reject_reason: str = None
     is_deleted: bool = False
 
+@dataclass
 class Rating:
     _id: str
     character_id: str
