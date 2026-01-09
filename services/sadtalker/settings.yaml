@@ -13,8 +13,8 @@ sadtalker:
   input_yaw: null
   input_pitch: null
   input_roll: null
-  enhancer: 'gfpgan'
-  preprocess: 'full'
+  enhancer: null
+  preprocess: 'crop'
   net_recon: 'resnet50'
   init_path: null
   use_last_fc: false
