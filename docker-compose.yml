@@ -80,8 +80,8 @@ services:
       - "8081:8081"
     networks:
       - multidimension
-    depends_on:
-      - mongodb
+    # depends_on:
+    #   - mongodb
     environment:
       - ME_CONFIG_MONGODB_SERVER=${MONGO__HOST}
       - ME_CONFIG_MONGODB_PORT=27017
@@ -101,8 +101,8 @@ services:
     networks:
       - multidimension
     command: uv run rag_service
-    depends_on:
-      - chromadb
+    # depends_on:
+    #   - chromadb
     volumes:
       - type: bind
         source: ./services/rag_service
@@ -126,8 +126,8 @@ services:
         - OPTIONAL_BUILD=src/chat_service/__init__.py
     ports:
       - 3000:3000
-    depends_on:
-      - mongodb
+    # depends_on:
+    #   - mongodb
     networks:
       - multidimension
     command: uv run chat_service
@@ -160,8 +160,8 @@ services:
         - OPTIONAL_BUILD=src/identity_service/__init__.py
     ports:
       - "8762:8762"
-    depends_on:
-      - postgres
+    # depends_on:
+    #   - postgres
     networks:
       - multidimension
     command: uv run identity_service
@@ -262,8 +262,8 @@ services:
       - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
       - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
-    depends_on:
-      - minio
+    # depends_on:
+    #   - minio
     deploy:
       resources:
         reservations:
@@ -301,8 +301,6 @@ services:
       - MINIO__HTTP_PORT=${MINIO__HTTP_PORT}
       - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
-    depends_on:
-      - minio
     deploy:
       resources:
         reservations:
@@ -330,8 +328,8 @@ services:
       - MINIO__SECRET_KEY=${MINIO__SECRET_KEY}
       - MINIO__HOST=minio
       - MINIO__HTTP_PORT=9000
-    depends_on:
-      - minio
+    # depends_on:
+    #   - minio
     deploy:
       resources:
         reservations:
@@ -350,8 +348,8 @@ services:
         - OPTIONAL_BUILD=src/character_service/__init__.py
     ports:
       - "3006:3006"
-    depends_on:
-      - mongodb
+    # depends_on:
+    #   - mongodb
     networks:
       - multidimension
     command: uv run character_service
@@ -375,6 +373,15 @@ services:
       - INDEXER_SERVICE_URL=${INDEXER_SERVICE_URL}
       - ACCESS_TOKEN_SECRET_KEY=${ACCESS_TOKEN_SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
+      - FRONTEND_HOST=${FRONTEND_HOST}
+      - PROJECT_NAME=${PROJECT_NAME}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAILS_FROM_EMAIL=${EMAILS_FROM_EMAIL}
+      - SMTP_TLS=${SMTP_TLS}
+      - SMTP_SSL=${SMTP_SSL}
+      - SMTP_PORT=${SMTP_PORT}
 
   indexer:
     build:
@@ -386,15 +393,15 @@ services:
         - OPTIONAL_BUILD=src/indexer/__init__.py
     ports:
       - "3036:3036"
-    depends_on:
-      - minio
-      - chromadb
-      - mongodb
-      - character_service
-      - sadtalker
-      - wav2lip
-      - mongo-gui
-      - litellm
+    # depends_on:
+    #   - minio
+    #   - chromadb
+    #   - mongodb
+    #   - character_service
+    #   # - sadtalker
+    #   # - wav2lip
+    #   - mongo-gui
+    #   - litellm
     volumes:
       - type: bind
         source: ./services/indexer

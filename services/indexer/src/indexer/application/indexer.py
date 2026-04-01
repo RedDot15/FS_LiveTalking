@@ -22,6 +22,7 @@ class IndexerApplicationInput(BaseModel):
     knowledge_url: str
     avatar_url: str
     audio_url: str
+    created_by: str
 
 class IndexerApplicationOutput(BaseModel):
     json_response: str
@@ -62,6 +63,7 @@ class IndexerApplication(BaseService):
             inputs=CharacterMongoDBInputs(
                 name=inputs.name,
                 character_id=inputs.character_id,
+                created_by=inputs.created_by
             )
         )
         return result.result
@@ -80,7 +82,8 @@ class IndexerApplication(BaseService):
         mongo_result = await self.upload_to_mongodb(
             inputs = CharacterMongoDBInputs(
                 name = inputs.name,
-                character_id=character_id
+                character_id=character_id,
+                created_by=inputs.created_by
             )
         )
         

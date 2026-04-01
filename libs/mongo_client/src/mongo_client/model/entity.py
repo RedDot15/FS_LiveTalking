@@ -5,6 +5,8 @@ from datetime import datetime
 class Character:
     _id: str
     name: str
+    created_by: str
+    is_deleted: bool = False
 
 @dataclass
 class Conversation:
@@ -13,6 +15,7 @@ class Conversation:
     participants_hash: str
     character_id: str
     created_at: datetime
+    is_deleted: bool = False
 
 @dataclass
 class QAPair:
@@ -32,11 +35,24 @@ class Request:
     knowledge_url: str
     avatar_url: str
     audio_url: str
-    created_by: datetime
+    created_by: str
+    created_by_email: str
+    created_by_username: str
     created_at: datetime
     status: str
-    evaluated_at: str = None
-    approved_by: str = None
-    rejected_by: str = None
+    evaluated_at: datetime = None
+    evaluated_by: str = None
+    evaluated_by_username: str = None
     reject_reason: str = None
+    is_deleted: bool = False
 
+@dataclass
+class Rating:
+    _id: str
+    character_id: str
+    commented_by: dict
+    rating: float
+    comment: str
+    created_at: datetime
+    updated_at: datetime
+    is_deleted: bool = False

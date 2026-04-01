@@ -8,7 +8,6 @@ from base import BaseService
 from typing import Annotated
 from typing import Any
 
-from character_service.domain.delete_minio.service import CharacterDeleteInputs, CharacterDeleteMinioService
 from character_service.shared.tools import request_indexer
 from fastapi import File, Form, UploadFile
 from pydantic import ConfigDict
@@ -20,6 +19,7 @@ from mongo_client.controller.request import RequestHandler
 from mongo_client.model.entity import Request
 
 from character_service.domain.upload_minio import CharacterUploadMinioService, CharacterInputs
+from character_service.shared.tools.email_utils import send_email, generate_request_approved_email, generate_request_rejected_email
 
 logger = get_logger(__name__)
 
@@ -50,14 +50,8 @@ class RequestServiceApplication(BaseService):
         return CharacterUploadMinioService(
             minio_client = self.request.app.state.minio_client
         )
-    
-    @property
-    def delete_minio_init(self) -> CharacterDeleteMinioService:
-        return CharacterDeleteMinioService(
-            minio_client = self.request.app.state.minio_client
-        )
         
-    async def add_creation_request(self, inputs: RequestInput, current_user_id: str) -> RequestOutput:
+    async def add_creation_request(self, inputs: RequestInput, current_user_id: str, current_email: str, current_username: str) -> RequestOutput:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 character_id = str(uuid4())
@@ -80,17 +74,19 @@ class RequestServiceApplication(BaseService):
                     character_id=character_id,
                     character_name=inputs.character_name, 
                     knowledge_url=character_outputs.knowledge_url,
+                    created_by_email=current_email,
                     avatar_url=character_outputs.avatar_url,
                     audio_url=character_outputs.audio_url,
                     created_at=datetime.now(), 
                     created_by=current_user_id, 
+                    created_by_username=current_username,
                     status="PENDING"))
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
         return RequestOutput(request_id=request_id, character_name=inputs.character_name, character_id=character_id)
     
-    async def approve_request(self, request_id: str, current_user_id: str) -> None:
+    async def approve_request(self, request_id: str, current_user_id: str, current_username: str) -> None:
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 request_handler = RequestHandler(collection=mongodb["requests"])
@@ -108,18 +104,30 @@ class RequestServiceApplication(BaseService):
                     knowledge_url = request['knowledge_url'],
                     avatar_url = request['avatar_url'],
                     audio_url = request['audio_url'],
+                    created_by = request['created_by']
                 )
 
                 request['status'] = "APPROVED"
-                request['approved_by'] = current_user_id
+                request['evaluated_by'] = current_user_id
+                request['evaluated_by_username'] = current_username
                 request['evaluated_at'] = datetime.now()
                 request_handler.update_request_by_id(request_id = request_id, request = request)
+
+                if self.settings.emails_enabled and request['created_by_email']:
+                    email_data = generate_request_approved_email(
+                        request=request
+                    )
+                    send_email(
+                        email_to=request['created_by_email'],
+                        subject=email_data.subject,
+                        html_content=email_data.html_content,
+                    )
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         
         return
         
-    async def reject_request(self, inputs: RequestRejectInput, current_user_id: str):
+    async def reject_request(self, inputs: RequestRejectInput, current_user_id: str, current_username: str):
         with self.request.app.state.mongodb_client.get_database() as mongodb:
             try:
                 request_handler = RequestHandler(collection=mongodb["requests"])
@@ -129,18 +137,44 @@ class RequestServiceApplication(BaseService):
                 if request['status'] != "PENDING":
                     raise Exception(f"Request status is not PENDING: {inputs.request_id}")
 
-                # Delete image, knowledge, voice from minio
-                await self.delete_minio_init.process(
-                    character_delete_inputs = CharacterDeleteInputs(
-                        id = request['character_id']
-                    )
-                )
-
                 request['status'] = "REJECTED"
-                request['rejected_by'] = current_user_id
+                request['evaluated_by'] = current_user_id
+                request['evaluated_by_username'] = current_username
                 request['evaluated_at'] = datetime.now()
                 request['reject_reason'] = inputs.reject_reason
                 request_handler.update_request_by_id(request_id = inputs.request_id, request = request)
+
+                if self.settings.emails_enabled and request['created_by_email']:
+                    email_data = generate_request_rejected_email(
+                        request=request
+                    )
+                    send_email(
+                        email_to=request['created_by_email'],
+                        subject=email_data.subject,
+                        html_content=email_data.html_content,
+                    )
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+        
+        return
+
+    def process(self, inputs: Any) -> Any:
+        pass
+
+    async def delete_request(self, request_id: str, current_user_id: str):
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                request_handler = RequestHandler(collection=mongodb["requests"])
+                request = request_handler.get_request_by_id(request_id=request_id)
+                if not request:
+                    raise Exception(f"Request not found: {request_id}")
+                if request['status'] != "PENDING":
+                    raise Exception(f"Request status is not PENDING: {request_id}")
+                # Validate conversation owner
+                if request['created_by'] != current_user_id:
+                    raise Exception(f"Unauthorized user: {current_user_id}")
+
+                request_handler.delete_request_by_id(request_id = request_id)
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
         

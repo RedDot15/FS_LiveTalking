@@ -36,10 +36,10 @@ class ParserService(BaseService):
             try:
                 with open(knowledge_file_local_path, 'r', encoding='utf-8') as f:
                     md_text = f.read()
-                os.remove(knowledge_file_path)
+                os.remove(knowledge_file_local_path)
                 return md_text
             except Exception as e:
-                os.remove(knowledge_file_path)
+                os.remove(knowledge_file_local_path)
                 raise e
 
     

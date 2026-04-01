@@ -16,7 +16,8 @@ async def request_indexer(
         character_id: str, 
         knowledge_url: str,
         avatar_url: str, 
-        audio_url: str):
+        audio_url: str,
+        created_by: str):
     
     try:
         settings = get_settings()
@@ -34,29 +35,30 @@ async def request_indexer(
             'name': character_name,
             'knowledge_url': knowledge_url,
             'avatar_url': avatar_url,
-            'audio_url': audio_url
+            'audio_url': audio_url,
+            'created_by': created_by
         }
         
 
-        async with httpx.AsyncClient(timeout=600) as client:
+        async with httpx.AsyncClient(timeout=6000) as client:
             response = await client.post(
                 url=settings.indexer_service_url + '/indexing',
                 json=data,
                 headers=headers
             )
             
-            if response.status_code != 200:
+            if str(response.status_code) != "200":
                 raise Exception(f'API request failed with status {response.status_code}: {response.text}')
             
             return response.json()
             
     except httpx.RequestError as e:
         logger.exception(f'Network error while fetching context: {e}')
-        return []
+        raise Exception(f'Network error while fetching context: {e}')
     except json.JSONDecodeError as e:
         logger.exception(f'Failed to decode JSON response: {e}')
-        return []
+        raise Exception(f'Failed to decode JSON response: {e}')
     except Exception as e:
         logger.exception(f'Unexpected error in get_context: {e}')
-        return []
+        raise Exception(f'Unexpected error in get_context: {e}')
     

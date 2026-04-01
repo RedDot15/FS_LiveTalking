@@ -54,7 +54,7 @@ async def add_creation_request(
             character_knowledge_file = character_knowledge_file,
             character_audio_file = character_audio_file
         )
-        response = await request_service.add_creation_request(inputs=body, current_user_id=current_token.id)
+        response = await request_service.add_creation_request(inputs=body, current_user_id=current_token.id, current_email=current_token.email, current_username=current_token.username)
         
     except Exception as e:
         return exception_handler.handle_exception(e=str(e), extra={})
@@ -86,7 +86,7 @@ async def approve_request(request: Request, request_id: str, permitted_token: An
         )
 
     try:
-        await request_service.approve_request(request_id=request_id, current_user_id=permitted_token.id)
+        await request_service.approve_request(request_id=request_id, current_user_id=permitted_token.id, current_username=permitted_token.username)
         
     except Exception as e:
         return exception_handler.handle_exception(e=str(e), extra={})
@@ -119,7 +119,7 @@ async def reject_request(request: Request, request_id: str, body: RequestRejectI
 
     try:
         body.request_id = request_id
-        response = await request_service.reject_request(inputs=body, current_user_id=permitted_token.id)
+        response = await request_service.reject_request(inputs=body, current_user_id=permitted_token.id, current_username=permitted_token.username)
         
     except Exception as e:
         return exception_handler.handle_exception(e=str(e), extra={})
@@ -127,5 +127,37 @@ async def reject_request(request: Request, request_id: str, body: RequestRejectI
     return exception_handler.handle_success(
         jsonable_encoder(
             "REJECTED",
+        )
+    )
+    
+@request_router.delete('/requests/{request_id}')
+async def delete_request(request: Request, request_id: str, current_token: CurrentToken) -> JSONResponse:
+
+    exception_handler = ExceptionHandler(
+        logger=logger.bind(),
+        service_name=__name__,
+    )
+    
+    try:
+        request_service = RequestServiceApplication(
+            settings=settings,
+            request=request
+        )
+    
+    except Exception as e:
+        return exception_handler.handle_exception(
+            e=f'Error during application initialization: {str(e)}',
+            extra={},
+        )
+
+    try:
+        response = await request_service.delete_request(request_id=request_id, current_user_id=current_token.id)
+        
+    except Exception as e:
+        return exception_handler.handle_exception(e=str(e), extra={})
+
+    return exception_handler.handle_success(
+        jsonable_encoder(
+            "DELETED",
         )
     )

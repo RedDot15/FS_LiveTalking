@@ -62,7 +62,6 @@ class AnswerAggregatorService(BaseService):
                 ),
             )
         
-        # TODO: self._create_empty_output()
         if not response:
             return self._create_empty_output()
 

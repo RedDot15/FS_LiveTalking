@@ -10,6 +10,9 @@ from mongo_client import MongoSettings
 from pydantic_settings import BaseSettings
 from pydantic_settings import PydanticBaseSettingsSource
 from pydantic_settings import YamlConfigSettingsSource
+from pydantic import computed_field
+from pydantic import model_validator
+from pydantic.networks import EmailStr
 
 load_dotenv(find_dotenv('.env'), override=True)
 
@@ -18,6 +21,29 @@ class Settings(BaseSettings):
     minio: MinioSettings
     indexer_service_url: str
     
+    FRONTEND_HOST: str
+    PROJECT_NAME: str
+    
+    SMTP_TLS: bool 
+    SMTP_SSL: bool 
+    SMTP_PORT: int 
+    SMTP_HOST: str | None
+    SMTP_USER: str | None 
+    SMTP_PASSWORD: str | None 
+    EMAILS_FROM_EMAIL: EmailStr | None
+    EMAILS_FROM_NAME: EmailStr | None = None
+    
+    @model_validator(mode="after")
+    def _set_default_emails_from(self) -> Self:
+        if not self.EMAILS_FROM_NAME:
+            self.EMAILS_FROM_NAME = self.PROJECT_NAME
+        return self
+
+    @computed_field
+    @property
+    def emails_enabled(self) -> bool:
+        return bool(self.SMTP_HOST and self.EMAILS_FROM_EMAIL)
+
     class Config:
         env_nested_delimiter = '__'
         yaml_file = str(Path(__file__).parent.parent.parent / 'settings.yaml')

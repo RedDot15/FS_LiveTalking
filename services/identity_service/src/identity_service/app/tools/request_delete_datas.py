@@ -6,14 +6,10 @@ import httpx
 from logger import get_logger
 from fastapi import Request
 
-from ..utils import get_settings
 
 logger = get_logger(__name__)
 
-async def get_context(character_id: str, question: str, request: Request) -> list[str]:
-    if not question.strip():
-        logger.warning('Empty question provided to get_context')
-        return []
+async def request_delete_datas(user_id: str, request: Request) -> list[str]:
     
     authorization_header = request.headers.get('Authorization')
     
@@ -22,29 +18,19 @@ async def get_context(character_id: str, question: str, request: Request) -> lis
         headers['Authorization'] = authorization_header
 
     try:
-        settings = get_settings()
         async with httpx.AsyncClient(timeout=6000) as client:
-            response = await client.post(
-                url=settings.rag_service_url,
-                json={
-                    'character_id': character_id,
-                    'query': question,
-                    'topk': 10
-                },
+            response = await client.delete(
+                url=f"http://character_service:3006/v1/users/{user_id}/mongo_datas",
                 headers=headers
             )
             
             if response.status_code != 200:
                 logger.warning(
-                    f'API request failed with status {response.status_code}: {response.text} : {settings.rag_service_url}',
+                    f'API request failed with status {response.status_code}: {response.text}',
                 )
                 return []
             
-            response_data = response.json()
-            
-            search_output = response_data.get('info', {}).get('results', [])
-            
-            return search_output
+            return
         
     except httpx.RequestError as e:
         logger.exception(f'Network error while fetching context: {e}')

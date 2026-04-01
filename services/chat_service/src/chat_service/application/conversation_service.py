@@ -32,9 +32,19 @@ class CreateConversationInput(BaseModel):
 
 class CreateConversationOutput(BaseModel):
     answer: str
-    
-class DeleteConversationInput(BaseModel):
+    summary: str | None = None
     conversation_id: str
+
+class UpdateConversationInput(BaseModel):
+    conversation_id: str = "default"
+    new_conversation_name: str | None = None
+    user_id: str = "default"
+
+class UpdateConversationOutput(BaseModel):
+    new_conversation_name: str
+
+class DeleteConversationInput(BaseModel):
+    conversation_id: str = "default"
     user_id: str = "default"
 
 class DeleteConversationOutput(BaseModel):
@@ -101,8 +111,11 @@ class ConversationService(BaseService):
 
                 # Insert into DB new conversation 
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                
+                conversation_id = str(uuid.uuid4())
+                
                 conversation: Conversation = conversation_handler.create_conversation(conversation=Conversation(
-                    _id=str(uuid.uuid4()), 
+                    _id=conversation_id, 
                     name=conversation_summary or input.question[:50],
                     participants_hash=participants_hash, 
                     character_id=input.character_id, 
@@ -122,8 +135,30 @@ class ConversationService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateConversationOutput(answer=answer)
+        return CreateConversationOutput(answer=answer, summary=conversation_summary, conversation_id=conversation_id)
     
+    async def update_conversation(self, input: UpdateConversationInput) -> UpdateConversationOutput:
+
+        with self.request.app.state.mongodb_client.get_database() as mongodb:
+            try:
+                # Get character
+                conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
+
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
+                # Validate conversation owner
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
+                    raise Exception(f"Unauthorize user: {input.user_id}")
+
+                conversation_handler.update_conversation_by_id(
+                    conversation_id=input.conversation_id, 
+                    updated_conversation_name=input.new_conversation_name)
+            except Exception as e:
+                raise Exception(f"Error accessing MongoDB: {str(e)}")
+
+        return UpdateConversationOutput(new_conversation_name=input.new_conversation_name)
+
     async def delete_conversation(self, input: DeleteConversationInput) -> DeleteConversationOutput:
 
         with self.request.app.state.mongodb_client.get_database() as mongodb:
@@ -132,6 +167,8 @@ class ConversationService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation: Conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
@@ -140,4 +177,4 @@ class ConversationService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateConversationOutput(answer=input.conversation_id)
+        return DeleteConversationOutput(conversation_id=input.conversation_id)

@@ -1,6 +1,6 @@
-INSERT INTO public."user" (id,username,"password",name,avatar_url,email,phone_number) VALUES
-	 ('0a852eab-dff7-4e0b-bc99-4edd7d13aa4d'::uuid,'admin','$2a$12$pj2bBHJdYqvKTLoIkChv7eGGiQm/VbvrcJ9NpQ3vRfgPKpvzrxzei','hiimadmin','example_url','admin@gmail.com','982359246'),
-	 ('94811f40-fada-4d84-a1e3-cf1c5131f1a6'::uuid,'minh','$2b$12$zn.0mRrLOTbU6QYsFvJeP.25SHjgdbpebp/rzHRv7CjI31QLrYCYK','minh','minh_image','minhtb03@gmail.com','823475698')
+INSERT INTO public."user" (id,username,"password",name,email,phone_number,is_deleted) VALUES
+	 ('0a852eab-dff7-4e0b-bc99-4edd7d13aa4d'::uuid,'admin','$2a$12$pj2bBHJdYqvKTLoIkChv7eGGiQm/VbvrcJ9NpQ3vRfgPKpvzrxzei','hiimadmin','admin@gmail.com','982359246',false),
+	 ('94811f40-fada-4d84-a1e3-cf1c5131f1a6'::uuid,'minh','$2b$12$zn.0mRrLOTbU6QYsFvJeP.25SHjgdbpebp/rzHRv7CjI31QLrYCYK','minh','minhtb03@gmail.com','823475698',false)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public."role" (id,name) VALUES
@@ -21,7 +21,8 @@ INSERT INTO public."permission" (id,name) VALUES
 	 ('ee95e823-dc3a-4d7b-bd70-7467a6e3c2f2'::uuid,'DELETE_ROLE'),
 	 ('602d241c-99d5-4815-839a-ad9192c3cd87'::uuid,'APPROVE_REQUEST'),
 	 ('4f05e87a-3aa5-4ec8-89ce-5c212a79dd6e'::uuid,'REJECT_REQUEST'),
-	 ('7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid,'INDEXING')
+	 ('7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid,'INDEXING'),
+	 ('c8a830b6-e8bd-4657-99fc-cc33089bf407'::uuid,'DELETE_CHARACTER')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.user_role (user_id,role_id) VALUES
@@ -42,5 +43,6 @@ INSERT INTO public.role_permission (role_id,permission_id) VALUES
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'ee95e823-dc3a-4d7b-bd70-7467a6e3c2f2'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'602d241c-99d5-4815-839a-ad9192c3cd87'::uuid),
 	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'4f05e87a-3aa5-4ec8-89ce-5c212a79dd6e'::uuid),
-	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid)
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'7c2fd190-abe6-4886-bc8c-bfd6dd1cf819'::uuid),
+	 ('419935b9-3c66-47ad-9dd2-874ddf0f7551'::uuid,'c8a830b6-e8bd-4657-99fc-cc33089bf407'::uuid)
 ON CONFLICT (role_id, permission_id) DO NOTHING;

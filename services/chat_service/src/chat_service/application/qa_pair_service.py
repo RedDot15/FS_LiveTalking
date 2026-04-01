@@ -16,9 +16,10 @@ from mongo_client.controller import ConversationHandler, CharacterHandler, QAPai
 from mongo_client.model import QAPair
 
 logger = get_logger(__name__)
+
 class QAPairInput(BaseModel):
     conversation_id: str
-    
+    user_id: str = "default"
     
 class QAPairOutput(BaseModel):
     qa_pairs: list[dict]
@@ -48,7 +49,17 @@ class QAPairService(BaseService):
     async def process(self, input: QAPairInput) -> QAPairOutput:
         
         with self.request.app.state.mongodb_client.get_database() as mongodb:
-            try:
+            try:                
+                # Get conversation
+                conversation_handler = ConversationHandler(collection=mongodb["conversations"])
+                conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
+
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
+                # Validate conversation owner
+                if conversation['participants_hash'].split('_')[0] != input.user_id:
+                    raise Exception(f"Unauthorize user: {input.user_id}")
+
                 qa_pair_handler = QAPairHandler(collection=mongodb["qa_pairs"])
                 conversations = qa_pair_handler.get_qa_pairs_by_conversation_id(conversation_id=input.conversation_id)
             except Exception as e:
@@ -70,6 +81,8 @@ class QAPairService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation = conversation_handler.get_conversation_by_id(conversation_id=input.conversation_id)
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {input.conversation_id}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
@@ -77,6 +90,9 @@ class QAPairService(BaseService):
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
                 character = character_handler.get_character_by_id(character_id=conversation['character_id'])
+
+                if not character:
+                    raise Exception(f"Character not found: {conversation['character_id']}")
 
                 # Record start time
                 start_time = datetime.now()
@@ -130,6 +146,8 @@ class QAPairService(BaseService):
                 conversation_handler = ConversationHandler(collection=mongodb["conversations"])
                 conversation = conversation_handler.get_conversation_by_id(conversation_id=qa_pair['conversation_id'])
 
+                if not conversation:
+                    raise Exception(f"Conversation not found: {qa_pair['conversation_id']}")
                 # Validate conversation owner
                 if conversation['participants_hash'].split('_')[0] != input.user_id:
                     raise Exception(f"Unauthorize user: {input.user_id}")
@@ -137,6 +155,9 @@ class QAPairService(BaseService):
                 # Get character
                 character_handler = CharacterHandler(collection=mongodb["characters"])
                 character = character_handler.get_character_by_id(character_id=conversation['character_id'])
+
+                if not character:
+                    raise Exception(f"Character not found: {conversation['character_id']}")
 
                 # Record start time
                 start_time = datetime.now()
@@ -169,4 +190,4 @@ class QAPairService(BaseService):
             except Exception as e:
                 raise Exception(f"Error accessing MongoDB: {str(e)}")
 
-        return CreateQAPairOutput(answer=answer)
+        return UpdateQAPairOutput(answer=answer)

@@ -13,12 +13,20 @@ class ConversationHandler(BaseService):
 
     # Get all conversation by participants_hash with (created_at order: desc)
     def get_conversation_by_participants_hash(self, participants_hash: str):
-        data = self.collection.find({"participants_hash": participants_hash}).sort("created_at", 1)
+        query = {
+            "participants_hash": participants_hash,
+            "is_deleted": {"$ne": True}
+        }
+        data = self.collection.find(query).sort("created_at", -1)
         return list(data)
 
     # Get conversation by id
     def get_conversation_by_id(self, conversation_id: str):
-        data = self.collection.find_one({"_id": conversation_id})
+        query = {
+            "_id": conversation_id,
+            "is_deleted": {"$ne": True}
+        }
+        data = self.collection.find_one(query)
         return data
     
     # Update conversation by id (can only update name)
@@ -27,13 +35,16 @@ class ConversationHandler(BaseService):
             "name": updated_conversation_name,
         }
         return self.collection.update_one(
-            {"_id": conversation_id},
+            {"_id": conversation_id, "is_deleted": {"$ne": True}},
             {"$set": update_data}
         )
     
     # Delete conversation by id
     def delete_conversation_by_id(self, conversation_id: str):
-        return self.collection.delete_one({"_id": conversation_id})
+        return self.collection.update_one(
+            {"_id": conversation_id},
+            {"$set": {"is_deleted": True}}
+        )
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")

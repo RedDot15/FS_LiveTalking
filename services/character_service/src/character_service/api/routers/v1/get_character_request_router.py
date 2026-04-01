@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from authorization.deps import CurrentToken
-from fastapi import APIRouter
+from typing import Annotated
+from authorization.deps import has_authority, TokenPayload, CurrentToken
+from fastapi import APIRouter, Depends
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from character_service.api.helpers.exception_handler import ExceptionHandler
@@ -17,30 +18,54 @@ get_character_request_router = APIRouter()
 
 @get_character_request_router.get('/requests')
 def get_character_request(
-    request: Request,
-    current_token: CurrentToken
+    request: Request
     ):
-    
     exception_handler = ExceptionHandler(
         logger=logger.bind(),
         service_name=__name__,
     )
-    
     try:
         request_character_service = GetRequestCharacterApplication(
             settings=settings,
             request=request
         )
-    
     except Exception as e:
         return exception_handler.handle_exception(
             e=f'Error during application initialization: {str(e)}',
             extra={},
         )
-        
     try:
         response = request_character_service.process()
-        
+    except Exception as e:
+        return exception_handler.handle_exception(e=str(e))
+    
+    return exception_handler.handle_success(
+        jsonable_encoder(
+            response,
+        )
+    )
+
+@get_character_request_router.get('/users/me/requests')
+def get_my_character_request(
+    request: Request,
+    current_token: CurrentToken,
+    ):
+    exception_handler = ExceptionHandler(
+        logger=logger.bind(),
+        service_name=__name__,
+    )
+    try:
+        request_character_service = GetRequestCharacterApplication(
+            settings=settings,
+            request=request
+        )
+    except Exception as e:
+        return exception_handler.handle_exception(
+            e=f'Error during application initialization: {str(e)}',
+            extra={},
+        )
+    try:
+        response = request_character_service.get_by_created_by(created_by=current_token.id)
     except Exception as e:
         return exception_handler.handle_exception(e=str(e))
     

@@ -45,3 +45,11 @@ class ChromaDB(BaseService):
         )
 
         return ChromaDBOutput(results=results['documents'][0])
+
+    # def delete_document(self, character_id: str):
+    #     try:
+    #         self.client.delete_collection(name=character_id)
+    #         print(f"Collection '{character_id}' has been successfully deleted.")
+    #     except Exception as e:
+    #         # Handle the case where the collection might not exist or other errors occur
+    #         print(f"An error occurred while deleting the collection: {e}")

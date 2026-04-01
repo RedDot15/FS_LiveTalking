@@ -13,18 +13,31 @@ class RequestHandler(BaseService):
 
     # Get all requests with (name order: asc)
     def get_requests(self):
-        data = self.collection.find().sort("created_at", -1)
+        query = {"is_deleted": {"$ne": True}}
+        data = self.collection.find(query).sort("created_at", -1)
         return list(data)
+
+    def get_requests_by_created_by(self, created_by: str):
+        query = {
+            "created_by": created_by,
+            "is_deleted": {"$ne": True}
+        }
+        data = self.collection.find(query).sort("created_at", -1)
+        return list(data)        
 
     # Get request by id
     def get_request_by_id(self, request_id: str):
-        data = self.collection.find_one({"_id": request_id})
+        query = {
+            "_id": request_id,
+            "is_deleted": {"$ne": True}
+        }
+        data = self.collection.find_one(query)
         return data
     
     # Get request by id
-    def get_request_by_character_name(self, character_name: str):
-        data = self.collection.find_one({"character_name": character_name})
-        return data
+    # def get_request_by_character_name(self, character_name: str):
+    #     data = self.collection.find_one({"character_name": character_name})
+    #     return data
     
     # Update request by id
     def update_request_by_id(self, request_id: str, request: Request):
@@ -35,7 +48,17 @@ class RequestHandler(BaseService):
 
     # Delete request by id
     def delete_request_by_id(self, request_id: str):
-        return self.collection.delete_one({"_id": request_id})
+        return self.collection.update_one(
+            {"_id": request_id},
+            {"$set": {"is_deleted": True}}
+        )
+
+    # Soft Delete all requests by created_by (User ID)
+    def delete_requests_by_created_by(self, created_by: str):
+        return self.collection.update_many(
+            {"created_by": created_by},
+            {"$set": {"is_deleted": True}}
+        )
     
     def process(self, inputs: Any) -> Any:
         raise NotImplementedError("This method is not used.")

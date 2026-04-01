@@ -5,3 +5,5 @@ from sqlmodel import SQLModel
 class TokenPayload(SQLModel):
     id: str | None = None
     scope: str | None = None
+    username: str | None = None
+    email: str | None = None

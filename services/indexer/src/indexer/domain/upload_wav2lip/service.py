@@ -22,7 +22,7 @@ class UploadWav2lipService(BaseService):
         url = get_settings().wav2lip_service_url 
 
         try:
-            async with httpx.AsyncClient(timeout=300) as client:
+            async with httpx.AsyncClient(timeout=6000) as client:
                 response = await client.post(url, json=inputs.model_dump())
                 response.raise_for_status()   
                 response_data = response.json()
